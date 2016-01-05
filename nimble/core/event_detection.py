@@ -30,15 +30,30 @@ class Event(object):
             return output
             
         def _apply_parameters(self):
-            starts, stops = self._apply_condtion
+            starts, stops = self._apply_condtion()
             
             return starts, stops
             
         def _apply_condtion(self):
-            mask = (self.condition > 0).view('i1')
-            slice_index - np.arange(mask.size+1, dtype='int32')
+            """
+            Apply initial masking conditions
+            """
+            mask = (self.condition > 0)
+            slice_index - np.arange(mask.size+1)
             
+            if mask[0] == 0:
+                to_begin = np.array([0])
+            else:
+                to_begin = np.array([1])
+                
+            if mask[-1] == 0:
+                to_end = np.array([0])
+            else:
+                to_end = np.array([-1])
+                
+            deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
             
-        
-        
-        
+            starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
+            stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
+            
+            return starts, stops
