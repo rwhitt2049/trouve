@@ -24,6 +24,7 @@ class Event(object):
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
         #TODO - Cache this value?
+        #import pdb; pdb.set_trace()
         output = np.zeros(self.condition.size, dtype='i1')
         for start, stop in zip(self.starts, self.stops):
             output[start:stop] = 1
@@ -38,7 +39,7 @@ class Event(object):
         """
         Apply initial masking conditions
         """
-        mask = (self.condition > 0)
+        mask = (self.condition > 0).view('i1')
         slice_index = np.arange(mask.size+1)
 
         if mask[0] == 0:
@@ -52,7 +53,7 @@ class Event(object):
             to_end = np.array([-1])
 
         deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
-
+        #import pdb; pdb.set_trace()
         starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
         stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
