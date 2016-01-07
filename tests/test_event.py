@@ -20,8 +20,9 @@ class TestEventDetection(TestCase):
         """
         Test arrays that have no active events
         """
-        validation_array = np.zeros(10, dtype='i1')
-        condition = (validation_array > 0)
+        conditional_array = np.ones(10, dtype='i1') * 5
+        validation_array = np.zeros(10, dtype='i1') 
+        condition = (conditional_array > 5)
         events = Event(condition)
         
         npt.assert_array_equal(validation_array, events.as_array)
