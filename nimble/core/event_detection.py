@@ -40,17 +40,17 @@ class Event(object):
         Apply initial masking conditions
         """
         mask = (self.condition > 0).view('i1')
-        slice_index = np.arange(mask.size+1)
+        slice_index = np.arange(mask.size+1, dtype='int32')
 
         if mask[0] == 0:
-            to_begin = np.array([0])
+            to_begin = np.array([0], dtype='i1')
         else:
-            to_begin = np.array([1])
+            to_begin = np.array([1], dtype='i1')
 
         if mask[-1] == 0:
-            to_end = np.array([0])
+            to_end = np.array([0], dtype='i1')
         else:
-            to_end = np.array([-1])
+            to_end = np.array([-1], dtype='i1')
 
         deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
 
