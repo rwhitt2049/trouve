@@ -32,6 +32,9 @@ class Event(object):
 
     def _apply_parameters(self):
         starts, stops = self._apply_condition()
+        
+        if self.entry_debounce or self.exit_debounce:
+            starts, stops = self._apply_debounce()
 
         return starts, stops
 
@@ -58,3 +61,6 @@ class Event(object):
         stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
         return starts, stops
+        
+    def _apply_debounce(self):
+        pass
