@@ -14,7 +14,7 @@ class TestEventDetection(TestCase):
         condition = (validation_array > 0)
         events = Event(condition)
         
-        npt.assert_aray_equal(validation_array, events.array)
+        npt.assert_array_equal(validation_array, events.as_array)
         
     def test_no_events_found(self):
         """
@@ -24,7 +24,7 @@ class TestEventDetection(TestCase):
         condition = (validation_array > 0)
         events = Event(condition)
         
-        npt.assert_aray_equal(validation_array, events.array)
+        npt.assert_array_equal(validation_array, events.as_array)
 
     def test_event_always_active(self):
         """
@@ -34,7 +34,7 @@ class TestEventDetection(TestCase):
         condition = (validation_array > 0)
         events = Event(condition)
         
-        npt.assert_aray_equal(validation_array, events.array)
+        npt.assert_array_equal(validation_array, events.as_array)
 
     def test_array_with_event_active_at_start(self):
         """
@@ -45,7 +45,7 @@ class TestEventDetection(TestCase):
         condition = (validation_array > 0)
         
         events = Event(condition)
-        npt.assert_aray_equal(validation_array, events.array)
+        npt.assert_array_equal(validation_array, events.as_array)
 
     def test_array_with_event_active_at_end(self):
         """
@@ -56,7 +56,7 @@ class TestEventDetection(TestCase):
         condition = (validation_array > 0)
         
         events = Event(condition)
-        npt.assert_aray_equal(validation_array, events.array)
+        npt.assert_array_equal(validation_array, events.as_array)
 
     #def test_event_entry_debounce(self):
     #def test_event_exit_debounce(self):
