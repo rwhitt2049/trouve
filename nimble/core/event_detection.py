@@ -3,20 +3,31 @@ import numpy as np
 
 class Event(object):
     def __init__(self, condition, sample_rate=1,
-                 entry_debounce=0, exit_debounce=0):
+                 entry_debounce=0, exit_debounce=0,
+                 min_event_length=0, max_event_length=None):
 
         self.condition = condition
+        self.sample_rate = sample_rate  # Assumes univariate time series
         self.entry_debounce = entry_debounce
         self.exit_debounce = exit_debounce
-        self.sample_rate = sample_rate  # Assumes univariate time series
-        #TODO - work out strategy for multivariate data
+        self.min_event_length = min_event_length
+
+        if max_event_length is None:
+            self.max_event_length = condition.size
+        else:
+            self.max_event_length = max_event_length
+
         self.starts, self.stops = self._apply_parameters()
+        # TODO - work out strategy for multivariate data
+        # TODO - potentially just return a tuple of (start, stop) values
+        # TODO Replace len()'s with x.size, these are all numpy arrays
 
     @property
     def size(self):
         """
         Return the number of events found.
         """
+        # TODO  return self.starts.size instead
         return len(self.starts)
 
     @property
@@ -24,7 +35,7 @@ class Event(object):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
-        #TODO - Cache this value?
+        # TODO - Cache this value? or make it a method (better option)
 
         output = np.zeros(self.condition.size, dtype='i1')
         for start, stop in zip(self.starts, self.stops):
@@ -33,9 +44,12 @@ class Event(object):
 
     def _apply_parameters(self):
         starts, stops = self._apply_condition()
-        
+
         if len(starts) and (self.entry_debounce or self.exit_debounce):
             starts, stops = self._apply_debounce(starts, stops)
+
+        if len(starts) and (self.min_event_length or self.max_event_length):
+            starts, stops = self._apply_event_length_filter(starts, stops)
 
         return starts, stops
 
@@ -44,7 +58,7 @@ class Event(object):
         Apply initial masking conditions
         """
         mask = (self.condition > 0).view('i1')
-        slice_index = np.arange(mask.size+1, dtype='int32')
+        slice_index = np.arange(mask.size + 1, dtype='int32')
 
         if mask[0] == 0:
             to_begin = np.array([0], dtype='i1')
@@ -62,7 +76,7 @@ class Event(object):
         stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
         return starts, stops
-        
+
     def _apply_debounce(self, starts, stops):
         """ Apply debounce paramaters"""
         start_mask = np.zeros(starts.size)
@@ -73,7 +87,7 @@ class Event(object):
             event_length = stops[id] - starts[id]
 
             try:
-                reset_length = starts[id+1] - stops[id]
+                reset_length = starts[id + 1] - stops[id]
             except IndexError:
                 reset_length = None
 
@@ -99,5 +113,17 @@ class Event(object):
 
         starts = np.ma.masked_where(start_mask > 0, starts).compressed()
         stops = np.ma.masked_where(stop_mask > 0, stops).compressed()
+
+        return starts, stops
+
+    def _apply_event_length_filter(self, starts, stops):
+        event_lengths = stops - starts
+        #import pdb; pdb.set_trace()
+        cond = ((event_lengths < self.min_event_length) |
+                     (event_lengths > self.max_event_length))
+
+        starts = np.ma.masked_where(cond, starts).compressed()
+
+        stops = np.ma.masked_where(cond, stops).compressed()
 
         return starts, stops
