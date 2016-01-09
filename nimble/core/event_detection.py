@@ -64,6 +64,7 @@ class Event(object):
         return starts, stops
         
     def _apply_debounce(self, starts, stops):
+        """ Apply debounce paramaters"""
         start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
         event_started = False
