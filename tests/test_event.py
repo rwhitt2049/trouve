@@ -93,7 +93,7 @@ class TestEventDetection(TestCase):
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_max_event_window_length(self):
-        condition_array = np.array([0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1])
+        condition_array = np.array([0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1])
         validation_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1])
 
         condition = (condition_array > 0)
