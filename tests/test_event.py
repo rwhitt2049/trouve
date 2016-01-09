@@ -59,8 +59,29 @@ class TestEventDetection(TestCase):
         events = Event(condition)
         npt.assert_array_equal(validation_array, events.as_array)
 
-    #def test_event_entry_debounce(self):
-    #def test_event_exit_debounce(self):
-    #def test_entry_and_exit_debounce(self):
+    def test_event_entry_debounce(self):
+        conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0])
+        validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 0, 0, 0])
+        
+        condition = (conditional_array > 0)
+        events = Event(condition, entry_debounce=3)
+        npt.assert_array_equal(validation_array, events.as_array)
+        
+    def test_event_exit_debounce(self):
+        conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
+        validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1])
+        
+        condition = (conditional_array > 0)
+        events = Event(condition, exit_debounce=2)
+        npt.assert_array_equal(validation_array, events.as_array)
+
+    def test_entry_and_exit_debounce(self):
+        conditional_array = np.array([0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1])
+        validation_array = np.array([0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1])
+        
+        condition = (conditional_array > 0)
+        events = Event(condition, entry_debounce=2, exit_debounce=2)
+        npt.assert_array_equal(validation_array, events.as_array)
+    
     #def test_min_event_window_length(self):
     #def test_max_event_window_length(self):

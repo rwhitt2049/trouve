@@ -2,8 +2,9 @@ import numpy as np
 
 
 class Event(object):
-    def __init__(self, condition, entry_debounce=0, exit_debounce=0,
-                 sample_rate=1):
+    def __init__(self, condition, sample_rate=1,
+                 entry_debounce=0, exit_debounce=0):
+
         self.condition = condition
         self.entry_debounce = entry_debounce
         self.exit_debounce = exit_debounce
@@ -32,6 +33,9 @@ class Event(object):
 
     def _apply_parameters(self):
         starts, stops = self._apply_condition()
+        
+        if len(starts) and (self.entry_debounce or self.exit_debounce):
+            starts, stops = self._apply_debounce(starts, stops)
 
         return starts, stops
 
@@ -56,5 +60,44 @@ class Event(object):
 
         starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
         stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
+
+        return starts, stops
+        
+    def _apply_debounce(self, starts, stops):
+        """ Apply debounce paramaters"""
+        start_mask = np.zeros(starts.size)
+        stop_mask = np.zeros(stops.size)
+        event_started = False
+
+        for id in np.arange(starts.size):
+            event_length = stops[id] - starts[id]
+
+            try:
+                reset_length = starts[id+1] - stops[id]
+            except IndexError:
+                reset_length = None
+
+            if event_started:
+                pass
+            elif not event_started and event_length >= self.entry_debounce:
+                event_started = True
+            elif not event_started and event_length < self.entry_debounce:
+                start_mask[id] = 1
+                stop_mask[id] = 1
+            else:
+                raise ValueError
+
+            if not event_started or reset_length is None:
+                pass
+            elif event_started and reset_length >= self.exit_debounce:
+                event_started = False
+            elif event_started and reset_length < self.exit_debounce:
+                start_mask[id + 1] = 1
+                stop_mask[id] = 1
+            else:
+                raise ValueError
+
+        starts = np.ma.masked_where(start_mask > 0, starts).compressed()
+        stops = np.ma.masked_where(stop_mask > 0, stops).compressed()
 
         return starts, stops
