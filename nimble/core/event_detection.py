@@ -64,7 +64,6 @@ class Event(object):
         return starts, stops
         
     def _apply_debounce(self, starts, stops):
-        #n_events = len(starts)
         start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
         event_started = False
@@ -77,13 +76,13 @@ class Event(object):
             except IndexError:
                 reset_length = None
 
-            if event_length >= self.entry_debounce and not event_started:
+            if event_started:
+                pass
+            elif not event_started and event_length >= self.entry_debounce:
                 event_started = True
             elif not event_started and event_length < self.entry_debounce:
                 start_mask[id] = 1
                 stop_mask[id] = 1
-            elif event_started:
-                pass
             else:
                 raise ValueError
 
