@@ -1,4 +1,5 @@
 import numpy as np
+from functools import lru_cache
 
 
 class Events(object):
@@ -24,16 +25,16 @@ class Events(object):
         """
         return self.starts.size
 
-    @property
-    def as_array(self):
+    @lru_cache(10)
+    def as_array(self, false_values=0, true_values=1, dtype='float'):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
         # TODO - Cache this value? or make it a method (better option)
 
-        output = np.zeros(self.condition.size, dtype='i1')
+        output = np.ones(self.condition.size, dtype=dtype) * false_values
         for start, stop in zip(self.starts, self.stops):
-            output[start:stop] = 1
+            output[start:stop] = 1 * true_values
         return output
 
     def _apply_filters(self):
