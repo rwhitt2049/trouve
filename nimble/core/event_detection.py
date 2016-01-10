@@ -16,15 +16,13 @@ class Event(object):
         self.starts, self.stops = self._apply_parameters()
         # TODO - work out strategy for multivariate data
         # TODO - potentially just return a tuple of (start, stop) values
-        # TODO Replace len()'s with x.size, these are all numpy arrays
 
     @property
     def size(self):
         """
         Return the number of events found.
         """
-        # TODO  return self.starts.size instead
-        return len(self.starts)
+        return self.starts.size
 
     @property
     def as_array(self):
@@ -41,10 +39,10 @@ class Event(object):
     def _apply_parameters(self):
         starts, stops = self._apply_condition()
 
-        if len(starts) and (self.entry_debounce or self.exit_debounce):
+        if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
             starts, stops = self._apply_debounce(starts, stops)
 
-        if len(starts) and (self.min_event_length or self.max_event_length):
+        if starts.size > 0 and (self.min_event_length or self.max_event_length):
             starts, stops = self._apply_event_length_filter(starts, stops)
 
         return starts, stops
@@ -75,6 +73,7 @@ class Event(object):
 
     def _apply_debounce(self, starts, stops):
         """ Apply debounce paramaters"""
+        # TODO - Replace with function in Cython for significant speed boost
         start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
         event_active = False
