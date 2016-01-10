@@ -77,33 +77,33 @@ class Event(object):
         """ Apply debounce paramaters"""
         start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
-        event_started = False
+        event_active = False
 
-        for id in np.arange(starts.size):
-            event_length = stops[id] - starts[id]
+        for index in np.arange(starts.size):
+            event_length = stops[index] - starts[index]
 
             try:
-                reset_length = starts[id + 1] - stops[id]
+                reset_length = starts[index + 1] - stops[index]
             except IndexError:
                 reset_length = None
 
-            if event_started:
+            if event_active:
                 pass
-            elif not event_started and event_length >= self.entry_debounce:
-                event_started = True
-            elif not event_started and event_length < self.entry_debounce:
-                start_mask[id] = 1
-                stop_mask[id] = 1
+            elif not event_active and event_length >= self.entry_debounce:
+                event_active = True
+            elif not event_active and event_length < self.entry_debounce:
+                start_mask[index] = 1
+                stop_mask[index] = 1
             else:
                 raise ValueError
 
-            if not event_started or reset_length is None:
+            if not event_active or reset_length is None:
                 pass
-            elif event_started and reset_length >= self.exit_debounce:
-                event_started = False
-            elif event_started and reset_length < self.exit_debounce:
-                start_mask[id + 1] = 1
-                stop_mask[id] = 1
+            elif event_active and reset_length >= self.exit_debounce:
+                event_active = False
+            elif event_active and reset_length < self.exit_debounce:
+                start_mask[index + 1] = 1
+                stop_mask[index] = 1
             else:
                 raise ValueError
 
@@ -115,7 +115,7 @@ class Event(object):
     def _apply_event_length_filter(self, starts, stops):
         event_lengths = stops - starts
 
-        if self.max_event_length is None:
+        if not self.max_event_length:
             condition = (event_lengths < self.min_event_length)
         elif self.min_event_length >= 0 and self.max_event_length > 0:
             condition = ((event_lengths < self.min_event_length) |
