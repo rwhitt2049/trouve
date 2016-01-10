@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Event(object):
+class Events(object):
     def __init__(self, condition, sample_rate=1,
                  entry_debounce=0, exit_debounce=0,
                  min_event_length=0, max_event_length=None):
@@ -13,7 +13,7 @@ class Event(object):
         self.min_event_length = min_event_length
         self.max_event_length = max_event_length
 
-        self.starts, self.stops = self._apply_parameters()
+        self.starts, self.stops = self._apply_filters()
         # TODO - work out strategy for multivariate data
         # TODO - potentially just return a tuple of (start, stop) values
 
@@ -36,18 +36,18 @@ class Event(object):
             output[start:stop] = 1
         return output
 
-    def _apply_parameters(self):
-        starts, stops = self._apply_condition()
+    def _apply_filters(self):
+        starts, stops = self._apply_condition_filter()
 
         if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            starts, stops = self._apply_debounce(starts, stops)
+            starts, stops = self._apply_debounce_filter(starts, stops)
 
         if starts.size > 0 and (self.min_event_length or self.max_event_length):
             starts, stops = self._apply_event_length_filter(starts, stops)
 
         return starts, stops
 
-    def _apply_condition(self):
+    def _apply_condition_filter(self):
         """
         Apply initial masking conditions
         """
@@ -71,7 +71,7 @@ class Event(object):
 
         return starts, stops
 
-    def _apply_debounce(self, starts, stops):
+    def _apply_debounce_filter(self, starts, stops):
         """ Apply debounce paramaters"""
         # TODO - Replace with function in Cython for significant speed boost
         start_mask = np.zeros(starts.size)

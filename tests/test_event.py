@@ -1,6 +1,6 @@
 import numpy as np
 import numpy.testing as npt
-from nimble.core.event_detection import Event
+from nimble.core.event_detection import Events
 from unittest import TestCase
 
 
@@ -12,7 +12,7 @@ class TestEventDetection(TestCase):
         np.random.seed(10)
         validation_array = np.random.random_integers(0, 1, 100)
         condition = (validation_array > 0)
-        events = Event(condition)
+        events = Events(condition)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -23,7 +23,7 @@ class TestEventDetection(TestCase):
         conditional_array = np.ones(10, dtype='i1') * 5
         validation_array = np.zeros(10, dtype='i1')
         condition = (conditional_array > 5)
-        events = Event(condition)
+        events = Events(condition)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -33,7 +33,7 @@ class TestEventDetection(TestCase):
         """
         validation_array = np.ones(10, dtype='i1')
         condition = (validation_array > 0)
-        events = Event(condition)
+        events = Events(condition)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -45,7 +45,7 @@ class TestEventDetection(TestCase):
         validation_array[:1] = 1
         condition = (validation_array > 0)
 
-        events = Event(condition)
+        events = Events(condition)
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_array_with_event_active_at_end(self):
@@ -56,7 +56,7 @@ class TestEventDetection(TestCase):
         validation_array[-1:] = 1
         condition = (validation_array > 0)
 
-        events = Event(condition)
+        events = Events(condition)
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_event_entry_debounce(self):
@@ -64,7 +64,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 0, 0, 0])
 
         condition = (conditional_array > 0)
-        events = Event(condition, entry_debounce=3)
+        events = Events(condition, entry_debounce=3)
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_event_exit_debounce(self):
@@ -72,7 +72,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1])
 
         condition = (conditional_array > 0)
-        events = Event(condition, exit_debounce=2)
+        events = Events(condition, exit_debounce=2)
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_entry_and_exit_debounce(self):
@@ -80,7 +80,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1])
 
         condition = (conditional_array > 0)
-        events = Event(condition, entry_debounce=2, exit_debounce=2)
+        events = Events(condition, entry_debounce=2, exit_debounce=2)
         npt.assert_array_equal(validation_array, events.as_array)
 
     def test_min_event_window_length(self):
@@ -88,7 +88,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0])
 
         condition = (condition_array > 0)
-        events = Event(condition, min_event_length=3)
+        events = Events(condition, min_event_length=3)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -97,7 +97,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1])
 
         condition = (condition_array > 0)
-        events = Event(condition, max_event_length=3)
+        events = Events(condition, max_event_length=3)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -106,7 +106,7 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0])
 
         condition = (condition_array > 0)
-        events = Event(condition, min_event_length=3)
+        events = Events(condition, min_event_length=3)
 
         npt.assert_array_equal(validation_array, events.as_array)
 
@@ -115,6 +115,6 @@ class TestEventDetection(TestCase):
         validation_array = np.array([0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0])
 
         condition = (condition_array > 0)
-        events = Event(condition, min_event_length=2, max_event_length=3)
+        events = Events(condition, min_event_length=2, max_event_length=3)
 
         npt.assert_array_equal(validation_array, events.as_array)
