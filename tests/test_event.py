@@ -17,18 +17,21 @@ class TestAsArrayMethod(TestCase):
     def test_as_array_low_value(self):
         """Test as_array() with low value"""
         validation_array = np.array([-1, 1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1])
-        npt.assert_array_equal(validation_array, self.events.as_array(low=-1))
+        npt.assert_array_equal(validation_array, self.events.as_array(
+            false_values=-1))
 
     def test_as_array_high_value(self):
         """Test as_array() with high value"""
         validation_array = np.array([0, 5, 5, 5, 0, 0, 0, 5, 5, 0, 5, 5])
-        npt.assert_array_equal(validation_array, self. events.as_array(high=5))
+        npt.assert_array_equal(validation_array, self. events.as_array(
+            true_values=5))
 
     def test_as_array_low_and_high_value(self):
         """Test as_array() with low and high values"""
         validation_array = np.array([-1, 5, 5, 5, -1, -1, -1, 5, 5, -1, 5, 5])
-        npt.assert_array_equal(validation_array, self.events.as_array(low=-1,
-                                                                      high=5))
+        npt.assert_array_equal(validation_array, self.events.as_array(
+            false_values=-1,
+            true_values=5))
 
 
 class TestEventDetection(TestCase):
