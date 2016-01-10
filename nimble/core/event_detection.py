@@ -1,4 +1,5 @@
 import numpy as np
+from functools import lru_cache
 
 
 class Events(object):
@@ -24,7 +25,7 @@ class Events(object):
         """
         return self.starts.size
 
-    @property
+    @lru_cache(10)
     def as_array(self):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
