@@ -26,15 +26,15 @@ class Events(object):
         return self.starts.size
 
     @lru_cache(10)
-    def as_array(self):
+    def as_array(self, low=0, high=1, dtype='float'):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
         # TODO - Cache this value? or make it a method (better option)
 
-        output = np.zeros(self.condition.size, dtype='i1')
+        output = np.ones(self.condition.size, dtype=dtype) * low
         for start, stop in zip(self.starts, self.stops):
-            output[start:stop] = 1
+            output[start:stop] = 1 * high
         return output
 
     def _apply_filters(self):
