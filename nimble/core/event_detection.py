@@ -11,11 +11,7 @@ class Event(object):
         self.entry_debounce = entry_debounce
         self.exit_debounce = exit_debounce
         self.min_event_length = min_event_length
-
-        if max_event_length is None:
-            self.max_event_length = condition.size
-        else:
-            self.max_event_length = max_event_length
+        self.max_event_length = max_event_length
 
         self.starts, self.stops = self._apply_parameters()
         # TODO - work out strategy for multivariate data
@@ -118,12 +114,16 @@ class Event(object):
 
     def _apply_event_length_filter(self, starts, stops):
         event_lengths = stops - starts
-        #import pdb; pdb.set_trace()
-        cond = ((event_lengths < self.min_event_length) |
-                     (event_lengths > self.max_event_length))
 
-        starts = np.ma.masked_where(cond, starts).compressed()
+        if self.max_event_length is None:
+            condition = (event_lengths < self.min_event_length)
+        elif self.min_event_length >= 0 and self.max_event_length > 0:
+            condition = ((event_lengths < self.min_event_length) |
+                         (event_lengths > self.max_event_length))
+        else:
+            raise ValueError
 
-        stops = np.ma.masked_where(cond, stops).compressed()
+        starts = np.ma.masked_where(condition, starts).compressed()
+        stops = np.ma.masked_where(condition, stops).compressed()
 
         return starts, stops
