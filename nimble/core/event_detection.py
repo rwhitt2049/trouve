@@ -2,6 +2,20 @@ import numpy as np
 from functools import lru_cache
 
 
+def lazyproperty(func):
+    name = '_lazy_' + func.__name__
+
+    @property
+    def lazy(self):
+        if hasattr(self, name):
+            return getattr(self, name)
+        else:
+            value = func(self)
+            setattr(self, name, value)
+            return value
+    return lazy
+
+
 class Events(object):
     def __init__(self, condition, sample_rate=1,
                  entry_debounce=0, exit_debounce=0,
@@ -14,16 +28,24 @@ class Events(object):
         self.min_event_length = min_event_length
         self.max_event_length = max_event_length
 
-        self.starts, self.stops = self._apply_filters()
         # TODO - work out strategy for multivariate data
-        # TODO - potentially just return a tuple of (start, stop) values
 
     @property
     def size(self):
-        """
-        Return the number of events found.
-        """
-        return self.starts.size
+        """Return the number of events found."""
+        return self.condition.size
+        
+    @lazyproperty
+    def starts(self):
+        """Return a numpy.array() of start indexes."""
+        starts, _ = self._apply_filters()
+        return starts
+        
+    @lazyproperty
+    def stops(self):
+        """Return a numpy.array() of start indexes."""
+        _, stops = self._apply_filters()
+        return stops
 
     @lru_cache(10)
     def as_array(self, false_values=0, true_values=1, dtype='float'):
@@ -31,12 +53,14 @@ class Events(object):
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
         # TODO - Cache this value? or make it a method (better option)
-
+        starts = self.starts
+        stops = self.stops
         output = np.ones(self.condition.size, dtype=dtype) * false_values
-        for start, stop in zip(self.starts, self.stops):
+        for start, stop in zip(starts, stops):
             output[start:stop] = 1 * true_values
         return output
 
+    @lru_cache(1)
     def _apply_filters(self):
         starts, stops = self._apply_condition_filter()
 
@@ -73,7 +97,7 @@ class Events(object):
         return starts, stops
 
     def _apply_debounce_filter(self, starts, stops):
-        """ Apply debounce paramaters"""
+        """ Apply debounce parameters"""
         # TODO - Replace with function in Cython for significant speed boost
         start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
