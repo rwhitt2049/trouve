@@ -1,13 +1,16 @@
+from unittest import TestCase
+
 import numpy as np
 import numpy.testing as npt
-from nimble.core.event_detection import Events
-from unittest import TestCase
+
+from nimble import Events
 
 
 class TestAsArrayMethod(TestCase):
     def setUp(self):
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
-        self.events = Events(conditional_array)
+        condition = (conditional_array > 0)
+        self.events = Events(condition)
 
     def test_default_parameters(self):
         """Test as_array() with default settings"""

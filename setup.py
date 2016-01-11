@@ -3,8 +3,10 @@
 
 from codecs import open
 from os import path
+
 from setuptools import find_packages, setup
-from nimble.core import __version__
+
+from nimble import __version__
 
 base = path.abspath(path.dirname(__file__))
 
