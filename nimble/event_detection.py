@@ -33,7 +33,7 @@ class Events(object):
     @property
     def size(self):
         """Return the number of events found."""
-        return self.condition.size
+        return self.starts.size
         
     @lazyproperty
     def starts(self):
