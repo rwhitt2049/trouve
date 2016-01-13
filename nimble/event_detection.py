@@ -52,7 +52,6 @@ class Events(object):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
         """
-        # TODO - Cache this value? or make it a method (better option)
         starts = self.starts
         stops = self.stops
         output = np.ones(self.condition.size, dtype=dtype) * false_values
