@@ -23,12 +23,33 @@ class Events(object):
 
         self.condition = condition
         self.sample_rate = sample_rate  # Assumes univariate time series
-        self.entry_debounce = entry_debounce
-        self.exit_debounce = exit_debounce
-        self.min_event_length = min_event_length
-        self.max_event_length = max_event_length
+        self._entry_debounce = entry_debounce
+        self._exit_debounce = exit_debounce
+        self._min_event_length = min_event_length
+        self._max_event_length = max_event_length
 
-        # TODO - work out strategy for multivariate data
+        # TODO - work out strategy for multivariate data. Pass index
+        # TODO - add event start and stop offsets
+        # TODO - promote private methods to public, allow events to be created step by step
+
+    @property
+    def entry_debounce(self):
+        return np.ceil(self._entry_debounce * self.sample_rate)
+
+    @property
+    def exit_debounce(self):
+        return np.ceil(self._exit_debounce * self.sample_rate)
+
+    @property
+    def min_event_length(self):
+        return np.ceil(self._min_event_length * self.sample_rate)
+
+    @property
+    def max_event_length(self):
+        try:
+            return np.floor(self._max_event_length * self.sample_rate)
+        except TypeError:
+            return None
 
     @property
     def size(self):
