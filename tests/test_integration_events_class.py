@@ -134,3 +134,25 @@ class TestEventLengthFilter(TestCase):
         validation_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0])
         events = Events(self.condition, min_event_length=2, max_event_length=3)
         npt.assert_array_equal(validation_array, events.as_array())
+
+
+class TestSampleRates(TestCase):
+    def setUp(self):
+        condition_array = np.array([1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1,
+                                    0, 0, 0, 1, 0, 0])
+        self.condition = (condition_array > 0)
+
+    def test_entry_and_exit_debounce(self):
+        validation_array = np.array([0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0])
+
+        events = Events(self.condition, sample_rate=3,
+                        entry_debounce=0.5, exit_debounce=1)
+        npt.assert_array_equal(validation_array, events.as_array())
+
+    def test_max_and_min_event_window_length(self):
+        validation_array = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0])
+        events = Events(self.condition, sample_rate=3,
+                        min_event_length=0.5, max_event_length=1)
+        npt.assert_array_equal(validation_array, events.as_array())
