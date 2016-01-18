@@ -19,7 +19,8 @@ def lazyproperty(func):
 class Events(object):
     def __init__(self, condition, sample_rate=1,
                  entry_debounce=0, exit_debounce=0,
-                 min_event_length=0, max_event_length=None):
+                 min_event_length=0, max_event_length=None,
+                 start_offset=0, stop_offset=0):
 
         self.condition = condition
         self.sample_rate = sample_rate  # Assumes univariate time series
@@ -27,11 +28,12 @@ class Events(object):
         self._exit_debounce = exit_debounce
         self._min_event_length = min_event_length
         self._max_event_length = max_event_length
+        self._start_offset = start_offset
+        self._stop_offset = stop_offset
 
         # TODO - work out strategy for multivariate data. Pass index
-        # TODO - add event start and stop offsets
         # TODO - promote private methods to public, allow events to be created step by step
-
+        # TODO - parameter datatypes might become an issue
     @property
     def entry_debounce(self):
         return np.ceil(self._entry_debounce * self.sample_rate)
@@ -50,6 +52,22 @@ class Events(object):
             return np.floor(self._max_event_length * self.sample_rate)
         except TypeError:
             return None
+
+    @property
+    def start_offset(self):
+        if self._start_offset > 0:
+            raise ValueError('Currently only negative '
+                             'start offsets are supported')
+        else:
+            return np.ceil(self._start_offset * self.sample_rate).astype('int32')
+
+    @property
+    def stop_offset(self):
+        if self._stop_offset < 0:
+            raise ValueError('Currently only negative '
+                             'start offsets are supported')
+        else:
+            return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
 
     @property
     def size(self):
@@ -89,6 +107,9 @@ class Events(object):
 
         if starts.size > 0 and (self.min_event_length or self.max_event_length):
             starts, stops = self._apply_event_length_filter(starts, stops)
+
+        if starts.size > 0 and (self.start_offset or self.stop_offset):
+            starts, stops = self._apply_offsets(starts, stops)
 
         return starts, stops
 
@@ -169,5 +190,17 @@ class Events(object):
 
         starts = np.ma.masked_where(condition, starts).compressed()
         stops = np.ma.masked_where(condition, stops).compressed()
+
+        return starts, stops
+
+    def _apply_offsets(self, starts, stops):
+        min_index = 0
+        max_index = self.condition.size
+
+        starts += self.start_offset
+        stops += self.stop_offset
+
+        np.clip(starts, min_index, max_index, out=starts)
+        np.clip(stops, min_index, max_index, out=stops)
 
         return starts, stops
