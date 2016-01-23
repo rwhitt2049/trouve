@@ -1,5 +1,6 @@
 import numpy as np
 from functools import lru_cache
+# from memory_profiler import profile
 
 
 def lazyproperty(func):
@@ -64,8 +65,7 @@ class Events(object):
     @property
     def stop_offset(self):
         if self._stop_offset < 0:
-            raise ValueError('Currently only negative '
-                             'start offsets are supported')
+            raise ValueError('Currently only negative start offsets are supported')
         else:
             return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
 
@@ -204,3 +204,17 @@ class Events(object):
         np.clip(stops, min_index, max_index, out=stops)
 
         return starts, stops
+
+
+def main():
+    np.random.seed(15)
+    mask = np.random.random_integers(0, 1, 1000000)
+    events = Events(mask > 0,
+                    entry_debounce=2,
+                    min_event_length=3,
+                    start_offset=-1)
+    starts = events.starts
+
+if __name__ == '__main__':
+    import sys
+    sys.exit(main())
