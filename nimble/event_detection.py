@@ -1,5 +1,5 @@
 import numpy as np
-from functools import lru_cache
+from functools import lru_cache, wraps
 # from memory_profiler import profile
 
 
@@ -7,6 +7,7 @@ def lazyproperty(func):
     name = '_lazy_' + func.__name__
 
     @property
+    @wraps(func)
     def lazy(self):
         if hasattr(self, name):
             return getattr(self, name)
