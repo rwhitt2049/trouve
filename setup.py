@@ -12,7 +12,7 @@ base = path.abspath(path.dirname(__file__))
 
 ext = '.pyx' if USE_CYTHON else '.c'
 
-extensions = [Extension('nimble.cyfunc.cydeb', ['nimble/cyfunc/cydeb'+ext])]
+extensions = [Extension('nimble.cyfunc.debounce', ['nimble/cyfunc/debounce'+ext])]
 
 if USE_CYTHON:
     from Cython.Build import cythonize

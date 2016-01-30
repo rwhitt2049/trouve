@@ -242,8 +242,8 @@ static CYTHON_INLINE float __PYX_NAN() {
   #endif
 #endif
 
-#define __PYX_HAVE__cydeb
-#define __PYX_HAVE_API__cydeb
+#define __PYX_HAVE__debounce
+#define __PYX_HAVE_API__debounce
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -478,7 +478,7 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "cydeb.pyx",
+  "nimble\\cyfunc\\debounce.pyx",
   "__init__.pxd",
   "type.pxd",
 };
@@ -1119,13 +1119,13 @@ static PyTypeObject *__pyx_ptype_5numpy_ndarray = 0;
 static PyTypeObject *__pyx_ptype_5numpy_ufunc = 0;
 static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, char *, char *, int *); /*proto*/
 
-/* Module declarations from 'cydeb' */
+/* Module declarations from 'debounce' */
 static __Pyx_TypeInfo __Pyx_TypeInfo_long = { "long", NULL, sizeof(long), { 0 }, 0, IS_UNSIGNED(long) ? 'U' : 'I', IS_UNSIGNED(long), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_int_t = { "int_t", NULL, sizeof(__pyx_t_5numpy_int_t), { 0 }, 0, IS_UNSIGNED(__pyx_t_5numpy_int_t) ? 'U' : 'I', IS_UNSIGNED(__pyx_t_5numpy_int_t), 0 };
-#define __Pyx_MODULE_NAME "cydeb"
-int __pyx_module_is_main_cydeb = 0;
+#define __Pyx_MODULE_NAME "debounce"
+int __pyx_module_is_main_debounce = 0;
 
-/* Implementation of 'cydeb' */
+/* Implementation of 'debounce' */
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_RuntimeError;
@@ -1148,11 +1148,9 @@ static char __pyx_k_Zf[] = "Zf";
 static char __pyx_k_Zg[] = "Zg";
 static char __pyx_k_ma[] = "ma";
 static char __pyx_k_np[] = "np";
-static char __pyx_k_deb[] = "deb";
 static char __pyx_k_int[] = "int";
 static char __pyx_k_main[] = "__main__";
 static char __pyx_k_test[] = "__test__";
-static char __pyx_k_cydeb[] = "cydeb";
 static char __pyx_k_dtype[] = "dtype";
 static char __pyx_k_index[] = "index";
 static char __pyx_k_numpy[] = "numpy";
@@ -1163,6 +1161,7 @@ static char __pyx_k_exitdb[] = "exitdb";
 static char __pyx_k_import[] = "__import__";
 static char __pyx_k_starts[] = "starts";
 static char __pyx_k_entrydb[] = "entrydb";
+static char __pyx_k_debounce[] = "debounce";
 static char __pyx_k_stop_mask[] = "stop_mask";
 static char __pyx_k_ValueError[] = "ValueError";
 static char __pyx_k_compressed[] = "compressed";
@@ -1174,21 +1173,20 @@ static char __pyx_k_event_length[] = "event_length";
 static char __pyx_k_masked_where[] = "masked_where";
 static char __pyx_k_reset_length[] = "reset_length";
 static char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
-static char __pyx_k_D_Python_mad_science_lab_cython[] = "D:\\Python\\mad_science_lab\\cython testing\\cydeb.pyx";
 static char __pyx_k_unknown_dtype_code_in_numpy_pxd[] = "unknown dtype code in numpy.pxd (%d)";
+static char __pyx_k_D_Python_nimble_nimble_cyfunc_de[] = "D:\\Python\\nimble\\nimble\\cyfunc\\debounce.pyx";
 static char __pyx_k_Format_string_allocated_too_shor[] = "Format string allocated too short, see comment in numpy.pxd";
 static char __pyx_k_Non_native_byte_order_not_suppor[] = "Non-native byte order not supported";
 static char __pyx_k_ndarray_is_not_Fortran_contiguou[] = "ndarray is not Fortran contiguous";
 static char __pyx_k_Format_string_allocated_too_shor_2[] = "Format string allocated too short.";
-static PyObject *__pyx_kp_s_D_Python_mad_science_lab_cython;
+static PyObject *__pyx_kp_s_D_Python_nimble_nimble_cyfunc_de;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor;
 static PyObject *__pyx_kp_u_Format_string_allocated_too_shor_2;
 static PyObject *__pyx_kp_u_Non_native_byte_order_not_suppor;
 static PyObject *__pyx_n_s_RuntimeError;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_compressed;
-static PyObject *__pyx_n_s_cydeb;
-static PyObject *__pyx_n_s_deb;
+static PyObject *__pyx_n_s_debounce;
 static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_entrydb;
 static PyObject *__pyx_n_s_event_active;
@@ -1214,7 +1212,7 @@ static PyObject *__pyx_n_s_stops;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_kp_u_unknown_dtype_code_in_numpy_pxd;
 static PyObject *__pyx_n_s_zeros;
-static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_starts, PyArrayObject *__pyx_v_stops, long __pyx_v_entrydb, long __pyx_v_exitdb); /* proto */
+static PyObject *__pyx_pf_8debounce_debounce(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_starts, PyArrayObject *__pyx_v_stops, long __pyx_v_entrydb, long __pyx_v_exitdb); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static PyObject *__pyx_int_0;
@@ -1227,18 +1225,18 @@ static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_codeobj__8;
 
-/* "cydeb.pyx":5
+/* "debounce.pyx":5
  * 
  * 
- * def deb(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
- *         np.ndarray[long, ndim=1] stops,
- *         long entrydb, long exitdb):
+ * def debounce(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
+ *              np.ndarray[long, ndim=1] stops,
+ *              long entrydb, long exitdb):
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_5cydeb_1deb = {"deb", (PyCFunction)__pyx_pw_5cydeb_1deb, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_8debounce_1debounce(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_8debounce_1debounce = {"debounce", (PyCFunction)__pyx_pw_8debounce_1debounce, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_8debounce_1debounce(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyArrayObject *__pyx_v_starts = 0;
   PyArrayObject *__pyx_v_stops = 0;
   long __pyx_v_entrydb;
@@ -1248,7 +1246,7 @@ static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args
   int __pyx_clineno = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("deb (wrapper)", 0);
+  __Pyx_RefNannySetupContext("debounce (wrapper)", 0);
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_starts,&__pyx_n_s_stops,&__pyx_n_s_entrydb,&__pyx_n_s_exitdb,0};
     PyObject* values[4] = {0,0,0,0};
@@ -1271,21 +1269,21 @@ static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_stops)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("deb", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("debounce", 1, 4, 4, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_entrydb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("deb", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("debounce", 1, 4, 4, 2); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_exitdb)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("deb", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("debounce", 1, 4, 4, 3); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "deb") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "debounce") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
       goto __pyx_L5_argtuple_error;
@@ -1302,15 +1300,15 @@ static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("deb", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("debounce", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("cydeb.deb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("debounce.debounce", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_starts), __pyx_ptype_5numpy_ndarray, 1, "starts", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_stops), __pyx_ptype_5numpy_ndarray, 1, "stops", 0))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 6; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_r = __pyx_pf_5cydeb_deb(__pyx_self, __pyx_v_starts, __pyx_v_stops, __pyx_v_entrydb, __pyx_v_exitdb);
+  __pyx_r = __pyx_pf_8debounce_debounce(__pyx_self, __pyx_v_starts, __pyx_v_stops, __pyx_v_entrydb, __pyx_v_exitdb);
 
   /* function exit code */
   goto __pyx_L0;
@@ -1321,7 +1319,7 @@ static PyObject *__pyx_pw_5cydeb_1deb(PyObject *__pyx_self, PyObject *__pyx_args
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_starts, PyArrayObject *__pyx_v_stops, long __pyx_v_entrydb, long __pyx_v_exitdb) {
+static PyObject *__pyx_pf_8debounce_debounce(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_starts, PyArrayObject *__pyx_v_stops, long __pyx_v_entrydb, long __pyx_v_exitdb) {
   Py_ssize_t __pyx_v_index;
   long __pyx_v_event_length;
   long __pyx_v_reset_length;
@@ -1367,7 +1365,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("deb", 0);
+  __Pyx_RefNannySetupContext("debounce", 0);
   __Pyx_INCREF((PyObject *)__pyx_v_starts);
   __Pyx_INCREF((PyObject *)__pyx_v_stops);
   __pyx_pybuffer_start_mask.pybuffer.buf = NULL;
@@ -1397,7 +1395,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   }
   __pyx_pybuffernd_stops.diminfo[0].strides = __pyx_pybuffernd_stops.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_stops.diminfo[0].shape = __pyx_pybuffernd_stops.rcbuffer->pybuffer.shape[0];
 
-  /* "cydeb.pyx":11
+  /* "debounce.pyx":11
  *         cdef Py_ssize_t index
  *         cdef long event_length, reset_length, next_index
  *         cdef np.ndarray[np.int_t] start_mask = np.zeros(starts.shape[0], dtype=np.int)             # <<<<<<<<<<<<<<
@@ -1444,7 +1442,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   __pyx_v_start_mask = ((PyArrayObject *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "cydeb.pyx":12
+  /* "debounce.pyx":12
  *         cdef long event_length, reset_length, next_index
  *         cdef np.ndarray[np.int_t] start_mask = np.zeros(starts.shape[0], dtype=np.int)
  *         cdef np.ndarray[np.int_t] stop_mask = np.zeros(stops.shape[0], dtype=np.int)             # <<<<<<<<<<<<<<
@@ -1491,7 +1489,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   __pyx_v_stop_mask = ((PyArrayObject *)__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "cydeb.pyx":13
+  /* "debounce.pyx":13
  *         cdef np.ndarray[np.int_t] start_mask = np.zeros(starts.shape[0], dtype=np.int)
  *         cdef np.ndarray[np.int_t] stop_mask = np.zeros(stops.shape[0], dtype=np.int)
  *         event_active = False             # <<<<<<<<<<<<<<
@@ -1500,7 +1498,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
  */
   __pyx_v_event_active = 0;
 
-  /* "cydeb.pyx":15
+  /* "debounce.pyx":15
  *         event_active = False
  * 
  *         for index in range(starts.shape[0]):             # <<<<<<<<<<<<<<
@@ -1511,7 +1509,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   for (__pyx_t_9 = 0; __pyx_t_9 < __pyx_t_8; __pyx_t_9+=1) {
     __pyx_v_index = __pyx_t_9;
 
-    /* "cydeb.pyx":16
+    /* "debounce.pyx":16
  * 
  *         for index in range(starts.shape[0]):
  *             event_length = stops[index] - starts[index]             # <<<<<<<<<<<<<<
@@ -1540,7 +1538,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     }
     __pyx_v_event_length = ((*__Pyx_BufPtrStrided1d(long *, __pyx_pybuffernd_stops.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_stops.diminfo[0].strides)) - (*__Pyx_BufPtrStrided1d(long *, __pyx_pybuffernd_starts.rcbuffer->pybuffer.buf, __pyx_t_12, __pyx_pybuffernd_starts.diminfo[0].strides)));
 
-    /* "cydeb.pyx":18
+    /* "debounce.pyx":18
  *             event_length = stops[index] - starts[index]
  * 
  *             if index < (starts.shape[0]-1):             # <<<<<<<<<<<<<<
@@ -1550,7 +1548,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_t_13 = ((__pyx_v_index < ((__pyx_v_starts->dimensions[0]) - 1)) != 0);
     if (__pyx_t_13) {
 
-      /* "cydeb.pyx":19
+      /* "debounce.pyx":19
  * 
  *             if index < (starts.shape[0]-1):
  *                 reset_length = starts[index + 1] - stops[index]             # <<<<<<<<<<<<<<
@@ -1579,7 +1577,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       }
       __pyx_v_reset_length = ((*__Pyx_BufPtrStrided1d(long *, __pyx_pybuffernd_starts.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_starts.diminfo[0].strides)) - (*__Pyx_BufPtrStrided1d(long *, __pyx_pybuffernd_stops.rcbuffer->pybuffer.buf, __pyx_t_15, __pyx_pybuffernd_stops.diminfo[0].strides)));
 
-      /* "cydeb.pyx":18
+      /* "debounce.pyx":18
  *             event_length = stops[index] - starts[index]
  * 
  *             if index < (starts.shape[0]-1):             # <<<<<<<<<<<<<<
@@ -1589,7 +1587,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L5;
     }
 
-    /* "cydeb.pyx":21
+    /* "debounce.pyx":21
  *                 reset_length = starts[index + 1] - stops[index]
  *             else:
  *                 reset_length = 0             # <<<<<<<<<<<<<<
@@ -1601,7 +1599,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     }
     __pyx_L5:;
 
-    /* "cydeb.pyx":23
+    /* "debounce.pyx":23
  *                 reset_length = 0
  * 
  *             if event_active:             # <<<<<<<<<<<<<<
@@ -1613,7 +1611,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L6;
     }
 
-    /* "cydeb.pyx":25
+    /* "debounce.pyx":25
  *             if event_active:
  *                 pass
  *             elif not event_active and event_length >= entrydb:             # <<<<<<<<<<<<<<
@@ -1631,7 +1629,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_L7_bool_binop_done:;
     if (__pyx_t_13) {
 
-      /* "cydeb.pyx":26
+      /* "debounce.pyx":26
  *                 pass
  *             elif not event_active and event_length >= entrydb:
  *                 event_active = True             # <<<<<<<<<<<<<<
@@ -1640,7 +1638,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
  */
       __pyx_v_event_active = 1;
 
-      /* "cydeb.pyx":25
+      /* "debounce.pyx":25
  *             if event_active:
  *                 pass
  *             elif not event_active and event_length >= entrydb:             # <<<<<<<<<<<<<<
@@ -1650,7 +1648,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L6;
     }
 
-    /* "cydeb.pyx":27
+    /* "debounce.pyx":27
  *             elif not event_active and event_length >= entrydb:
  *                 event_active = True
  *             elif not event_active and event_length < entrydb:             # <<<<<<<<<<<<<<
@@ -1668,7 +1666,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_L9_bool_binop_done:;
     if (__pyx_t_13) {
 
-      /* "cydeb.pyx":28
+      /* "debounce.pyx":28
  *                 event_active = True
  *             elif not event_active and event_length < entrydb:
  *                 start_mask[index] = 1             # <<<<<<<<<<<<<<
@@ -1687,7 +1685,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_start_mask.rcbuffer->pybuffer.buf, __pyx_t_17, __pyx_pybuffernd_start_mask.diminfo[0].strides) = 1;
 
-      /* "cydeb.pyx":29
+      /* "debounce.pyx":29
  *             elif not event_active and event_length < entrydb:
  *                 start_mask[index] = 1
  *                 stop_mask[index] = 1             # <<<<<<<<<<<<<<
@@ -1706,7 +1704,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_stop_mask.rcbuffer->pybuffer.buf, __pyx_t_18, __pyx_pybuffernd_stop_mask.diminfo[0].strides) = 1;
 
-      /* "cydeb.pyx":27
+      /* "debounce.pyx":27
  *             elif not event_active and event_length >= entrydb:
  *                 event_active = True
  *             elif not event_active and event_length < entrydb:             # <<<<<<<<<<<<<<
@@ -1716,7 +1714,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L6;
     }
 
-    /* "cydeb.pyx":31
+    /* "debounce.pyx":31
  *                 stop_mask[index] = 1
  *             else:
  *                 raise ValueError             # <<<<<<<<<<<<<<
@@ -1729,7 +1727,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     }
     __pyx_L6:;
 
-    /* "cydeb.pyx":33
+    /* "debounce.pyx":33
  *                 raise ValueError
  * 
  *             if not event_active or reset_length == 0:             # <<<<<<<<<<<<<<
@@ -1749,7 +1747,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L11;
     }
 
-    /* "cydeb.pyx":35
+    /* "debounce.pyx":35
  *             if not event_active or reset_length == 0:
  *                 pass
  *             elif event_active and reset_length >= exitdb:             # <<<<<<<<<<<<<<
@@ -1767,7 +1765,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_L14_bool_binop_done:;
     if (__pyx_t_13) {
 
-      /* "cydeb.pyx":36
+      /* "debounce.pyx":36
  *                 pass
  *             elif event_active and reset_length >= exitdb:
  *                 event_active = False             # <<<<<<<<<<<<<<
@@ -1776,7 +1774,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
  */
       __pyx_v_event_active = 0;
 
-      /* "cydeb.pyx":35
+      /* "debounce.pyx":35
  *             if not event_active or reset_length == 0:
  *                 pass
  *             elif event_active and reset_length >= exitdb:             # <<<<<<<<<<<<<<
@@ -1786,7 +1784,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L11;
     }
 
-    /* "cydeb.pyx":37
+    /* "debounce.pyx":37
  *             elif event_active and reset_length >= exitdb:
  *                 event_active = False
  *             elif event_active and reset_length < exitdb:             # <<<<<<<<<<<<<<
@@ -1804,7 +1802,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_L16_bool_binop_done:;
     if (__pyx_t_13) {
 
-      /* "cydeb.pyx":38
+      /* "debounce.pyx":38
  *                 event_active = False
  *             elif event_active and reset_length < exitdb:
  *                 start_mask[index + 1] = 1             # <<<<<<<<<<<<<<
@@ -1823,7 +1821,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_start_mask.rcbuffer->pybuffer.buf, __pyx_t_19, __pyx_pybuffernd_start_mask.diminfo[0].strides) = 1;
 
-      /* "cydeb.pyx":39
+      /* "debounce.pyx":39
  *             elif event_active and reset_length < exitdb:
  *                 start_mask[index + 1] = 1
  *                 stop_mask[index] = 1             # <<<<<<<<<<<<<<
@@ -1842,7 +1840,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       }
       *__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int_t *, __pyx_pybuffernd_stop_mask.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_stop_mask.diminfo[0].strides) = 1;
 
-      /* "cydeb.pyx":37
+      /* "debounce.pyx":37
  *             elif event_active and reset_length >= exitdb:
  *                 event_active = False
  *             elif event_active and reset_length < exitdb:             # <<<<<<<<<<<<<<
@@ -1852,7 +1850,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
       goto __pyx_L11;
     }
 
-    /* "cydeb.pyx":41
+    /* "debounce.pyx":41
  *                 stop_mask[index] = 1
  *             else:
  *                 raise ValueError             # <<<<<<<<<<<<<<
@@ -1866,7 +1864,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __pyx_L11:;
   }
 
-  /* "cydeb.pyx":43
+  /* "debounce.pyx":43
  *                 raise ValueError
  * 
  *         starts = np.ma.masked_where(start_mask > 0, starts).compressed()             # <<<<<<<<<<<<<<
@@ -1952,7 +1950,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   __Pyx_DECREF_SET(__pyx_v_starts, ((PyArrayObject *)__pyx_t_4));
   __pyx_t_4 = 0;
 
-  /* "cydeb.pyx":44
+  /* "debounce.pyx":44
  * 
  *         starts = np.ma.masked_where(start_mask > 0, starts).compressed()
  *         stops = np.ma.masked_where(stop_mask > 0, stops).compressed()             # <<<<<<<<<<<<<<
@@ -2038,7 +2036,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   __Pyx_DECREF_SET(__pyx_v_stops, ((PyArrayObject *)__pyx_t_4));
   __pyx_t_4 = 0;
 
-  /* "cydeb.pyx":46
+  /* "debounce.pyx":46
  *         stops = np.ma.masked_where(stop_mask > 0, stops).compressed()
  * 
  *         return starts, stops             # <<<<<<<<<<<<<<
@@ -2056,12 +2054,12 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "cydeb.pyx":5
+  /* "debounce.pyx":5
  * 
  * 
- * def deb(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
- *         np.ndarray[long, ndim=1] stops,
- *         long entrydb, long exitdb):
+ * def debounce(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
+ *              np.ndarray[long, ndim=1] stops,
+ *              long entrydb, long exitdb):
  */
 
   /* function exit code */
@@ -2079,7 +2077,7 @@ static PyObject *__pyx_pf_5cydeb_deb(CYTHON_UNUSED PyObject *__pyx_self, PyArray
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_stop_mask.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_stops.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("cydeb.deb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("debounce.debounce", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -4251,7 +4249,7 @@ static struct PyModuleDef __pyx_moduledef = {
   #else
     PyModuleDef_HEAD_INIT,
   #endif
-    "cydeb",
+    "debounce",
     0, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
@@ -4263,15 +4261,14 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
-  {&__pyx_kp_s_D_Python_mad_science_lab_cython, __pyx_k_D_Python_mad_science_lab_cython, sizeof(__pyx_k_D_Python_mad_science_lab_cython), 0, 0, 1, 0},
+  {&__pyx_kp_s_D_Python_nimble_nimble_cyfunc_de, __pyx_k_D_Python_nimble_nimble_cyfunc_de, sizeof(__pyx_k_D_Python_nimble_nimble_cyfunc_de), 0, 0, 1, 0},
   {&__pyx_kp_u_Format_string_allocated_too_shor, __pyx_k_Format_string_allocated_too_shor, sizeof(__pyx_k_Format_string_allocated_too_shor), 0, 1, 0, 0},
   {&__pyx_kp_u_Format_string_allocated_too_shor_2, __pyx_k_Format_string_allocated_too_shor_2, sizeof(__pyx_k_Format_string_allocated_too_shor_2), 0, 1, 0, 0},
   {&__pyx_kp_u_Non_native_byte_order_not_suppor, __pyx_k_Non_native_byte_order_not_suppor, sizeof(__pyx_k_Non_native_byte_order_not_suppor), 0, 1, 0, 0},
   {&__pyx_n_s_RuntimeError, __pyx_k_RuntimeError, sizeof(__pyx_k_RuntimeError), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_compressed, __pyx_k_compressed, sizeof(__pyx_k_compressed), 0, 0, 1, 1},
-  {&__pyx_n_s_cydeb, __pyx_k_cydeb, sizeof(__pyx_k_cydeb), 0, 0, 1, 1},
-  {&__pyx_n_s_deb, __pyx_k_deb, sizeof(__pyx_k_deb), 0, 0, 1, 1},
+  {&__pyx_n_s_debounce, __pyx_k_debounce, sizeof(__pyx_k_debounce), 0, 0, 1, 1},
   {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
   {&__pyx_n_s_entrydb, __pyx_k_entrydb, sizeof(__pyx_k_entrydb), 0, 0, 1, 1},
   {&__pyx_n_s_event_active, __pyx_k_event_active, sizeof(__pyx_k_event_active), 0, 0, 1, 1},
@@ -4378,17 +4375,17 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "cydeb.pyx":5
+  /* "debounce.pyx":5
  * 
  * 
- * def deb(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
- *         np.ndarray[long, ndim=1] stops,
- *         long entrydb, long exitdb):
+ * def debounce(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
+ *              np.ndarray[long, ndim=1] stops,
+ *              long entrydb, long exitdb):
  */
   __pyx_tuple__7 = PyTuple_Pack(11, __pyx_n_s_starts, __pyx_n_s_stops, __pyx_n_s_entrydb, __pyx_n_s_exitdb, __pyx_n_s_index, __pyx_n_s_event_length, __pyx_n_s_reset_length, __pyx_n_s_next_index, __pyx_n_s_start_mask, __pyx_n_s_stop_mask, __pyx_n_s_event_active); if (unlikely(!__pyx_tuple__7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
-  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(4, 0, 11, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Python_mad_science_lab_cython, __pyx_n_s_deb, 5, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_codeobj__8 = (PyObject*)__Pyx_PyCode_New(4, 0, 11, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__7, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_D_Python_nimble_nimble_cyfunc_de, __pyx_n_s_debounce, 5, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4405,11 +4402,11 @@ static int __Pyx_InitGlobals(void) {
 }
 
 #if PY_MAJOR_VERSION < 3
-PyMODINIT_FUNC initcydeb(void); /*proto*/
-PyMODINIT_FUNC initcydeb(void)
+PyMODINIT_FUNC initdebounce(void); /*proto*/
+PyMODINIT_FUNC initdebounce(void)
 #else
-PyMODINIT_FUNC PyInit_cydeb(void); /*proto*/
-PyMODINIT_FUNC PyInit_cydeb(void)
+PyMODINIT_FUNC PyInit_debounce(void); /*proto*/
+PyMODINIT_FUNC PyInit_debounce(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
@@ -4426,7 +4423,7 @@ PyMODINIT_FUNC PyInit_cydeb(void)
           Py_FatalError("failed to import 'refnanny' module");
   }
   #endif
-  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_cydeb(void)", 0);
+  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_debounce(void)", 0);
   if (__Pyx_check_binary_version() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -4454,7 +4451,7 @@ PyMODINIT_FUNC PyInit_cydeb(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4("cydeb", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4("debounce", __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -4471,14 +4468,14 @@ PyMODINIT_FUNC PyInit_cydeb(void)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
   if (__Pyx_init_sys_getdefaultencoding_params() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
-  if (__pyx_module_is_main_cydeb) {
+  if (__pyx_module_is_main_debounce) {
     if (PyObject_SetAttrString(__pyx_m, "__name__", __pyx_n_s_main) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "cydeb")) {
-      if (unlikely(PyDict_SetItemString(modules, "cydeb", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "debounce")) {
+      if (unlikely(PyDict_SetItemString(modules, "debounce", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -4510,7 +4507,7 @@ PyMODINIT_FUNC PyInit_cydeb(void)
   if (__Pyx_patch_abc() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   #endif
 
-  /* "cydeb.pyx":1
+  /* "debounce.pyx":1
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * 
@@ -4520,19 +4517,19 @@ PyMODINIT_FUNC PyInit_cydeb(void)
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cydeb.pyx":5
+  /* "debounce.pyx":5
  * 
  * 
- * def deb(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
- *         np.ndarray[long, ndim=1] stops,
- *         long entrydb, long exitdb):
+ * def debounce(np.ndarray[long, ndim=1] starts,             # <<<<<<<<<<<<<<
+ *              np.ndarray[long, ndim=1] stops,
+ *              long entrydb, long exitdb):
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_5cydeb_1deb, NULL, __pyx_n_s_cydeb); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_8debounce_1debounce, NULL, __pyx_n_s_debounce); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_deb, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_debounce, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 5; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cydeb.pyx":1
+  /* "debounce.pyx":1
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * 
@@ -4557,11 +4554,11 @@ PyMODINIT_FUNC PyInit_cydeb(void)
   __Pyx_XDECREF(__pyx_t_1);
   if (__pyx_m) {
     if (__pyx_d) {
-      __Pyx_AddTraceback("init cydeb", __pyx_clineno, __pyx_lineno, __pyx_filename);
+      __Pyx_AddTraceback("init debounce", __pyx_clineno, __pyx_lineno, __pyx_filename);
     }
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init cydeb");
+    PyErr_SetString(PyExc_ImportError, "init debounce");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();

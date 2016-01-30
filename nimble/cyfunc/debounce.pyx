@@ -2,9 +2,9 @@ import numpy as np
 cimport numpy as np
 
 
-def deb(np.ndarray[long, ndim=1] starts, 
-        np.ndarray[long, ndim=1] stops, 
-        long entrydb, long exitdb):
+def debounce(np.ndarray[long, ndim=1] starts,
+             np.ndarray[long, ndim=1] stops,
+             long entrydb, long exitdb):
 
         cdef Py_ssize_t index
         cdef long event_length, reset_length, next_index
