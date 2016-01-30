@@ -1,5 +1,6 @@
 import numpy as np
 from functools import lru_cache, wraps
+import nimble.cyfunc.cydeb as cy
 # from memory_profiler import profile
 
 
@@ -141,7 +142,8 @@ class Events(object):
     def _apply_debounce_filter(self, starts, stops):
         """ Apply debounce parameters"""
         # TODO - Replace with function in Cython for significant speed boost
-        start_mask = np.zeros(starts.size)
+
+        '''start_mask = np.zeros(starts.size)
         stop_mask = np.zeros(stops.size)
         event_active = False
 
@@ -175,7 +177,8 @@ class Events(object):
 
         starts = np.ma.masked_where(start_mask > 0, starts).compressed()
         stops = np.ma.masked_where(stop_mask > 0, stops).compressed()
-
+        '''
+        starts, stops = cy.deb(starts, stops, self.entry_debounce, self.exit_debounce)
         return starts, stops
 
     def _apply_event_length_filter(self, starts, stops):

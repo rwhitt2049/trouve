@@ -3,12 +3,20 @@
 
 from codecs import open
 from os import path
-
-from setuptools import find_packages, setup
-
+from setuptools import find_packages, setup, Extension
+import numpy
 from nimble import __version__
 
+USE_CYTHON = False
 base = path.abspath(path.dirname(__file__))
+
+ext = '.pyx' if USE_CYTHON else '.c'
+
+extensions = [Extension('nimble.cyfunc.cydeb', ['nimble/cyfunc/cydeb'+ext])]
+
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions)
 
 
 def install_requires():
@@ -28,6 +36,8 @@ def long_description():
 
 setup(
     name='nimble',
+    ext_modules=extensions,
+    include_dirs=[numpy.get_include()],
     version=__version__,
     description=long_description()[0],
     long_description=long_description(),
@@ -39,6 +49,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Cython',
     ],
     keywords='time_series, timeseries, iot, sensor',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
