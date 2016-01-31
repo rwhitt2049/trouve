@@ -3,12 +3,20 @@
 
 from codecs import open
 from os import path
-
-from setuptools import find_packages, setup
-
+from setuptools import find_packages, setup, Extension
+import numpy
 from nimble import __version__
 
+USE_CYTHON = False
 base = path.abspath(path.dirname(__file__))
+
+ext = '.pyx' if USE_CYTHON else '.c'
+
+extensions = [Extension('nimble.cyfunc.debounce', ['nimble/cyfunc/debounce'+ext])]
+
+if USE_CYTHON:
+    from Cython.Build import cythonize
+    extensions = cythonize(extensions)
 
 
 def install_requires():
@@ -25,9 +33,15 @@ def long_description():
     with open(path.join(base, 'README.rst'), encoding='utf-8') as file:
         return file.read()
 
+extras = {
+    'Cython': ['Cython']
+}
 
 setup(
     name='nimble',
+    ext_modules=extensions,
+    include_dirs=[numpy.get_include()],
+    extras_require=extras,
     version=__version__,
     description=long_description()[0],
     long_description=long_description(),
@@ -39,9 +53,10 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Cython',
     ],
     keywords='time_series, timeseries, iot, sensor',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
     install_requires=install_requires(),
     extras_require={},
     package_data={},
