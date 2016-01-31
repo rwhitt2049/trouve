@@ -33,11 +33,15 @@ def long_description():
     with open(path.join(base, 'README.rst'), encoding='utf-8') as file:
         return file.read()
 
+extras = {
+    'Cython': ['Cython']
+}
 
 setup(
     name='nimble',
     ext_modules=extensions,
     include_dirs=[numpy.get_include()],
+    extras_require=extras,
     version=__version__,
     description=long_description()[0],
     long_description=long_description(),
@@ -52,7 +56,7 @@ setup(
         'Programming Language :: Cython',
     ],
     keywords='time_series, timeseries, iot, sensor',
-    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
     install_requires=install_requires(),
     extras_require={},
     package_data={},
