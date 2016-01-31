@@ -144,10 +144,8 @@ class Events(object):
         # TODO - Replace with function in Cython for significant speed boost
         try:
             import nimble.cyfunc.debounce as cy
-            print('using cython')
             starts, stops = cy.debounce(starts, stops, self.entry_debounce, self.exit_debounce)
         except ImportError:
-            print('not using cython')
             start_mask = np.zeros(starts.size)
             stop_mask = np.zeros(stops.size)
             event_active = False
