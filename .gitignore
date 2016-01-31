@@ -2,3 +2,4 @@
 *.idea/
 nimble.egg-info/*
 build/*
+*.pyd
