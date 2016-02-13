@@ -12,7 +12,8 @@ base = path.abspath(path.dirname(__file__))
 
 ext = '.pyx' if USE_CYTHON else '.c'
 
-extensions = [Extension('nimble.cyfunc.debounce', ['nimble/cyfunc/debounce'+ext])]
+extensions = [Extension('nimble.cyfunc.debounce', ['nimble/cyfunc/debounce'+ext]),
+              Extension('nimble.cyfunc.as_array', ['nimble/cyfunc/as_array'+ext])]
 
 if USE_CYTHON:
     from Cython.Build import cythonize
@@ -58,7 +59,6 @@ setup(
     keywords='time_series, timeseries, iot, sensor',
     packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
     install_requires=install_requires(),
-    extras_require={},
     package_data={},
     data_files=[],
     entry_points={},

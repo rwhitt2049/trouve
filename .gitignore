@@ -3,3 +3,4 @@
 nimble.egg-info/*
 build/*
 *.pyd
+*.orig

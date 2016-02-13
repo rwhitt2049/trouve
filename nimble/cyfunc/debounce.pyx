@@ -1,7 +1,10 @@
 import numpy as np
 cimport numpy as np
+import cython
 
-
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
 def debounce(np.ndarray[long, ndim=1] starts,
              np.ndarray[long, ndim=1] stops,
              long entrydb, long exitdb):
