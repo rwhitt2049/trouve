@@ -61,15 +61,14 @@ class Events(object):
     @property
     def start_offset(self):
         if self._start_offset > 0:
-            raise ValueError('Currently only negative '
-                             'start offsets are supported')
+            raise ValueError('Currently only negative start offsets are supported')
         else:
             return np.ceil(self._start_offset * self.sample_rate).astype('int32')
 
     @property
     def stop_offset(self):
         if self._stop_offset < 0:
-            raise ValueError('Currently only negative start offsets are supported')
+            raise ValueError('Currently only positive stop offsets are supported')
         else:
             return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
 
