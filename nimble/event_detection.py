@@ -1,6 +1,6 @@
 import numpy as np
 from functools import lru_cache, wraps
-
+import pandas as pd
 # from memory_profiler import profile
 
 
@@ -24,8 +24,10 @@ class Events(object):
                  entry_debounce=0, exit_debounce=0,
                  min_event_length=0, max_event_length=None,
                  start_offset=0, stop_offset=0):
-
-        self.condition = condition
+        if type(condition) is pd.core.series.Series:
+            self.condition = condition.values
+        else:
+            self.condition = condition
         self.sample_rate = sample_rate  # Assumes univariate time series
         self._entry_debounce = entry_debounce
         self._exit_debounce = exit_debounce
@@ -72,7 +74,7 @@ class Events(object):
             return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
 
     @property
-    def size(self):
+    def n_events(self):
         """Return the number of events found."""
         return self.starts.size
         
@@ -101,6 +103,12 @@ class Events(object):
         output = np.ones(self.condition.size) * false_values
         output = as_array(self.starts, self.stops, output, true_values)
         return output.astype(dtype)
+
+    @lru_cache(2)
+    def as_series(self, false_values=0, true_values=1, name='events'):
+        index = pd.RangeIndex(self.condition.size, step=self.sample_rate)
+        data = self.as_array(false_values=false_values, true_values=true_values)
+        return pd.Series(data=data, index=index, name=name)
 
     @lru_cache(1)
     def _apply_filters(self):
@@ -189,6 +197,7 @@ def main():
                     min_event_length=3,
                     start_offset=-1)
     starts = events.starts
+    series = events.as_series()
 
 if __name__ == '__main__':
     import sys

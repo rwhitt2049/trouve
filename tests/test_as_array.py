@@ -45,7 +45,7 @@ class TestCyvPy(TestCase):
         np.random.seed(10)
         x = np.random.random_integers(0, 1, 300000)
         events = Events(x > 0)
-        self.mask = np.zeros(events.size)
+        self.mask = np.zeros(events.n_events)
         self.starts = events.starts
         self.stops = events.stops
 
