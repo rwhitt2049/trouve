@@ -89,6 +89,11 @@ class Events(object):
         _, stops = self._apply_filters()
         return stops
 
+    @lazyproperty
+    def durations(self):
+        """Return a numpy.array() of event durations in seconds."""
+        return (self.stops - self.starts)/self.sample_rate
+
     @lru_cache(10)
     def as_array(self, false_values=0, true_values=1, dtype='float'):
         """
@@ -186,6 +191,20 @@ class Events(object):
         np.clip(stops, min_index, max_index, out=stops)
 
         return starts, stops
+
+    def __iter__(self):
+        self.index = 0
+        return self
+
+    def __next__(self):
+        try:
+            self.start = self.starts[self.index]
+            self.stop = self.stops[self.index]
+            self.duration = (self.stop - self.start)/self.sample_rate
+            self.index += 1
+            return self
+        except IndexError:
+            raise StopIteration
 
 
 def main():
