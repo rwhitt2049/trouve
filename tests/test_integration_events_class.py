@@ -196,3 +196,18 @@ class TestSampleRates(TestCase):
                         min_event_length=0.5, max_event_length=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
+
+
+class TestDurationArray(TestCase):
+    def setUp(self):
+        condition_array = np.array([1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1,
+                                    0, 0, 0, 1, 0, 0])
+
+        condition = (condition_array > 0)
+        self.events = Events(condition, sample_rate=3,
+                             entry_debounce=0.5, exit_debounce=1)
+
+    def test_durations(self):
+        # validation_array = np.array([0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        validation_durations = [(8/3)]
+        npt.assert_array_equal(validation_durations, self.events.durations)

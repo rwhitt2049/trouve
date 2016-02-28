@@ -24,9 +24,10 @@ class TestClassIterable(TestCase):
         npt.assert_array_equal(self.events.stops, test_stops)
 
     def test_durations(self):
+        validation_durations = self.events.stops - self.events.starts
         test_durations = []
         for event in self.events:
             test_durations.append(event.duration)
 
-        npt.assert_array_equal(self.events.durations, test_durations)
+        npt.assert_array_equal(validation_durations, test_durations)
 
