@@ -31,3 +31,10 @@ class TestClassIterable(TestCase):
 
         npt.assert_array_equal(validation_durations, test_durations)
 
+    def test_index(self):
+        validation_index = [0, 1, 2]
+        test_index = []
+        for event in self.events:
+            test_index.append(event.index)
+
+        npt.assert_array_equal(validation_index, test_index)

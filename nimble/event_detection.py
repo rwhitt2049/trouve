@@ -193,15 +193,16 @@ class Events(object):
         return starts, stops
 
     def __iter__(self):
-        self.index = 0
+        self.i = 0
         return self
 
     def __next__(self):
         try:
-            self.start = self.starts[self.index]
-            self.stop = self.stops[self.index]
+            self.start = self.starts[self.i]
+            self.stop = self.stops[self.i]
             self.duration = (self.stop - self.start)/self.sample_rate
-            self.index += 1
+            self.i += 1
+            self.index = self.i-1
             return self
         except IndexError:
             raise StopIteration
