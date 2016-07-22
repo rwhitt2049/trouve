@@ -28,6 +28,8 @@ class Events(object):
             self.condition = condition.values
         else:
             self.condition = condition
+        self._starts = None
+        self._stops = None
         self.sample_rate = sample_rate  # Assumes univariate time series
         self._entry_debounce = entry_debounce
         self._exit_debounce = exit_debounce
@@ -76,7 +78,7 @@ class Events(object):
     def n_events(self):
         """Return the number of events found."""
         return self.starts.size
-        
+
     @lazyproperty
     def starts(self):
         """Return a numpy.array() of start indexes."""
@@ -88,6 +90,7 @@ class Events(object):
         """Return a numpy.array() of start indexes."""
         _, stops = self._apply_filters()
         return stops
+
 
     @lazyproperty
     def durations(self):
@@ -116,14 +119,21 @@ class Events(object):
 
     @lru_cache(1)
     def _apply_filters(self):
-        starts, stops = self.apply_condition_filter()
+        self.apply_condition_filter()
+        starts = self._starts
+        stops = self._stops
 
         if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            starts, stops = self.apply_debounce_filter(starts, stops)
+            # starts, stops = self.apply_debounce_filter(starts, stops)
+            self.apply_debounce_filter()
 
+        starts = self._starts
+        stops = self._stops
         if starts.size > 0 and (self.min_event_length or self.max_event_length):
             starts, stops = self.apply_event_length_filter(starts, stops)
 
+        #starts = self._starts
+        #stops = self._stops
         if starts.size > 0 and (self.start_offset or self.stop_offset):
             starts, stops = self.apply_offsets(starts, stops)
 
@@ -148,21 +158,18 @@ class Events(object):
 
         deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
 
-        starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
-        stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
+        self._starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
+        self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
-        return starts, stops
-
-    def apply_debounce_filter(self, starts, stops):
+    def apply_debounce_filter(self):
         """ Apply debounce parameters"""
         try:
             from nimble.cyfunc.debounce import debounce
         except ImportError:
             from nimble.debounce import debounce
 
-        starts, stops = debounce(starts, stops,
-                                 self.entry_debounce, self.exit_debounce)
-        return starts, stops
+        self._starts, self._stops = debounce(self._starts, self._stops,
+                                             self.entry_debounce, self.exit_debounce)
 
     def apply_event_length_filter(self, starts, stops):
         event_lengths = stops - starts
