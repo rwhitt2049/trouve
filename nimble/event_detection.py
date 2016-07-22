@@ -79,14 +79,12 @@ class Events(object):
         """Return the number of events found."""
         return self.starts.size
 
-    @lazyproperty
     def starts(self):
         """Return a numpy.array() of start indexes."""
         if self._starts is None:
             self._apply_filters()
         return self._starts
-        
-    @lazyproperty
+
     def stops(self):
         """Return a numpy.array() of start indexes."""
         if self._stops is None:
