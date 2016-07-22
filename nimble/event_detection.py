@@ -116,20 +116,20 @@ class Events(object):
 
     @lru_cache(1)
     def _apply_filters(self):
-        starts, stops = self._apply_condition_filter()
+        starts, stops = self.apply_condition_filter()
 
         if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            starts, stops = self._apply_debounce_filter(starts, stops)
+            starts, stops = self.apply_debounce_filter(starts, stops)
 
         if starts.size > 0 and (self.min_event_length or self.max_event_length):
-            starts, stops = self._apply_event_length_filter(starts, stops)
+            starts, stops = self.apply_event_length_filter(starts, stops)
 
         if starts.size > 0 and (self.start_offset or self.stop_offset):
-            starts, stops = self._apply_offsets(starts, stops)
+            starts, stops = self.apply_offsets(starts, stops)
 
         return starts, stops
 
-    def _apply_condition_filter(self):
+    def apply_condition_filter(self):
         """
         Apply initial masking conditions
         """
@@ -153,7 +153,7 @@ class Events(object):
 
         return starts, stops
 
-    def _apply_debounce_filter(self, starts, stops):
+    def apply_debounce_filter(self, starts, stops):
         """ Apply debounce parameters"""
         try:
             from nimble.cyfunc.debounce import debounce
@@ -164,7 +164,7 @@ class Events(object):
                                  self.entry_debounce, self.exit_debounce)
         return starts, stops
 
-    def _apply_event_length_filter(self, starts, stops):
+    def apply_event_length_filter(self, starts, stops):
         event_lengths = stops - starts
 
         if not self.max_event_length:
@@ -180,7 +180,7 @@ class Events(object):
 
         return starts, stops
 
-    def _apply_offsets(self, starts, stops):
+    def apply_offsets(self, starts, stops):
         min_index = 0
         max_index = self.condition.size
 
