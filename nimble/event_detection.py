@@ -82,15 +82,16 @@ class Events(object):
     @lazyproperty
     def starts(self):
         """Return a numpy.array() of start indexes."""
-        starts, _ = self._apply_filters()
-        return starts
+        if self._starts is None:
+            self._apply_filters()
+        return self._starts
         
     @lazyproperty
     def stops(self):
         """Return a numpy.array() of start indexes."""
-        _, stops = self._apply_filters()
-        return stops
-
+        if self._stops is None:
+            self._apply_filters()
+        return self._stops
 
     @lazyproperty
     def durations(self):
@@ -117,27 +118,18 @@ class Events(object):
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, index=index, name=name)
 
-    @lru_cache(1)
     def _apply_filters(self):
         self.apply_condition_filter()
         starts = self._starts
-        stops = self._stops
 
         if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            # starts, stops = self.apply_debounce_filter(starts, stops)
             self.apply_debounce_filter()
 
-        starts = self._starts
-        stops = self._stops
         if starts.size > 0 and (self.min_event_length or self.max_event_length):
-            starts, stops = self.apply_event_length_filter(starts, stops)
+            self.apply_event_length_filter()
 
-        #starts = self._starts
-        #stops = self._stops
         if starts.size > 0 and (self.start_offset or self.stop_offset):
-            starts, stops = self.apply_offsets(starts, stops)
-
-        return starts, stops
+            self.apply_offsets()
 
     def apply_condition_filter(self):
         """
@@ -146,11 +138,13 @@ class Events(object):
         mask = (self.condition > 0).view('i1')
         slice_index = np.arange(mask.size + 1, dtype='int32')
 
+        # Determine if condition is active at array start, set to_begin accordingly
         if mask[0] == 0:
             to_begin = np.array([0], dtype='i1')
         else:
             to_begin = np.array([1], dtype='i1')
 
+        # Determine if condition is active at array end, set to_end accordingly
         if mask[-1] == 0:
             to_end = np.array([0], dtype='i1')
         else:
@@ -171,8 +165,8 @@ class Events(object):
         self._starts, self._stops = debounce(self._starts, self._stops,
                                              self.entry_debounce, self.exit_debounce)
 
-    def apply_event_length_filter(self, starts, stops):
-        event_lengths = stops - starts
+    def apply_event_length_filter(self):
+        event_lengths = self._stops - self._starts
 
         if not self.max_event_length:
             condition = (event_lengths < self.min_event_length)
@@ -182,22 +176,18 @@ class Events(object):
         else:
             raise ValueError
 
-        starts = np.ma.masked_where(condition, starts).compressed()
-        stops = np.ma.masked_where(condition, stops).compressed()
+        self._starts = np.ma.masked_where(condition, self._starts).compressed()
+        self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
-        return starts, stops
-
-    def apply_offsets(self, starts, stops):
+    def apply_offsets(self):
         min_index = 0
         max_index = self.condition.size
 
-        starts += self.start_offset
-        stops += self.stop_offset
+        self._starts += self.start_offset
+        self._stops += self.stop_offset
 
-        np.clip(starts, min_index, max_index, out=starts)
-        np.clip(stops, min_index, max_index, out=stops)
-
-        return starts, stops
+        np.clip(self._starts, min_index, max_index, out=self._starts)
+        np.clip(self._stops, min_index, max_index, out=self._stops)
 
     def __iter__(self):
         self.i = 0
