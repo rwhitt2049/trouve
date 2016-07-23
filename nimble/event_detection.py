@@ -19,6 +19,17 @@ def lazyproperty(func):
     return lazy
 
 
+def skip_check(*dargs):
+    def wrapper(func):
+        @wraps(func)
+        def wrapped(self, *args):
+            attrs = [getattr(self, darg) for darg in dargs]
+            if any(attrs):
+                func(self, *args)
+        return wrapped
+    return wrapper
+
+
 class Events(object):
     def __init__(self, condition, sample_rate=1,
                  entry_debounce=0, exit_debounce=0,
@@ -79,12 +90,14 @@ class Events(object):
         """Return the number of events found."""
         return self.starts.size
 
+    @property
     def starts(self):
         """Return a numpy.array() of start indexes."""
         if self._starts is None:
             self._apply_filters()
         return self._starts
 
+    @property
     def stops(self):
         """Return a numpy.array() of start indexes."""
         if self._stops is None:
@@ -118,16 +131,9 @@ class Events(object):
 
     def _apply_filters(self):
         self.apply_condition_filter()
-        starts = self._starts
-
-        if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            self.apply_debounce_filter()
-
-        if starts.size > 0 and (self.min_event_length or self.max_event_length):
-            self.apply_event_length_filter()
-
-        if starts.size > 0 and (self.start_offset or self.stop_offset):
-            self.apply_offsets()
+        self.apply_debounce_filter()
+        self.apply_event_length_filter()
+        self.apply_offsets()
 
     def apply_condition_filter(self):
         """
@@ -153,6 +159,7 @@ class Events(object):
         self._starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
         self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
+    @skip_check('entry_debounce', 'exit_debounce')
     def apply_debounce_filter(self):
         """ Apply debounce parameters"""
         try:
@@ -163,6 +170,7 @@ class Events(object):
         self._starts, self._stops = debounce(self._starts, self._stops,
                                              self.entry_debounce, self.exit_debounce)
 
+    @skip_check('min_event_length', 'max_event_length')
     def apply_event_length_filter(self):
         event_lengths = self._stops - self._starts
 
@@ -177,6 +185,7 @@ class Events(object):
         self._starts = np.ma.masked_where(condition, self._starts).compressed()
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
+    @skip_check('start_offset', 'stop_offset')
     def apply_offsets(self):
         min_index = 0
         max_index = self.condition.size
