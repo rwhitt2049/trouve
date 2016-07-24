@@ -32,9 +32,9 @@ def skip_check(*dargs):
 
 class Events(object):
     def __init__(self, condition, sample_rate=1,
-                 entry_debounce=0, exit_debounce=0,
-                 min_event_length=0, max_event_length=None,
-                 start_offset=0, stop_offset=0):
+                 entry_debounce=None, exit_debounce=None,
+                 min_event_length=None, max_event_length=None,
+                 start_offset=None, stop_offset=None):
         if type(condition) is pd.core.series.Series:
             self.condition = condition.values
         else:
@@ -46,44 +46,58 @@ class Events(object):
         self._exit_debounce = exit_debounce
         self._min_event_length = min_event_length
         self._max_event_length = max_event_length
+
+        if start_offset is not None and start_offset > 0:
+            raise ValueError('Currently only negative start offsets are supported')
+        if stop_offset is not None and stop_offset < 0:
+            raise ValueError('Currently only positive stop offsets are supported')
+
         self._start_offset = start_offset
         self._stop_offset = stop_offset
 
         # TODO - work out strategy for multivariate data. Pass index
-        # TODO - promote private methods to public, allow events to be created step by step
-        # TODO - parameter datatypes might become an issue
+
     @property
     def entry_debounce(self):
-        return np.ceil(self._entry_debounce * self.sample_rate)
+        try:
+            return np.ceil(self._entry_debounce * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def exit_debounce(self):
-        return np.ceil(self._exit_debounce * self.sample_rate)
+        try:
+            return np.ceil(self._exit_debounce * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def min_event_length(self):
-        return np.ceil(self._min_event_length * self.sample_rate)
+        try:
+            return np.ceil(self._min_event_length * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def max_event_length(self):
         try:
             return np.floor(self._max_event_length * self.sample_rate)
         except TypeError:
-            return None
+            return self.condition.size
 
     @property
     def start_offset(self):
-        if self._start_offset > 0:
-            raise ValueError('Currently only negative start offsets are supported')
-        else:
+        try:
             return np.ceil(self._start_offset * self.sample_rate).astype('int32')
+        except TypeError:
+            return 0
 
     @property
     def stop_offset(self):
-        if self._stop_offset < 0:
-            raise ValueError('Currently only positive stop offsets are supported')
-        else:
+        try:
             return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
+        except TypeError:
+            return 0
 
     @property
     def n_events(self):
@@ -159,7 +173,7 @@ class Events(object):
         self._starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
         self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
-    @skip_check('entry_debounce', 'exit_debounce')
+    @skip_check('_entry_debounce', '_exit_debounce')
     def apply_debounce_filter(self):
         """ Apply debounce parameters"""
         try:
@@ -170,22 +184,16 @@ class Events(object):
         self._starts, self._stops = debounce(self._starts, self._stops,
                                              self.entry_debounce, self.exit_debounce)
 
-    @skip_check('min_event_length', 'max_event_length')
+    @skip_check('_min_event_length', '_max_event_length')
     def apply_event_length_filter(self):
         event_lengths = self._stops - self._starts
-
-        if not self.max_event_length:
-            condition = (event_lengths < self.min_event_length)
-        elif self.min_event_length >= 0 and self.max_event_length > 0:
-            condition = ((event_lengths < self.min_event_length) |
+        condition = ((event_lengths < self.min_event_length) |
                          (event_lengths > self.max_event_length))
-        else:
-            raise ValueError
 
         self._starts = np.ma.masked_where(condition, self._starts).compressed()
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
-    @skip_check('start_offset', 'stop_offset')
+    @skip_check('_start_offset', '_stop_offset')
     def apply_offsets(self):
         min_index = 0
         max_index = self.condition.size
