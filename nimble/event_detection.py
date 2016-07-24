@@ -19,75 +19,104 @@ def lazyproperty(func):
     return lazy
 
 
+def skip_check(*dargs):
+    def wrapper(func):
+        @wraps(func)
+        def wrapped(self, *args):
+            attrs = [getattr(self, darg) for darg in dargs]
+            if any(attrs):
+                func(self, *args)
+        return wrapped
+    return wrapper
+
+
 class Events(object):
     def __init__(self, condition, sample_rate=1,
-                 entry_debounce=0, exit_debounce=0,
-                 min_event_length=0, max_event_length=None,
-                 start_offset=0, stop_offset=0):
+                 entry_debounce=None, exit_debounce=None,
+                 min_event_length=None, max_event_length=None,
+                 start_offset=None, stop_offset=None):
         if type(condition) is pd.core.series.Series:
             self.condition = condition.values
         else:
             self.condition = condition
+        self._starts = None
+        self._stops = None
         self.sample_rate = sample_rate  # Assumes univariate time series
         self._entry_debounce = entry_debounce
         self._exit_debounce = exit_debounce
         self._min_event_length = min_event_length
         self._max_event_length = max_event_length
+
+        if start_offset is not None and start_offset > 0:
+            raise ValueError('Currently only negative start offsets are supported')
+        if stop_offset is not None and stop_offset < 0:
+            raise ValueError('Currently only positive stop offsets are supported')
+
         self._start_offset = start_offset
         self._stop_offset = stop_offset
 
         # TODO - work out strategy for multivariate data. Pass index
-        # TODO - promote private methods to public, allow events to be created step by step
-        # TODO - parameter datatypes might become an issue
+
     @property
     def entry_debounce(self):
-        return np.ceil(self._entry_debounce * self.sample_rate)
+        try:
+            return np.ceil(self._entry_debounce * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def exit_debounce(self):
-        return np.ceil(self._exit_debounce * self.sample_rate)
+        try:
+            return np.ceil(self._exit_debounce * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def min_event_length(self):
-        return np.ceil(self._min_event_length * self.sample_rate)
+        try:
+            return np.ceil(self._min_event_length * self.sample_rate)
+        except TypeError:
+            return 0
 
     @property
     def max_event_length(self):
         try:
             return np.floor(self._max_event_length * self.sample_rate)
         except TypeError:
-            return None
+            return self.condition.size
 
     @property
     def start_offset(self):
-        if self._start_offset > 0:
-            raise ValueError('Currently only negative start offsets are supported')
-        else:
+        try:
             return np.ceil(self._start_offset * self.sample_rate).astype('int32')
+        except TypeError:
+            return 0
 
     @property
     def stop_offset(self):
-        if self._stop_offset < 0:
-            raise ValueError('Currently only positive stop offsets are supported')
-        else:
+        try:
             return np.ceil(self._stop_offset * self.sample_rate).astype('int32')
+        except TypeError:
+            return 0
 
     @property
     def n_events(self):
         """Return the number of events found."""
         return self.starts.size
-        
-    @lazyproperty
+
+    @property
     def starts(self):
         """Return a numpy.array() of start indexes."""
-        starts, _ = self._apply_filters()
-        return starts
-        
-    @lazyproperty
+        if self._starts is None:
+            self._apply_filters()
+        return self._starts
+
+    @property
     def stops(self):
         """Return a numpy.array() of start indexes."""
-        _, stops = self._apply_filters()
-        return stops
+        if self._stops is None:
+            self._apply_filters()
+        return self._stops
 
     @lazyproperty
     def durations(self):
@@ -114,33 +143,26 @@ class Events(object):
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, index=index, name=name)
 
-    @lru_cache(1)
     def _apply_filters(self):
-        starts, stops = self._apply_condition_filter()
+        self.apply_condition_filter()
+        self.apply_debounce_filter()
+        self.apply_event_length_filter()
+        self.apply_offsets()
 
-        if starts.size > 0 and (self.entry_debounce or self.exit_debounce):
-            starts, stops = self._apply_debounce_filter(starts, stops)
-
-        if starts.size > 0 and (self.min_event_length or self.max_event_length):
-            starts, stops = self._apply_event_length_filter(starts, stops)
-
-        if starts.size > 0 and (self.start_offset or self.stop_offset):
-            starts, stops = self._apply_offsets(starts, stops)
-
-        return starts, stops
-
-    def _apply_condition_filter(self):
+    def apply_condition_filter(self):
         """
         Apply initial masking conditions
         """
         mask = (self.condition > 0).view('i1')
         slice_index = np.arange(mask.size + 1, dtype='int32')
 
+        # Determine if condition is active at array start, set to_begin accordingly
         if mask[0] == 0:
             to_begin = np.array([0], dtype='i1')
         else:
             to_begin = np.array([1], dtype='i1')
 
+        # Determine if condition is active at array end, set to_end accordingly
         if mask[-1] == 0:
             to_end = np.array([0], dtype='i1')
         else:
@@ -148,49 +170,39 @@ class Events(object):
 
         deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
 
-        starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
-        stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
+        self._starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
+        self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
-        return starts, stops
-
-    def _apply_debounce_filter(self, starts, stops):
+    @skip_check('_entry_debounce', '_exit_debounce')
+    def apply_debounce_filter(self):
         """ Apply debounce parameters"""
         try:
             from nimble.cyfunc.debounce import debounce
         except ImportError:
             from nimble.debounce import debounce
 
-        starts, stops = debounce(starts, stops,
-                                 self.entry_debounce, self.exit_debounce)
-        return starts, stops
+        self._starts, self._stops = debounce(self._starts, self._stops,
+                                             self.entry_debounce, self.exit_debounce)
 
-    def _apply_event_length_filter(self, starts, stops):
-        event_lengths = stops - starts
-
-        if not self.max_event_length:
-            condition = (event_lengths < self.min_event_length)
-        elif self.min_event_length >= 0 and self.max_event_length > 0:
-            condition = ((event_lengths < self.min_event_length) |
+    @skip_check('_min_event_length', '_max_event_length')
+    def apply_event_length_filter(self):
+        event_lengths = self._stops - self._starts
+        condition = ((event_lengths < self.min_event_length) |
                          (event_lengths > self.max_event_length))
-        else:
-            raise ValueError
 
-        starts = np.ma.masked_where(condition, starts).compressed()
-        stops = np.ma.masked_where(condition, stops).compressed()
+        self._starts = np.ma.masked_where(condition, self._starts).compressed()
+        self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
-        return starts, stops
-
-    def _apply_offsets(self, starts, stops):
+    @skip_check('_start_offset', '_stop_offset')
+    def apply_offsets(self):
         min_index = 0
         max_index = self.condition.size
 
-        starts += self.start_offset
-        stops += self.stop_offset
+        self._starts += self.start_offset
+        self._stops += self.stop_offset
 
-        np.clip(starts, min_index, max_index, out=starts)
-        np.clip(stops, min_index, max_index, out=stops)
-
-        return starts, stops
+        np.clip(self._starts, min_index, max_index, out=self._starts)
+        np.clip(self._stops, min_index, max_index, out=self._stops)
 
     def __iter__(self):
         self.i = 0
