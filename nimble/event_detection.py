@@ -200,7 +200,7 @@ class Events(object):
     def apply_event_length_filter(self):
         event_lengths = self._stops - self._starts
         condition = ((event_lengths < self.min_event_length) |
-                         (event_lengths > self.max_event_length))
+                     (event_lengths > self.max_event_length))
 
         self._starts = np.ma.masked_where(condition, self._starts).compressed()
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
@@ -259,6 +259,17 @@ class Events(object):
                 '\nmin_event_length: {_min_event_length}, max_event_length: {_max_event_length}, '
                 '\nstart_offset: {_start_offset}, stop_offset: {_stop_offset}').format(*args, **kwargs)
 
+    def __eq__(self, other):
+        if (np.all(self.starts == other.starts) and np.all(self.stops == other.stops)
+                and self.sample_rate == other.sample_rate and self.condition.size == other.condition.size):
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        """Numpy arrays aren't hashable. Researching solution that doesn't require something beyond standard lib."""
+        return 0
+
 
 def main():
     np.random.seed(15)
@@ -269,9 +280,17 @@ def main():
                     start_offset=-1)
     starts = events.starts
     series = events.as_series()
+    array = events.as_array()
     print(repr(events))
     print(events)
     events
+
+    events2 = Events(mask > 0,
+                     entry_debounce=3,
+                     min_event_length=3,
+                     start_offset=-1)
+
+    print(events == events2)
 
 if __name__ == '__main__':
     import sys
