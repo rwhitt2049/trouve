@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
 import nimble.debounce as py
@@ -80,3 +80,6 @@ class TestCyvPy(TestCase):
 
         npt.assert_array_equal(py_starts, cy_starts)
         npt.assert_array_equal(py_stops, cy_stops)
+
+if __name__ == '__main__':
+    main()

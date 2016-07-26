@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
 import nimble.as_array as py
@@ -54,3 +54,6 @@ class TestCyvPy(TestCase):
         cy_arr = cy.as_array(self.starts, self.stops, self.mask)
 
         npt.assert_array_equal(py_arr, cy_arr)
+
+if __name__ == '__main__':
+    main()

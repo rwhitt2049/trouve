@@ -35,6 +35,18 @@ class Events(object):
                  entry_debounce=None, exit_debounce=None,
                  min_event_length=None, max_event_length=None,
                  start_offset=None, stop_offset=None):
+        """
+
+        Args:
+            condition:
+            sample_rate:
+            entry_debounce:
+            exit_debounce:
+            min_event_length:
+            max_event_length:
+            start_offset:
+            stop_offset:
+        """
         if type(condition) is pd.core.series.Series:
             self.condition = condition.values
         else:
@@ -219,6 +231,34 @@ class Events(object):
         except IndexError:
             raise StopIteration
 
+    def __len__(self):
+        return self.starts.size
+
+    def __repr__(self):
+        # TODO - due to the size of condition, this should take an optional path and serialize as pickle, yaml, or json
+        return ('{__class__.__name__}(condition={condition!r}, sample_rate={sample_rate!r}, '
+                'entry_debounce={_entry_debounce!r}, exit_debounce={_exit_debounce!r}, '
+                'min_event_length={_min_event_length!r}, max_event_length={_max_event_length!r}, '
+                'start_offset={_start_offset!r}, stop_offset={_stop_offset!r}').format(__class__=self.__class__, **self.__dict__)
+
+    def __str__(self):
+        args = [len(self), np.min(self.durations), np.max(self.durations), np.mean(self.durations)]
+        kwargs = {
+            'sample_rate': '{}Hz'.format(self.sample_rate),
+            '_entry_debounce': '{}s'.format(self._entry_debounce) if self._entry_debounce else None,
+            '_exit_debounce': '{}s'.format(self.exit_debounce) if self.exit_debounce else None,
+            '_min_event_length': '{}s'.format(self._min_event_length) if self._min_event_length else None,
+            '_max_event_length': '{}s'.format(self._max_event_length) if self._max_event_length else None,
+            '_start_offset': '{}s'.format(self._start_offset) if self._start_offset else None,
+            '_stop_offset': '{}s'.format(self._stop_offset) if self._stop_offset else None
+        }
+        return ('Number of events: {0}'
+                '\nMin, Max, Mean Duration: {1:.3f}s ,{2:.3f}s, {3:.3f}s'
+                '\nsample rate: {sample_rate}, '
+                '\nentry_debounce: {_entry_debounce} exit_debounce: {_exit_debounce}, '
+                '\nmin_event_length: {_min_event_length}, max_event_length: {_max_event_length}, '
+                '\nstart_offset: {_start_offset}, stop_offset: {_stop_offset}').format(*args, **kwargs)
+
 
 def main():
     np.random.seed(15)
@@ -229,6 +269,9 @@ def main():
                     start_offset=-1)
     starts = events.starts
     series = events.as_series()
+    print(repr(events))
+    print(events)
+    events
 
 if __name__ == '__main__':
     import sys

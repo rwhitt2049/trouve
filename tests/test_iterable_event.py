@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 
 import numpy as np
 import numpy.testing as npt
@@ -38,3 +38,6 @@ class TestClassIterable(TestCase):
             test_index.append(event.index)
 
         npt.assert_array_equal(validation_index, test_index)
+
+if __name__ == '__main__':
+    main()

@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 
 import numpy as np
 import numpy.testing as npt
@@ -211,3 +211,16 @@ class TestDurationArray(TestCase):
         # validation_array = np.array([0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
         validation_durations = [(8/3)]
         npt.assert_array_equal(validation_durations, self.events.durations)
+
+
+class TestDurationArray(TestCase):
+    def setUp(self):
+        condition_array = np.array([1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1])
+        condition = (condition_array > 0)
+        self.events = Events(condition)
+
+    def test__len__(self):
+        self.assertEquals(4, len(self.events))
+
+if __name__ == '__main__':
+    main()
