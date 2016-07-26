@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, main
 
 import numpy as np
 import pandas as pd
@@ -37,3 +37,6 @@ class TestAsNpArrCondition(TestCase):
     def test_as_array(self):
         validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         npt.assert_array_equal(validation_array, self.events.as_array())
+
+if __name__ == '__main__':
+    main()
