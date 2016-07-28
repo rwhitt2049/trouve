@@ -11,7 +11,7 @@ class TestPyAsArrayFunction(TestCase):
         # output = as_array(self.starts, self.stops, output, true_values)
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
         self.starts = events.starts
         self.stops = events.stops
         self.mask = np.zeros(condition.size)
@@ -28,7 +28,7 @@ class TestCyAsArrayFunction(TestCase):
         # output = as_array(self.starts, self.stops, output, true_values)
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
         self.starts = events.starts
         self.stops = events.stops
         self.mask = np.zeros(condition.size)
@@ -44,8 +44,8 @@ class TestCyvPy(TestCase):
     def setUp(self):
         np.random.seed(10)
         x = np.random.random_integers(0, 1, 300000)
-        events = Events(x > 0)
-        self.mask = np.zeros(events.n_events)
+        events = Events(x > 0, sample_period=1)
+        self.mask = np.zeros(len(events))
         self.starts = events.starts
         self.stops = events.stops
 

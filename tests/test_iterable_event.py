@@ -10,7 +10,7 @@ class TestClassIterable(TestCase):
     def setUp(self):
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        self.events = Events(condition)
+        self.events = Events(condition, sample_period=1, )
 
     def test_start_stop_loc(self):
         test_starts = []
