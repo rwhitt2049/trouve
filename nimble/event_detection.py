@@ -1,5 +1,5 @@
 import numpy as np
-from functools import lru_cache, wraps
+from functools import wraps
 import pandas as pd
 # from memory_profiler import profile
 
@@ -135,7 +135,6 @@ class Events(object):
         """Return a numpy.array() of event durations in seconds."""
         return (self.stops - self.starts)/self.sample_rate
 
-    @lru_cache(10)
     def as_array(self, false_values=0, true_values=1, dtype='float'):
         """
         Return the found events as a numpy array of 0's and 1'sample_rate
@@ -149,7 +148,6 @@ class Events(object):
         output = as_array(self.starts, self.stops, output, true_values)
         return output.astype(dtype)
 
-    @lru_cache(2)
     def as_series(self, false_values=0, true_values=1, name='events'):
         index = pd.RangeIndex(self.condition.size, step=self.sample_rate)
         data = self.as_array(false_values=false_values, true_values=true_values)
