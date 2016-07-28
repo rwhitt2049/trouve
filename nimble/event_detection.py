@@ -31,7 +31,7 @@ def skip_check(*dargs):
 
 
 class Events(object):
-    def __init__(self, condition, sample_period=1,
+    def __init__(self, condition, sample_period=None,
                  activation_debounce=None, deactivation_debounce=None,
                  min_duration=None, max_duration=None,
                  start_offset=None, stop_offset=None):
@@ -47,24 +47,29 @@ class Events(object):
             start_offset:
             stop_offset:
         """
-        if type(condition) is pd.core.series.Series:
-            self.condition = condition.values
-        else:
-            self.condition = condition
-        self._starts = None
-        self._stops = None
-        self.sample_period = sample_period  # Assumes univariate time series
         self._activation_debounce = activation_debounce
         self._deactivation_debounce = deactivation_debounce
         self._min_duration = min_duration
         self._max_duration = max_duration
+        self._starts = None
+        self._stops = None
 
-        if start_offset is not None and start_offset > 0:
+        if type(condition) is pd.core.series.Series:
+            self.condition = condition.values
+        else:
+            self.condition = condition
+
+        if not sample_period or sample_period <= 0:
+            raise ValueError('sample_period must be a positive value of the time in seconds between two samples')
+        else:
+            self.sample_period = sample_period  # Assumes univariate time series
+
+        if not start_offset and start_offset > 0:
             raise ValueError('Currently only negative start offsets are supported')
         else:
             self._start_offset = start_offset
 
-        if stop_offset is not None and stop_offset < 0:
+        if not stop_offset and stop_offset < 0:
             raise ValueError('Currently only positive stop offsets are supported')
         else:
             self._stop_offset = stop_offset
