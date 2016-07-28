@@ -64,12 +64,12 @@ class Events(object):
         else:
             self.sample_period = sample_period  # Assumes univariate time series
 
-        if not start_offset and start_offset > 0:
+        if start_offset and start_offset > 0:
             raise ValueError('Currently only negative start offsets are supported')
         else:
             self._start_offset = start_offset
 
-        if not stop_offset and stop_offset < 0:
+        if stop_offset and stop_offset < 0:
             raise ValueError('Currently only positive stop offsets are supported')
         else:
             self._stop_offset = stop_offset
