@@ -239,7 +239,8 @@ class Events(object):
         return ('{__class__.__name__}(condition={condition!r}, sample_rate={sample_rate!r}, '
                 'entry_debounce={_entry_debounce!r}, exit_debounce={_exit_debounce!r}, '
                 'min_event_length={_min_event_length!r}, max_event_length={_max_event_length!r}, '
-                'start_offset={_start_offset!r}, stop_offset={_stop_offset!r}').format(__class__=self.__class__, **self.__dict__)
+                'start_offset={_start_offset!r}, stop_offset={_stop_offset!r}').format(__class__=self.__class__,
+                                                                                       **self.__dict__)
 
     def __str__(self):
         args = [len(self), np.min(self.durations), np.max(self.durations), np.mean(self.durations)]
@@ -268,7 +269,7 @@ class Events(object):
 
     def __hash__(self):
         """Numpy arrays aren't hashable. Researching solution that doesn't require something beyond standard lib."""
-        return 0
+        return id(self)
 
 
 def main():
@@ -278,19 +279,11 @@ def main():
                     entry_debounce=2,
                     min_event_length=3,
                     start_offset=-1)
+    
     starts = events.starts
     series = events.as_series()
     array = events.as_array()
-    print(repr(events))
-    print(events)
-    events
 
-    events2 = Events(mask > 0,
-                     entry_debounce=3,
-                     min_event_length=3,
-                     start_offset=-1)
-
-    print(events == events2)
 
 if __name__ == '__main__':
     import sys
