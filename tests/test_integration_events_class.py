@@ -20,7 +20,7 @@ class TestAsArrayMethod(TestCase):
     def setUp(self):
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        self.events = Events(condition)
+        self.events = Events(condition, sample_period=1)
 
     def test_default_parameters(self):
         """Test as_array() with default settings"""
@@ -53,7 +53,7 @@ class TestEventDetection(TestCase):
         np.random.seed(10)
         validation_array = np.random.random_integers(0, 1, 100)
         condition = (validation_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -62,7 +62,7 @@ class TestEventDetection(TestCase):
         conditional_array = np.ones(10, dtype='i1')
         validation_array = np.zeros(10, dtype='i1')
         condition = (conditional_array > 5)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -70,7 +70,7 @@ class TestEventDetection(TestCase):
         """Test arrays that has an event active throughout entire array"""
         validation_array = np.ones(10, dtype='i1')
         condition = (validation_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -79,7 +79,7 @@ class TestEventDetection(TestCase):
         validation_array = np.zeros(10, dtype='i1')
         validation_array[:1] = 1
         condition = (validation_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -88,7 +88,7 @@ class TestEventDetection(TestCase):
         validation_array = np.zeros(10, dtype='i1')
         validation_array[-1:] = 1
         condition = (validation_array > 0)
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -99,7 +99,7 @@ class TestEventDetection(TestCase):
 
         validation_array = np.array([0, 0, 1, 1, 0, 0, 0, 1, 0, 0])
         condition = ((x > 0) & (y > 0))
-        events = Events(condition)
+        events = Events(condition, sample_period=1)
 
         npt.assert_array_equal(validation_array, events.as_array())
 
@@ -227,7 +227,7 @@ class TestDurationArray(TestCase):
     def setUp(self):
         condition_array = np.array([1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1])
         condition = (condition_array > 0)
-        self.events = Events(condition)
+        self.events = Events(condition, sample_period=1)
 
     def test__len__(self):
         self.assertEquals(4, len(self.events))

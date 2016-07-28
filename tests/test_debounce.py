@@ -88,7 +88,7 @@ class TestCyvPy(TestCase):
     def setUp(self):
         np.random.seed(10)
         x = np.random.random_integers(0, 1, 300000)
-        events = Events(x > 0)
+        events = Events(x > 0, sample_period=1)
         self.starts = events.starts
         self.stops = events.stops
 
