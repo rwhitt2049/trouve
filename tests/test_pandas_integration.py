@@ -17,10 +17,12 @@ class TestAsPandasCondition(TestCase):
         validation_series = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         test_series = self.events.as_series()
         test_series.equals(validation_series)
+        self.assertEqual(pd.core.series.Series, type(test_series))
 
     def test_as_array(self):
         validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         npt.assert_array_equal(validation_array, self.events.as_array())
+        self.assertEqual(np.ndarray, type(validation_array))
 
 
 class TestAsNpArrCondition(TestCase):
@@ -33,12 +35,13 @@ class TestAsNpArrCondition(TestCase):
         validation_series = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         test_series = self.events.as_series()
         test_series.equals(validation_series)
+        self.assertEqual(pd.core.series.Series, type(test_series))
 
     def test_as_array(self):
         validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         npt.assert_array_equal(validation_array, self.events.as_array())
+        self.assertEqual(np.ndarray, type(validation_array))
 
-        self.asser
 
 if __name__ == '__main__':
     main()
