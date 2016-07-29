@@ -5,3 +5,8 @@ build/*
 *.pyd
 *.orig
 *.ipynb
+_build
+_static
+_templates
+documentation/make.bat
+documentation/Makefile
