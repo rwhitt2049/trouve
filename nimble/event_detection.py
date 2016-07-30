@@ -397,7 +397,7 @@ class Events(object):
     def __str__(self):
         args = [len(self), np.min(self.durations), np.max(self.durations), np.mean(self.durations)]
         kwargs = {
-            'sample_period': '{}Hz'.format(self.sample_period),
+            'sample_period': '{}s'.format(self.sample_period),
             '_activation_debounce': '{}s'.format(self._activation_debounce) if self._activation_debounce else None,
             '_deactivation_debounce': '{}s'.format(self.deactivation_debounce) if self.deactivation_debounce else None,
             '_min_duration': '{}s'.format(self._min_duration) if self._min_duration else None,
