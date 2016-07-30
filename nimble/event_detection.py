@@ -377,7 +377,7 @@ class Events(object):
         try:
             self.start = self.starts[self.i]
             self.stop = self.stops[self.i]
-            self.duration = (self.stop - self.start)/self.sample_period
+            self.duration = (self.stop - self.start)*self.sample_period
             return self
         except IndexError:
             raise StopIteration
