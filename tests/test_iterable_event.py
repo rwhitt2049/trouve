@@ -10,7 +10,7 @@ class TestClassIterable(TestCase):
     def setUp(self):
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        self.events = Events(condition, sample_period=1, )
+        self.events = Events(condition, sample_period=0.5, )
 
     def test_start_stop_loc(self):
         test_starts = []
@@ -24,7 +24,7 @@ class TestClassIterable(TestCase):
         npt.assert_array_equal(self.events.stops, test_stops)
 
     def test_durations(self):
-        validation_durations = self.events.stops - self.events.starts
+        validation_durations = [1.5, 1, 1]
         test_durations = []
         for event in self.events:
             test_durations.append(event.duration)
