@@ -211,7 +211,7 @@ class Events(object):
     def start_offset(self):
         """Return start_offset in number of points or zero if None"""
         try:
-            return np.ceil(self._start_offset * self.sample_period).astype('int32')
+            return np.ceil(self._start_offset / self.sample_period).astype('int32')
         except TypeError:
             return 0
 
@@ -219,7 +219,7 @@ class Events(object):
     def stop_offset(self):
         """Return stop_offset in number of points or zero if None"""
         try:
-            return np.ceil(self._stop_offset * self.sample_period).astype('int32')
+            return np.ceil(self._stop_offset / self.sample_period).astype('int32')
         except TypeError:
             return 0
 
@@ -240,7 +240,7 @@ class Events(object):
     @lazyproperty
     def durations(self):
         """Return a numpy.array() of event durations in seconds."""
-        return (self.stops - self.starts)/self.sample_period
+        return (self.stops - self.starts)*self.sample_period
 
     def as_array(self, false_values=0, true_values=1, dtype='float'):
         """Returns a numpy.array that identifies events
@@ -377,7 +377,8 @@ class Events(object):
         try:
             self.start = self.starts[self.i]
             self.stop = self.stops[self.i]
-            self.duration = (self.stop - self.start)/self.sample_period
+            self.duration = (self.stop - self.start)*self.sample_period
+            self.slice = slice
             return self
         except IndexError:
             raise StopIteration
