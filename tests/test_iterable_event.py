@@ -35,7 +35,7 @@ class TestClassIterable(TestCase):
         validation_index = [0, 1, 2]
         test_index = []
         for event in self.events:
-            test_index.append(event.index)
+            test_index.append(event.i)
 
         npt.assert_array_equal(validation_index, test_index)
 

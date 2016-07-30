@@ -369,16 +369,15 @@ class Events(object):
         np.clip(self._stops, min_index, max_index, out=self._stops)
 
     def __iter__(self):
-        self._i = 0
+        self.i = -1
         return self
 
     def __next__(self):
+        self.i += 1
         try:
-            self.start = self.starts[self._i]
-            self.stop = self.stops[self._i]
+            self.start = self.starts[self.i]
+            self.stop = self.stops[self.i]
             self.duration = (self.stop - self.start)/self.sample_period
-            self._i += 1
-            self.index = self._i - 1
             return self
         except IndexError:
             raise StopIteration
