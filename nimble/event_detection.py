@@ -375,10 +375,10 @@ class Events(object):
     def __next__(self):
         self.i += 1
         try:
-            self.start = self.starts[self.i]
-            self.stop = self.stops[self.i]
-            self.duration = (self.stop - self.start)*self.sample_period
-            self.slice = slice
+            self.istart = self.starts[self.i]
+            self.istop = self.stops[self.i]-1
+            self.iduration = (self.stops[self.i] - self.starts[self.i])*self.sample_period
+            self.islice = slice(self.starts[self.i], self.stops[self.i])
             return self
         except IndexError:
             raise StopIteration
@@ -419,7 +419,7 @@ class Events(object):
         if two events are identical.
         """
         if (np.all(self.starts == other.starts) and np.all(self.stops == other.stops)
-                and self.sample_period == other.sample_rate and self.condition.size == other.condition.size):
+                and self.sample_period == other.sample_period and self.condition.size == other.condition.size):
             return True
         else:
             return False
