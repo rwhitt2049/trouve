@@ -147,10 +147,10 @@ class Events(object):
                  min_duration=None, max_duration=None,
                  start_offset=None, stop_offset=None):
 
-        self._activation_debounce = activation_debounce
-        self._deactivation_debounce = deactivation_debounce
-        self._min_duration = min_duration
-        self._max_duration = max_duration
+        self.activation_debounce = activation_debounce
+        self.deactivation_debounce = deactivation_debounce
+        self.min_duration = min_duration
+        self.max_duration = max_duration
         self._starts = None
         self._stops = None
 
@@ -167,59 +167,59 @@ class Events(object):
         if start_offset and start_offset > 0:
             raise ValueError('Currently only negative start offsets are supported')
         else:
-            self._start_offset = start_offset
+            self.start_offset = start_offset
 
         if stop_offset and stop_offset < 0:
             raise ValueError('Currently only positive stop offsets are supported')
         else:
-            self._stop_offset = stop_offset
-        # TODO - work out strategy for multivariate data. Pass index
+            self.stop_offset = stop_offset
+        # TODO - work out strategy for multivariate data. Pass index?
 
     @property
-    def activation_debounce(self):
+    def _activation_debounce(self):
         """Return activation_debounce in number of points or zero if None"""
         try:
-            return np.ceil(self._activation_debounce / self.sample_period)
+            return np.ceil(self.activation_debounce / self.sample_period)
         except TypeError:
             return 0
 
     @property
-    def deactivation_debounce(self):
+    def _deactivation_debounce(self):
         """Return deactivation_debounce in number of points or zero if None"""
         try:
-            return np.ceil(self._deactivation_debounce / self.sample_period)
+            return np.ceil(self.deactivation_debounce / self.sample_period)
         except TypeError:
             return 0
 
     @property
-    def min_duration(self):
+    def _min_duration(self):
         """Return min_duration in number of points or zero if None"""
         try:
-            return np.ceil(self._min_duration / self.sample_period)
+            return np.ceil(self.min_duration / self.sample_period)
         except TypeError:
             return 0
 
     @property
-    def max_duration(self):
+    def _max_duration(self):
         """Return max_duration in number of points or len(condtion) if None"""
         try:
-            return np.floor(self._max_duration / self.sample_period)
+            return np.floor(self.max_duration / self.sample_period)
         except TypeError:
             return self.condition.size
 
     @property
-    def start_offset(self):
+    def _start_offset(self):
         """Return start_offset in number of points or zero if None"""
         try:
-            return np.ceil(self._start_offset / self.sample_period).astype('int32')
+            return np.ceil(self.start_offset / self.sample_period).astype('int32')
         except TypeError:
             return 0
 
     @property
-    def stop_offset(self):
+    def _stop_offset(self):
         """Return stop_offset in number of points or zero if None"""
         try:
-            return np.ceil(self._stop_offset / self.sample_period).astype('int32')
+            return np.ceil(self.stop_offset / self.sample_period).astype('int32')
         except TypeError:
             return 0
 
@@ -345,13 +345,13 @@ class Events(object):
             from nimble.debounce import debounce
 
         self._starts, self._stops = debounce(self._starts, self._stops,
-                                             self.activation_debounce, self.deactivation_debounce)
+                                             self._activation_debounce, self._deactivation_debounce)
 
     @skip_check('_min_duration', '_max_duration')
     def apply_event_length_filter(self):
         event_lengths = self._stops - self._starts
-        condition = ((event_lengths < self.min_duration) |
-                     (event_lengths > self.max_duration))
+        condition = ((event_lengths < self._min_duration) |
+                     (event_lengths > self._max_duration))
 
         self._starts = np.ma.masked_where(condition, self._starts).compressed()
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
@@ -362,8 +362,8 @@ class Events(object):
         min_index = 0
         max_index = self.condition.size
 
-        self._starts += self.start_offset
-        self._stops += self.stop_offset
+        self._starts += self._start_offset
+        self._stops += self._stop_offset
 
         np.clip(self._starts, min_index, max_index, out=self._starts)
         np.clip(self._stops, min_index, max_index, out=self._stops)
@@ -398,19 +398,19 @@ class Events(object):
         args = [len(self), np.min(self.durations), np.max(self.durations), np.mean(self.durations)]
         kwargs = {
             'sample_period': '{}s'.format(self.sample_period),
-            '_activation_debounce': '{}s'.format(self._activation_debounce) if self._activation_debounce else None,
-            '_deactivation_debounce': '{}s'.format(self.deactivation_debounce) if self.deactivation_debounce else None,
-            '_min_duration': '{}s'.format(self._min_duration) if self._min_duration else None,
-            '_max_duration': '{}s'.format(self._max_duration) if self._max_duration else None,
-            '_start_offset': '{}s'.format(self._start_offset) if self._start_offset else None,
-            '_stop_offset': '{}s'.format(self._stop_offset) if self._stop_offset else None
+            'activation_debounce': '{}s'.format(self.activation_debounce) if self.activation_debounce else None,
+            'deactivation_debounce': '{}s'.format(self.deactivation_debounce) if self.deactivation_debounce else None,
+            'min_duration': '{}s'.format(self.min_duration) if self.min_duration else None,
+            'max_duration': '{}s'.format(self.max_duration) if self.max_duration else None,
+            'start_offset': '{}s'.format(self.start_offset) if self.start_offset else None,
+            'stop_offset': '{}s'.format(self.stop_offset) if self.stop_offset else None
         }
         return ('Number of events: {0}'
                 '\nMin, Max, Mean Duration: {1:.3f}s ,{2:.3f}s, {3:.3f}s'
-                '\nsample rate: {sample_period}, '
-                '\nactivation_debounce: {_activation_debounce} deactivation_debounce: {_deactivation_debounce}, '
-                '\nmin_duration: {_min_duration}, max_duration: {_max_duration}, '
-                '\nstart_offset: {_start_offset}, stop_offset: {_stop_offset}').format(*args, **kwargs)
+                '\nsample_period: {sample_period}, '
+                '\nactivation_debounce: {activation_debounce} deactivation_debounce: {deactivation_debounce}, '
+                '\nmin_duration: {min_duration}, max_duration: {max_duration}, '
+                '\nstart_offset: {start_offset}, stop_offset: {stop_offset}').format(*args, **kwargs)
 
     def __eq__(self, other):
         """Determine if two Events objects are identical
