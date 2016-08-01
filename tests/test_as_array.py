@@ -11,9 +11,9 @@ class TestPyAsArrayFunction(TestCase):
         # output = as_array(self.starts, self.stops, output, true_values)
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        events = Events(condition, sample_period=1)
-        self.starts = events.starts
-        self.stops = events.stops
+        events = Events(condition, sample_period=1).find()
+        self.starts = events._starts
+        self.stops = events._stops
         self.mask = np.zeros(condition.size)
 
     def test_python_as_array(self):
@@ -28,9 +28,9 @@ class TestCyAsArrayFunction(TestCase):
         # output = as_array(self.starts, self.stops, output, true_values)
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        events = Events(condition, sample_period=1)
-        self.starts = events.starts
-        self.stops = events.stops
+        events = Events(condition, sample_period=1).find()
+        self.starts = events._starts
+        self.stops = events._stops
         self.mask = np.zeros(condition.size)
         self.validation_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
 
@@ -44,10 +44,10 @@ class TestCyvPy(TestCase):
     def setUp(self):
         np.random.seed(10)
         x = np.random.random_integers(0, 1, 300000)
-        events = Events(x > 0, sample_period=1)
+        events = Events(x > 0, sample_period=1).find()
         self.mask = np.zeros(len(events))
-        self.starts = events.starts
-        self.stops = events.stops
+        self.starts = events._starts
+        self.stops = events._stops
 
     def test_large_array_compare(self):
         py_arr = py.as_array(self.starts, self.stops, self.mask)

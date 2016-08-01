@@ -223,24 +223,26 @@ class Events(object):
         except TypeError:
             return 0
 
+    '''
     @property
     def starts(self):
         """Return a numpy.array() of start indexes."""
-        if self._starts is None:
-            self._apply_filters()
+        #if self._starts is None:
+        #    self.find()
         return self._starts
 
     @property
     def stops(self):
         """Return a numpy.array() of start indexes."""
-        if self._stops is None:
-            self._apply_filters()
+        #if self._stops is None:
+        #    self.find()
         return self._stops
+    '''
 
     @lazyproperty
     def durations(self):
         """Return a numpy.array() of event durations in seconds."""
-        return (self.stops - self.starts)*self.sample_period
+        return (self._stops - self._starts)*self.sample_period
 
     def as_array(self, false_values=0, true_values=1, dtype='float'):
         """Returns a numpy.array that identifies events
@@ -269,7 +271,7 @@ class Events(object):
             from nimble.as_array import as_array
 
         output = np.ones(self.condition.size) * false_values
-        output = as_array(self.starts, self.stops, output, true_values)
+        output = as_array(self._starts, self._stops, output, true_values)
         return output.astype(dtype)
 
     def as_series(self, false_values=0, true_values=1, name='events'):
@@ -297,7 +299,7 @@ class Events(object):
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, index=index, name=name)
 
-    def _apply_filters(self):
+    def find(self):
         """Convenience function that applies all filters in order
 
         This method can be overridden by inherited from Events to apply a user specified order
@@ -313,6 +315,8 @@ class Events(object):
         self.apply_debounce_filter()
         self.apply_event_length_filter()
         self.apply_offsets()
+
+        return self
 
     def apply_condition_filter(self):
         """Apply initial masking conditions"""
@@ -375,16 +379,16 @@ class Events(object):
     def __next__(self):
         self.i += 1
         try:
-            self.istart = self.starts[self.i]
-            self.istop = self.stops[self.i]-1
-            self.iduration = (self.stops[self.i] - self.starts[self.i])*self.sample_period
-            self.islice = slice(self.starts[self.i], self.stops[self.i])
+            self.istart = self._starts[self.i]
+            self.istop = self._stops[self.i]-1
+            self.iduration = (self._stops[self.i] - self._starts[self.i])*self.sample_period
+            self.islice = slice(self._starts[self.i], self._stops[self.i])
             return self
         except IndexError:
             raise StopIteration
 
     def __len__(self):
-        return self.starts.size
+        return self._starts.size
 
     def __repr__(self):
         # TODO - due to the size of condition, this should take an optional path and serialize as pickle, yaml, or json
@@ -418,7 +422,7 @@ class Events(object):
         Compares starts, stops, sample_period and condition.size to determin
         if two events are identical.
         """
-        if (np.all(self.starts == other.starts) and np.all(self.stops == other.stops)
+        if (np.all(self._starts == other._starts) and np.all(self._stops == other._stops)
                 and self.sample_period == other.sample_period and self.condition.size == other.condition.size):
             return True
         else:
@@ -435,13 +439,15 @@ def main():
     events = Events(mask > 0, sample_period=1,
                     activation_debounce=1,
                     min_duration=3,
-                    start_offset=-1)
-    
-    starts = events.starts
-    series = events.as_series()
-    array = events.as_array()
+                    start_offset=-1).find()
+
+    events2 = Events(mask > 0, sample_period=1,
+                   activation_debounce=1,
+                   min_duration=3,
+                   start_offset=-1).find()
 
     print(events)
+    print(events == events2)
 
 
 if __name__ == '__main__':
