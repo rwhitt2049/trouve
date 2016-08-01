@@ -90,6 +90,12 @@ Default is None</dd>
 <dd>This will offset every identified event&#8217;s stop index forward this many seconds.
 Must be a positive value.
 Default is None</dd>
+<dt>_start: array_like, float</dt>
+<dd>After events are found, this will be a numpy array of the left slice bound for
+all events.</dd>
+<dt>_stop: array_like, float</dt>
+<dd>After events are found, this will be a numpy array of the right slice bound for
+all events.</dd>
 </dl>
 </div></blockquote>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">nimble</span> <span class="kn">import</span> <span class="n">Events</span>
@@ -97,18 +103,14 @@ Default is None</dd>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(((</span><span class="n">x</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">)),</span> <span class="n">sample_period</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span><span class="o">.</span><span class="n">starts</span>
-<span class="go">array([ 0,  8, 11, 15])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span><span class="o">.</span><span class="n">stops</span>
-<span class="go">array([ 2, 10, 12, 16])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(((</span><span class="n">x</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">)),</span> <span class="n">sample_period</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">events</span><span class="o">.</span><span class="n">durations</span>
-<span class="go">array([ 2.,  2.,  1.,  1.])</span>
+<span class="go">array([2, 2, 1, 1])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
 <span class="go">4</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">events</span><span class="o">.</span><span class="n">as_array</span><span class="p">()</span>
-<span class="go">array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,</span>
-<span class="go">        0.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.])</span>
+<span class="go">array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,</span>
+<span class="go">        0.,  0.,  1.,  0.,  0.,  0.,  0.])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">events</span><span class="o">.</span><span class="n">as_series</span><span class="p">()</span>
 <span class="go">0     1.0</span>
 <span class="go">1     1.0</span>
@@ -131,35 +133,42 @@ Default is None</dd>
 <span class="go">18    0.0</span>
 <span class="go">19    0.0</span>
 <span class="go">Name: events, dtype: float64</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
 <span class="go">Number of events: 4</span>
-<span class="go">Min, Max, Mean Duration: 1.000s ,2.000s, 1.500s</span>
-<span class="go">sample rate: 1Hz,</span>
-<span class="go">activation_debounce: None deactivation_debounce: None,</span>
+<span class="go">Min, Max, Mean Duration: 1.000s, 2.000s, 1.500s</span>
+<span class="go">sample_period: 1s,</span>
+<span class="go">activation_debounce: None, deactivation_debounce: None,</span>
 <span class="go">min_duration: None, max_duration: None,</span>
 <span class="go">start_offset: None, stop_offset: None</span>
 </pre></div>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;Event {} slice is {}:{} and was {}s in duration&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="k">print</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
-<span class="gp">&gt;&gt;&gt; </span>          <span class="n">event</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
-<span class="go">Event 0 slice is 0:2 and was 2.0s in duration</span>
-<span class="go">Event 1 slice is 8:10 and was 2.0s in duration</span>
-<span class="go">Event 2 slice is 11:12 and was 1.0s in duration</span>
-<span class="go">Event 3 slice is 15:16 and was 1.0s in duration</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
-<span class="go">[1 1]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
-<span class="go">[1 1</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="s1">&#39;Event {} was {}s in duration&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">iduration</span><span class="p">))</span>
+<span class="go">Event 0 was 2s in duration</span>
+<span class="go">Event 1 was 2s in duration</span>
+<span class="go">Event 2 was 1s in duration</span>
+<span class="go">Event 3 was 1s in duration</span>
 </pre></div>
 </div>
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.activation_debounce">
-<code class="descname">activation_debounce</code><a class="headerlink" href="#nimble.event_detection.Events.activation_debounce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return activation_debounce in number of points or zero if None</p>
-</dd></dl>
-
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">string</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;During event {}, the first and last value&#39;</span>
+<span class="gp">... </span><span class="s1">&#39; of y is {} and {}. The slice of y is {}.&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">i</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">istart</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">y</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">istop</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">islice</span><span class="p">]))</span>
+<span class="go">During event 0, the first and last value of y is 2 and 2. The slice of y is [2 2].</span>
+<span class="go">During event 1, the first and last value of y is 2 and 2. The slice of y is [2 2].</span>
+<span class="go">During event 2, the first and last value of y is 3 and 3. The slice of y is [3].</span>
+<span class="go">During event 3, the first and last value of y is 3 and 3. The slice of y is [3].</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">events2</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(((</span><span class="n">x</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span><span class="o">&lt;=</span><span class="mi">3</span><span class="p">)),</span> <span class="n">sample_period</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events2</span> <span class="o">==</span> <span class="n">events</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="nimble.event_detection.Events.apply_condition_filter">
 <code class="descname">apply_condition_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nimble/event_detection.html#Events.apply_condition_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimble.event_detection.Events.apply_condition_filter" title="Permalink to this definition">¶</a></dt>
@@ -224,51 +233,20 @@ identified.</dd>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="nimble.event_detection.Events.deactivation_debounce">
-<code class="descname">deactivation_debounce</code><a class="headerlink" href="#nimble.event_detection.Events.deactivation_debounce" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return deactivation_debounce in number of points or zero if None</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="nimble.event_detection.Events.durations">
 <code class="descname">durations</code><a class="headerlink" href="#nimble.event_detection.Events.durations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a numpy.array() of event durations in seconds.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.max_duration">
-<code class="descname">max_duration</code><a class="headerlink" href="#nimble.event_detection.Events.max_duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return max_duration in number of points or len(condtion) if None</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.min_duration">
-<code class="descname">min_duration</code><a class="headerlink" href="#nimble.event_detection.Events.min_duration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return min_duration in number of points or zero if None</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.start_offset">
-<code class="descname">start_offset</code><a class="headerlink" href="#nimble.event_detection.Events.start_offset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return start_offset in number of points or zero if None</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.starts">
-<code class="descname">starts</code><a class="headerlink" href="#nimble.event_detection.Events.starts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a numpy.array() of start indexes.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.stop_offset">
-<code class="descname">stop_offset</code><a class="headerlink" href="#nimble.event_detection.Events.stop_offset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return stop_offset in number of points or zero if None</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="nimble.event_detection.Events.stops">
-<code class="descname">stops</code><a class="headerlink" href="#nimble.event_detection.Events.stops" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a numpy.array() of start indexes.</p>
+<dl class="method">
+<dt id="nimble.event_detection.Events.find">
+<code class="descname">find</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/nimble/event_detection.html#Events.find"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nimble.event_detection.Events.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function that applies all filters in order</p>
+<p>This method can be overridden by inherited from Events to apply a user specified order</p>
+<p>apply_condition_filter()
+apply_debounce_filter()
+apply_event_length_filter()
+apply_offsets()</p>
 </dd></dl>
 
 </dd></dl>
