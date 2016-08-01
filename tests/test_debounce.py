@@ -88,9 +88,9 @@ class TestCyvPy(TestCase):
     def setUp(self):
         np.random.seed(10)
         x = np.random.random_integers(0, 1, 300000)
-        events = Events(x > 0, sample_period=1)
-        self.starts = events.starts
-        self.stops = events.stops
+        events = Events(x > 0, sample_period=1).find()
+        self.starts = events._starts
+        self.stops = events._stops
 
     def test_large_array_compare(self):
         py_starts, py_stops = py.debounce(self.starts, self.stops, 2, 2)
