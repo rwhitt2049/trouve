@@ -79,6 +79,12 @@ class Events(object):
             This will offset every identified event's stop index forward this many seconds.
             Must be a positive value.
             Default is None
+        _start: array_like, float
+            After events are found, this will be a numpy array of the left slice bound for
+            all events.
+        _stop: array_like, float
+            After events are found, this will be a numpy array of the right slice bound for
+            all events.
 
     Examples
     --------
@@ -87,18 +93,14 @@ class Events(object):
     >>> np.random.seed(10)
     >>> x = np.random.random_integers(0, 1, 20)
     >>> y = np.random.random_integers(2, 4, 20)
-    >>> events = Events(((x>0) & (y<=3)), sample_period=1)
-    >>> events.starts
-    array([ 0,  8, 11, 15])
-    >>> events.stops
-    array([ 2, 10, 12, 16])
+    >>> events = Events(((x>0) & (y<=3)), sample_period=1).find()
     >>> events.durations
-    array([ 2.,  2.,  1.,  1.])
+    array([2, 2, 1, 1])
     >>> len(events)
     4
     >>> events.as_array()
-    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,
-            0.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.])
+    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,
+            0.,  0.,  1.,  0.,  0.,  0.,  0.])
     >>> events.as_series()
     0     1.0
     1     1.0
@@ -121,26 +123,36 @@ class Events(object):
     18    0.0
     19    0.0
     Name: events, dtype: float64
+
     >>> print(events)
     Number of events: 4
-    Min, Max, Mean Duration: 1.000s ,2.000s, 1.500s
-    sample rate: 1Hz,
-    activation_debounce: None deactivation_debounce: None,
+    Min, Max, Mean Duration: 1.000s, 2.000s, 1.500s
+    sample_period: 1s,
+    activation_debounce: None, deactivation_debounce: None,
     min_duration: None, max_duration: None,
     start_offset: None, stop_offset: None
 
+    >>> string = 'Event {} was {}s in duration'
     >>> for event in events:
-    >>>     string = 'Event {} slice is {}:{} and was {}s in duration'
-    >>>     print(string.format(event.index, event.start,
-    >>>           event.stop, event.duration)
-    Event 0 slice is 0:2 and was 2.0s in duration
-    Event 1 slice is 8:10 and was 2.0s in duration
-    Event 2 slice is 11:12 and was 1.0s in duration
-    Event 3 slice is 15:16 and was 1.0s in duration
-    >>> print(x[0:2])
-    [1 1]
-    >>> print(y[0:2])
-    [1 1
+    ...     print(string.format(event.i, event.iduration))
+    Event 0 was 2s in duration
+    Event 1 was 2s in duration
+    Event 2 was 1s in duration
+    Event 3 was 1s in duration
+
+    >>> string = ('During event {}, the first and last value'
+    ... ' of y is {} and {}. The slice of y is {}.')
+    >>> for event in events:
+    ...     print(string.format(event.i, y[event.istart],
+    ...     y[event.istop], y[event.islice]))
+    During event 0, the first and last value of y is 2 and 2. The slice of y is [2 2].
+    During event 1, the first and last value of y is 2 and 2. The slice of y is [2 2].
+    During event 2, the first and last value of y is 3 and 3. The slice of y is [3].
+    During event 3, the first and last value of y is 3 and 3. The slice of y is [3].
+
+    >>> events2 = Events(((x>0) & (y<=3)), sample_period=1).find()
+    >>> events2 == events
+    True
     """
     def __init__(self, condition, sample_period,
                  activation_debounce=None, deactivation_debounce=None,
@@ -160,7 +172,8 @@ class Events(object):
             self.condition = condition
 
         if not sample_period or sample_period <= 0:
-            raise ValueError('sample_period must be a positive value of the time in seconds between two samples')
+            raise ValueError('sample_period must be a positive value '
+                             'of the time in seconds between two samples')
         else:
             self.sample_period = sample_period  # Assumes univariate time series
 
@@ -222,22 +235,6 @@ class Events(object):
             return np.ceil(self.stop_offset / self.sample_period).astype('int32')
         except TypeError:
             return 0
-
-    '''
-    @property
-    def starts(self):
-        """Return a numpy.array() of start indexes."""
-        #if self._starts is None:
-        #    self.find()
-        return self._starts
-
-    @property
-    def stops(self):
-        """Return a numpy.array() of start indexes."""
-        #if self._stops is None:
-        #    self.find()
-        return self._stops
-    '''
 
     @lazyproperty
     def durations(self):
@@ -410,9 +407,9 @@ class Events(object):
             'stop_offset': '{}s'.format(self.stop_offset) if self.stop_offset else None
         }
         return ('Number of events: {0}'
-                '\nMin, Max, Mean Duration: {1:.3f}s ,{2:.3f}s, {3:.3f}s'
+                '\nMin, Max, Mean Duration: {1:.3f}s, {2:.3f}s, {3:.3f}s'
                 '\nsample_period: {sample_period}, '
-                '\nactivation_debounce: {activation_debounce} deactivation_debounce: {deactivation_debounce}, '
+                '\nactivation_debounce: {activation_debounce}, deactivation_debounce: {deactivation_debounce}, '
                 '\nmin_duration: {min_duration}, max_duration: {max_duration}, '
                 '\nstart_offset: {start_offset}, stop_offset: {stop_offset}').format(*args, **kwargs)
 
@@ -442,9 +439,9 @@ def main():
                     start_offset=-1).find()
 
     events2 = Events(mask > 0, sample_period=1,
-                   activation_debounce=1,
-                   min_duration=3,
-                   start_offset=-1).find()
+                     activation_debounce=1,
+                     min_duration=3,
+                     start_offset=-1).find()
 
     print(events)
     print(events == events2)
