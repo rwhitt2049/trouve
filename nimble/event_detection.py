@@ -352,7 +352,8 @@ class Events(object):
             from nimble.debounce import debounce
 
         self._starts, self._stops = debounce(self._starts, self._stops,
-                                             self._activation_debounce, self._deactivation_debounce)
+                                             self._activation_debounce,
+                                             self._deactivation_debounce)
 
     @skip_check('_min_duration', '_max_duration')
     def apply_event_length_filter(self):
@@ -395,29 +396,38 @@ class Events(object):
 
     def __repr__(self):
         # TODO - due to the size of condition, this should take an optional path and serialize as pickle, yaml, or json
-        return ('{__class__.__name__}(condition={condition!r}, sample_period={sample_period!r}, '
-                'activation_debounce={_activation_debounce!r}, deactivation_debounce={_deactivation_debounce!r}, '
-                'min_duration={_min_duration!r}, max_duration={_max_duration!r}, '
-                'start_offset={_start_offset!r}, stop_offset={_stop_offset!r}').format(__class__=self.__class__,
-                                                                                       **self.__dict__)
+        return ('{__class__.__name__}(condition={condition!r}, '
+                'sample_period={sample_period!r}, '
+                'activation_debounce={_activation_debounce!r}, '
+                'deactivation_debounce={_deactivation_debounce!r}, '
+                'min_duration={_min_duration!r}, '
+                'max_duration={_max_duration!r}, '
+                'start_offset={_start_offset!r}, '
+                'stop_offset={_stop_offset!r}').format(__class__=self.__class__,
+                                                       **self.__dict__)
 
     def __str__(self):
-        args = [len(self), np.min(self.durations), np.max(self.durations), np.mean(self.durations)]
+        args = [len(self), np.min(self.durations),
+                np.max(self.durations), np.mean(self.durations)]
         kwargs = {
             'sample_period': '{}s'.format(self.sample_period),
-            'activation_debounce': '{}s'.format(self.activation_debounce) if self.activation_debounce else None,
-            'deactivation_debounce': '{}s'.format(self.deactivation_debounce) if self.deactivation_debounce else None,
+            'activation_debounce': '{}s'.format(self.activation_debounce)
+                if self.activation_debounce else None,
+            'deactivation_debounce': '{}s'.format(self.deactivation_debounce)
+                if self.deactivation_debounce else None,
             'min_duration': '{}s'.format(self.min_duration) if self.min_duration else None,
             'max_duration': '{}s'.format(self.max_duration) if self.max_duration else None,
             'start_offset': '{}s'.format(self.start_offset) if self.start_offset else None,
             'stop_offset': '{}s'.format(self.stop_offset) if self.stop_offset else None
         }
-        return ('Number of events: {0}'
-                '\nMin, Max, Mean Duration: {1:.3f}s, {2:.3f}s, {3:.3f}s'
-                '\nsample_period: {sample_period}, '
-                '\nactivation_debounce: {activation_debounce}, deactivation_debounce: {deactivation_debounce}, '
-                '\nmin_duration: {min_duration}, max_duration: {max_duration}, '
-                '\nstart_offset: {start_offset}, stop_offset: {stop_offset}').format(*args, **kwargs)
+        return (
+            'Number of events: {0}'
+            '\nMin, Max, Mean Duration: {1:.3f}s, {2:.3f}s, {3:.3f}s'
+            '\nsample_period: {sample_period},'
+            '\nactivation_debounce: {activation_debounce}, deactivation_debounce: {deactivation_debounce},'
+            '\nmin_duration: {min_duration}, max_duration: {max_duration},'
+            '\nstart_offset: {start_offset}, stop_offset: {stop_offset}'
+        ).format(*args, **kwargs)
 
     def __eq__(self, other):
         """Determine if two Events objects are identical
@@ -425,8 +435,10 @@ class Events(object):
         Compares starts, stops, sample_period and condition.size to
         determine if two events are identical.
         """
-        if (np.all(self._starts == other._starts) and np.all(self._stops == other._stops)
-                and self.sample_period == other.sample_period and self.condition.size == other.condition.size):
+        if (np.all(self._starts == other._starts)
+                and np.all(self._stops == other._stops)
+                and self.sample_period == other.sample_period
+                and self.condition.size == other.condition.size):
             return True
         else:
             return False
