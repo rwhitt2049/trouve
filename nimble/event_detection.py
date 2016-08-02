@@ -84,10 +84,10 @@ class Events(object):
             This will offset every identified event's stop index forward
             this many seconds. Must be a positive value.
             Default is None
-        _start: array_like, float
+        _starts: array_like, float
             After events are found, this will be a numpy array of the
             left slice bound for all events.
-        _stop: array_like, float
+        _stops: array_like, float
             After events are found, this will be a numpy array of the
             right slice bound for all events.
 
