@@ -34,10 +34,11 @@ def skip_check(*dargs):
 class Events(object):
     """Search for events that satisfy the condition and apply filters.
 
-    Return an iterable :Events: object that takes a condition and applies predefined
-    filtering methods. This object can be used to describe the condition,
-    segment arrays or dataframes, or create :numpy.array: or :pandas.series:
-    representations of the condition and filters.
+    Return an iterable :Events: object that takes a condition and
+    applies predefined filtering methods. This object can be used to
+    describe the condition, segment arrays or dataframes, or create
+    numpy.array or pandas.series representations of the condition and
+    filters.
 
     Filtering methods are applied in the following order
     1. Events.apply_debounce_filter
@@ -47,44 +48,48 @@ class Events(object):
     Attributes
     ----------
         condition: array_like, shape (M, )
-            Conditional mask of booleans derived from either numpy arrays or pandas
-            series.
-        sample_period: float, seconds
-            The sample period of the conditional array in seconds. :Events.condition:
-            must be of a univariate sample_period.
+            Conditional mask of booleans derived from either numpy
+            arrays or pandas series.
+        sample_period: float, units=seconds
+            The sample period of the conditional array in seconds.
+            Events.condition must be of a univariate sample_period.
             Default is None
-        activation_debounce: float, seconds, optional
-            The time in seconds that the condition must be True in order to activate
-            event identification. This will prevent events lasting less than
-            activation_debounce from being identified as an event.
+        activation_debounce (optional): float, units=seconds
+            The time in seconds that the condition must be True in order
+            to activate event identification. This will prevent events
+            lasting less than activation_debounce from being identified
+            as an event.
             Default is None
-        deactivation_debounce: float, seconds, optional
-            The time in seconds that the condition must be False in order to deactivate
-            event identification. This will prevent events lasting less than
-            activation_debounce from deactivating an identified event.
+        deactivation_debounce (optional): float, units=seconds
+            The time in seconds that the condition must be False in
+            order to deactivate event identification. This will prevent
+            events lasting less than activation_debounce from
+            deactivating an identified event.
             Default is None
-        min_duration: float, seconds, optional
-            The minimum time in seconds that the condition must be True to be identified
-            as an event. Any event of a duration less than min_duration will be ignored.
+        min_duration (optional): float, units=seconds
+            The minimum time in seconds that the condition must be True
+            to be identified as an event. Any event of a duration less
+            than min_duration will be ignored.
             Default is None
-        max_duration: float, seconds, optional
-            The maximum time in seconds that the condition may be True to be identified
-            as an event. Any event of a duration greater than max_duration will be ignored.
+        max_duration (optional): float, units=seconds
+            The maximum time in seconds that the condition may be True
+            to be identified as an event. Any event of a duration
+            greater than max_duration will be ignored.
             Default is None
-        start_offset: float, seconds, optional
-            This will offset every identified event's start index back this many seconds.
-            Must be a negative value.
+        start_offset (optional): float, units=seconds
+            This will offset every identified event's start index back
+            this many seconds. Must be a negative value.
             Default is None
-        stop_offset: float, seconds, optional
-            This will offset every identified event's stop index forward this many seconds.
-            Must be a positive value.
+        stop_offset (optional): float, units=seconds
+            This will offset every identified event's stop index forward
+            this many seconds. Must be a positive value.
             Default is None
         _start: array_like, float
-            After events are found, this will be a numpy array of the left slice bound for
-            all events.
+            After events are found, this will be a numpy array of the
+            left slice bound for all events.
         _stop: array_like, float
-            After events are found, this will be a numpy array of the right slice bound for
-            all events.
+            After events are found, this will be a numpy array of the
+            right slice bound for all events.
 
     Examples
     --------
@@ -99,8 +104,8 @@ class Events(object):
     >>> len(events)
     4
     >>> events.as_array()
-    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,
-            0.,  0.,  1.,  0.,  0.,  0.,  0.])
+    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,
+            0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.])
     >>> events.as_series()
     0     1.0
     1     1.0
@@ -140,15 +145,15 @@ class Events(object):
     Event 2 was 1s in duration
     Event 3 was 1s in duration
 
-    >>> string = ('During event {}, the first and last value'
-    ... ' of y is {} and {}. The slice of y is {}.')
+    >>> string = ('Event {}, first y val is {}, last is {} and'
+    ... ' slice is {}')
     >>> for event in events:
     ...     print(string.format(event.i, y[event.istart],
     ...     y[event.istop], y[event.islice]))
-    During event 0, the first and last value of y is 2 and 2. The slice of y is [2 2].
-    During event 1, the first and last value of y is 2 and 2. The slice of y is [2 2].
-    During event 2, the first and last value of y is 3 and 3. The slice of y is [3].
-    During event 3, the first and last value of y is 3 and 3. The slice of y is [3].
+    Event 0, first y val is 2, last is 2 and slice is [2 2]
+    Event 1, first y val is 2, last is 2 and slice is [2 2]
+    Event 2, first y val is 3, last is 3 and slice is [3]
+    Event 3, first y val is 3, last is 3 and slice is [3]
 
     >>> events2 = Events(((x>0) & (y<=3)), sample_period=1).find()
     >>> events2 == events
@@ -190,7 +195,7 @@ class Events(object):
 
     @property
     def _activation_debounce(self):
-        """Return activation_debounce in number of points or zero if None"""
+        """Convert activation_debounce to number of points"""
         try:
             return np.ceil(self.activation_debounce / self.sample_period)
         except TypeError:
@@ -198,7 +203,7 @@ class Events(object):
 
     @property
     def _deactivation_debounce(self):
-        """Return deactivation_debounce in number of points or zero if None"""
+        """Convert deactivation_debounce to number of points"""
         try:
             return np.ceil(self.deactivation_debounce / self.sample_period)
         except TypeError:
@@ -206,7 +211,7 @@ class Events(object):
 
     @property
     def _min_duration(self):
-        """Return min_duration in number of points or zero if None"""
+        """Convert min_duration to number of points"""
         try:
             return np.ceil(self.min_duration / self.sample_period)
         except TypeError:
@@ -214,7 +219,7 @@ class Events(object):
 
     @property
     def _max_duration(self):
-        """Return max_duration in number of points or len(condtion) if None"""
+        """Convert max_duration to number of points"""
         try:
             return np.floor(self.max_duration / self.sample_period)
         except TypeError:
@@ -222,7 +227,7 @@ class Events(object):
 
     @property
     def _start_offset(self):
-        """Return start_offset in number of points or zero if None"""
+        """Convert start_offset to number of points"""
         try:
             return np.ceil(self.start_offset / self.sample_period).astype('int32')
         except TypeError:
@@ -230,7 +235,7 @@ class Events(object):
 
     @property
     def _stop_offset(self):
-        """Return stop_offset in number of points or zero if None"""
+        """Convert stop_offset to number of poitns"""
         try:
             return np.ceil(self.stop_offset / self.sample_period).astype('int32')
         except TypeError:
@@ -238,7 +243,7 @@ class Events(object):
 
     @lazyproperty
     def durations(self):
-        """Return a numpy.array() of event durations in seconds."""
+        """Return a numpy.array of event durations in seconds."""
         return (self._stops - self._starts)*self.sample_period
 
     def as_array(self, false_values=0, true_values=1, dtype='float'):
@@ -299,7 +304,8 @@ class Events(object):
     def find(self):
         """Convenience function that applies all filters in order
 
-        This method can be overridden by inherited from Events to apply a user specified order
+        This method can be overridden when inherited from Events to
+        apply a user specified order
 
         Order
         -----
@@ -416,8 +422,8 @@ class Events(object):
     def __eq__(self, other):
         """Determine if two Events objects are identical
 
-        Compares starts, stops, sample_period and condition.size to determin
-        if two events are identical.
+        Compares starts, stops, sample_period and condition.size to
+        determine if two events are identical.
         """
         if (np.all(self._starts == other._starts) and np.all(self._stops == other._stops)
                 and self.sample_period == other.sample_period and self.condition.size == other.condition.size):
@@ -426,7 +432,11 @@ class Events(object):
             return False
 
     def __hash__(self):
-        """Numpy arrays aren't hashable. Researching solution that doesn't require something beyond standard lib."""
+        """Numpy arrays aren't hashable.
+
+        Researching solution that doesn't require something beyond
+        standard lib.
+        """
         return id(self)
 
 
