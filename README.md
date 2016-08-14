@@ -1,207 +1,140 @@
 
 # Nimble Quickstart
 
-Nimble is package to find and filter out events that meet user specified, multivariate criteria. Once the events are found, it can then return a mask, a Numpy array representation, or a Pandas series representation.
+Nimble is built to find and filter events that meet user specified, multivariate criteria. Once the events are found, it can then return a mask, a Numpy array representation, or a Pandas series representation of the found events that coincides with their location in an array of identical shape to the condition.
+
+Nimble has optional C extensions to return arrays, masks, series and to apply a debounce to events (`Events.as_array()`, `Events.as_series()` and `Events.apply_debounce_filter()`. While there are Python back up functionality to all C implevmentations, it is strongly recomended that you install a C compiler to take advantage of these optimazations, especially if you plan to work with large arrays (500k points and larger) or make use of the `apply_debounce_filter` method. More information on installing a C compiler for Windows can be found here: [https://matthew-brett.github.io/pydagogue/python_msvc.html](https://matthew-brett.github.io/pydagogue/python_msvc.html)
 
 
 ```python
 import numpy as np
 from nimble import Events
-import matplotlib.pyplot as plt
-%matplotlib inline
 ```
 
 ## Getting Started
 
 First, create some fake time series data with a sample period of 1 second.
 
-
 ```python
 np.random.seed(2)
 x = np.random.randint(0, 2, 25)
 y = np.random.randint(2, 5, 25)
 sample_period = 1
-index = list(range(0, 25))
 ```
 
-
-```python
-def plot():
-    # Convenience function to plot events vs condition
-    plt.plot(index, x, label='condition')
-    plt.plot(events.as_array(), label='events', linestyle='--', color='r')
-    plt.yticks([-1,0,1,2])
-    plt.xlabel('Time(s)')
-    plt.ylabel('Value')
-    plt.legend()
-    plt.xticks(index)
-    plt.grid()
-    plt.show()
-```
-
-
-```python
-plt.plot(index, x)
-plt.yticks([-1,0,1,2])
-plt.xlabel('Time(s)')
-plt.ylabel('Value')
-plt.xticks(index)
-plt.grid()
-plt.show()
-```
-
-
-![png](output_5_0.png)
-
+![output_5_0](https://cloud.githubusercontent.com/assets/4194594/17647051/7c21772c-61a7-11e6-99fc-f4e9c0bbe646.png)
 
 ## Basic Usage
 
-First, find the events where x>0. In this case, the events and the condition will be identical arrays.
-
+Now find the events where x>0. In this case, the events and the condition will be identical arrays.
 
 ```python
 events = Events(x>0, sample_period=1).find()
 ```
 
+One can also convert the found events to a time series array using the `Events.as_array()` method. This is helpful in visualizing your identified events for inspection and troubleshooting.
 
-```python
-plot()
-```
-
-
-![png](output_8_0.png)
-
+![output_9_0](https://cloud.githubusercontent.com/assets/4194594/17647052/7e2b7202-61a7-11e6-967f-d94d810d762a.png)
 
 ## Debouncing
 
-Debouncing prevents fast cycling from activating or deactivating events. More information on debouncing can be found [here](https://en.wikipedia.org/wiki/Switch#Contact_bounce)
-
-> The effect is usually unimportant in power circuits, but causes problems in some analogue and logic circuits that respond fast enough to misinterpret the on‑off pulses as a data stream. (Wikipedia)
+Debouncing prevents fast cycling from activating or deactivating events. More information on debouncing can be found in this [Wikipedia](https://en.wikipedia.org/wiki/Switch#Contact_bounce) article
 
 Debounce parameters are specified in the number of consecutive seconds required for the condition to be true or false in order to activate or deactivate an event. Both parameters are inclusive. So if `activation_debounce=4`, then the condition must be true for greater than or equal to 4 seconds to activate an event. If `deactivation_debounce=2`, then the condition will need to be `False` for greater than or equal to 2 seconds in order for an activated event to deactivate.
 
-
 ```python
-events = Events(x>0, sample_period=1, activation_debounce=1, deactivation_debounce=2).find()
+events = Events(x>0, sample_period=1, 
+                activation_debounce=1, deactivation_debounce=2).find()
 ```
 
-
-```python
-plot()
-```
-
-
-![png](output_11_0.png)
-
+![output_12_0](https://cloud.githubusercontent.com/assets/4194594/17647053/8034d53e-61a7-11e6-972b-88bee3d45a91.png)
 
 ## Event Duration Filtering
 
 Event's can be filtered out by both their minimum and maximum durations. Again, these parameters are inclusive. So if `min_duration=3`, then any event greater than or equal to 3 seconds will not be excluded. If `max_duration=5`, then any event less than or equal to 5 seconds in duration will not be excluded
 
-
 ```python
-events = Events(x>0, sample_period=1, min_duration=3, max_duration=5).find()
+events = Events(x>0, sample_period=1, 
+                min_duration=3, max_duration=5).find()
 ```
 
-
-```python
-plot()
-```
-
-
-![png](output_14_0.png)
-
+![output_15_0](https://cloud.githubusercontent.com/assets/4194594/17647054/84be02d8-61a7-11e6-857e-e6f35b60b79d.png)
 
 ## Offsetting Event Start and Stop Values
 
+The start and stop locations of any identified events can be directly manipulated by the user. This can be helpful to determine what may or may not be happening in the time leading up to an event or following an event. These parameters are specified in seconds. 
 
-
-
-```python
-events = Events(x>0, sample_period=1, deactivation_debounce=2, min_duration=3, start_offset=-1, stop_offset=1).find()
-```
-
+> **Note**: start_offset must be a negative number, and stop_offset must be a positive number.
 
 ```python
-plot()
+events = Events(x>0, sample_period=1, deactivation_debounce=2, 
+                min_duration=3, start_offset=-1, stop_offset=1).find()
 ```
 
-
-![png](output_17_0.png)
-
+![output_18_0](https://cloud.githubusercontent.com/assets/4194594/17647055/872dad0c-61a7-11e6-8a6c-5bf55bc566e1.png)
 
 ## A Note on Execution Order and the `find()` Method
 
+The `Events.find()` method is a convenience method that applies filters in the following order:
 
-```python
-plt.subplot(3,1,1)
-plt.plot(index, x, label='x')
-plt.ylabel('x')
-plt.yticks([-1,0,1,2])
-plt.xticks(index)
-plt.grid()
+1. `apply_condition_filter()` 
+2. `apply_debounce_filter()`
+3. `apply_event_length_filter()`
+4. `apply_offsets()`
 
-plt.subplot(3,1,2)
-plt.plot(index, y, label='y')
-plt.ylabel('y')
-plt.yticks(list(range(6)))
-plt.xticks(index)
-plt.grid()
+It returns self, which allows it to be called inline with the class instantiation, or at a later time if desired.
 
-plt.subplot(3,1,3)
-plt.plot(events.as_array(), label='trigger', linestyle='--', color='r')
-plt.yticks([-1,0,1,2])
-plt.xlabel('Time(s)')
-plt.ylabel('trigger')
-plt.xticks(index)
-plt.grid()
+> **Note**: The decorator function `skip_check()` prevents unnecessary applications of the above filters if there are no events or their respective parameters aren't specified by the user.
 
-plt.show()
-    
-
-```
-
-
-![png](output_19_0.png)
-
+To apply a custom order one can apply the filters above in their desired order, or you could inherit from `Events` and override the `find()` method.
 
 ## Iterating Over Events
 
+The `Events` class is also an iterable, allowing the user to easily inspect each identified event.
 
+When iterating, the following attributes become available:
 
+1. `i` - Counter to determine what event you're analyzing (zero start)
+2. `istart` - Returns the index number at the start of the event
+3. `istop` - Returns the index number at the end of the event
+4. `iduration` - Returns the duration in seconds of the event
+5. `islice` - Returns the slice for the event (useful for slicing over arrays)
+
+![output_20_0](https://cloud.githubusercontent.com/assets/4194594/17647056/89654c56-61a7-11e6-9c64-da99473b68a9.png)
 
 ```python
-string='For event {}, y at the start is {} and top is {}'
+string=('For event {}, y[istart] and y[istop] is {} & {}, \n'
+        'and the average of y during the event is {:.2f} \n')
 for event in events:
-    print('{} is the average of y during event {}'.format(np.mean(x[event.islice]), event.i))
-    
-    print(string.format(event.i, y[event.istart], y[event.istop]))
+    print(string.format(event.i, y[event.istart], y[event.istop], 
+                        np.mean(x[event.islice]), event.i))
 ```
 
-    0.6666666666666666 is the average of y during event 0
-    For event 0, y at the start is 4 and top is 2
-    0.75 is the average of y during event 1
-    For event 1, y at the start is 4 and top is 2
+    For event 0, y[istart] and y[istop] is 4 & 2, 
+    and the average of y during the event is 0.67 
+    
+    For event 1, y[istart] and y[istop] is 4 & 2, 
+    and the average of y during the event is 0.75 
+    
     
 
 ## Special Methods of `Events`
+
+### The `__len__()` special method
 
 The function `len(events)` tells you how many events were found
 
 
 ```python
-len(events)
+print('There were {} events identified'.format(len(events)))
 ```
 
+    There were 2 events identified
+    
 
-
-
-    2
-
-
+### The `__str__()` special method
 
 You can get a quick summary of all of the events by doing `print()`
-
 
 ```python
 print(events)
@@ -214,43 +147,37 @@ print(events)
     min_duration: 3s, max_duration: None,
     start_offset: -1s, stop_offset: 1s
     
+### The `__eq__()` special method
+
+Two `Events` objects can be directly compared. To be a match, the `_starts`, `stops`, `sample_period` and `condition.size` must be identical.
+
+```python
+events == events
+```
+
+    True
 
 ## Multivariate Conditions
 
-
-
-
-```python
-events = Events((x>0) & (y>3), sample_period=1, deactivation_debounce=2, min_duration=3, start_offset=-1, stop_offset=1).find()
-```
-
+You're not limited to one condition. To create multivariate events, just enclose each condition in `()` and make use of `&` (and) and the `|` (or) operators.
 
 ```python
-plt.subplot(3,1,1)
-plt.plot(index, x, label='x')
-plt.ylabel('x')
-plt.yticks([-1,0,1,2])
-plt.xticks(index)
-plt.grid()
-
-plt.subplot(3,1,2)
-plt.plot(index, y, label='y')
-plt.ylabel('y')
-plt.yticks(list(range(6)))
-plt.xticks(index)
-plt.grid()
-
-plt.subplot(3,1,3)
-plt.plot(events.as_array(), label='trigger', linestyle='--', color='r')
-plt.yticks([-1,0,1,2])
-plt.xlabel('Time(s)')
-plt.ylabel('trigger')
-plt.xticks(index)
-plt.grid()
-
-plt.show()
+events = Events((x>0) & (y>3), sample_period=1, 
+                deactivation_debounce=2, min_duration=3, 
+                start_offset=-1, stop_offset=1).find()
 ```
 
+![output_31_0](https://cloud.githubusercontent.com/assets/4194594/17647058/8bbc9ff4-61a7-11e6-8c8e-d953fdb5669f.png)
 
-![png](output_28_0.png)
+## Quickstart
 
+A quickstart jupyter notebook has been provided in the install directory.
+
+```python
+import inspect
+import nimble
+path_to_init = inspect.getfile(nimble)
+install_dir = os.path.dirname('z:\\nimble\\nimble\\__init__.py')
+path_to_qs = os.path.join(install_dir, 'Nimble_Quickstart.pynb')
+print(path_to_qs)
+```
