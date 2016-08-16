@@ -3,7 +3,7 @@
 
 Nimble is built to find and filter events that meet user specified, multivariate criteria. Once the events are found, it can then return a mask, a Numpy array representation, or a Pandas series representation of the found events that coincides with their location in an array of identical shape to the condition.
 
-Nimble has optional C extensions to return arrays, masks, series and to apply a debounce to events (`Events.as_array()`, `Events.as_series()` and `Events.apply_debounce_filter()`. While there are Python back up functionality to all C implevmentations, it is strongly recomended that you install a C compiler to take advantage of these optimazations, especially if you plan to work with large arrays (500k points and larger) or make use of the `apply_debounce_filter` method. More information on installing a C compiler for Windows can be found here: [https://matthew-brett.github.io/pydagogue/python_msvc.html](https://matthew-brett.github.io/pydagogue/python_msvc.html)
+Nimble has optional C extensions to return arrays, masks, series and to apply a debounce to events (`Events.as_array()`, `Events.as_series()` and `Events.apply_debounce_filter()`. While there are Python back up functionality to all C implementations, it is strongly recommended that you install a C compiler to take advantage of these optimizations, especially if you plan to work with large arrays (500k points and larger) or make use of the `apply_debounce_filter` method. More information on installing a C compiler for Windows can be found here: [https://matthew-brett.github.io/pydagogue/python_msvc.html](https://matthew-brett.github.io/pydagogue/python_msvc.html)
 
 
 ```python
@@ -149,7 +149,7 @@ print(events)
     
 ### The `__eq__()` special method
 
-Two `Events` objects can be directly compared. To be a match, the `_starts`, `stops`, `sample_period` and `condition.size` must be identical.
+Two `Events` objects can be directly compared. To be a match, the `_starts`, `_stops`, `sample_period` and `condition.size` must be identical.
 
 ```python
 events == events
@@ -177,7 +177,7 @@ A quickstart jupyter notebook has been provided in the install directory.
 import inspect
 import nimble
 path_to_init = inspect.getfile(nimble)
-install_dir = os.path.dirname('z:\\nimble\\nimble\\__init__.py')
+install_dir = os.path.dirname(path_to_init)
 path_to_qs = os.path.join(install_dir, 'Nimble_Quickstart.pynb')
 print(path_to_qs)
 ```
