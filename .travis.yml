@@ -1,16 +1,20 @@
-language: c
-env:
-    - PYTHON=python PYSUF='' PYVER=2.7
-    - PYTHON=python3 PYSUF='3' PYVER=3.5
+language: python
+notifications:
+  email: false
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
 install:
-    - sudo apt-get update
-    - sudo apt-get install $PYTHON-dev
-    - sudo apt-get install $PYTHON-setuptools
-    - sudo easy_install$PYSUF pip
-    - sudo pip-$PYVER install cython
-    - sudo pip-$PYVER install numpy
-    - sudo pip-$PYVER install pandas
-    - sudo $PYTHON setup.py develop
+  # Install conda
+  - sudo pip install conda
+  # install deps
+  - sudo conda init
+  - deps='pip numpy pandas nose'
+  - conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION"
+  - export PATH=$HOME/py/bin:$PATH
+  # install your own package into the environment
+  - python setup.py install
 script:
-    - "cd nimble"
-    - "nosetests"
+- "nosetests -w tests/ -v"

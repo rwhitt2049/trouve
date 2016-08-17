@@ -38,56 +38,36 @@ extras = {
     'Cython': ['Cython']
 }
 
+kwargs = dict(
+    name='nimble',
+    version=__version__,
+    description=long_description()[0],
+    long_description=long_description(),
+    author='Ry Whittington',
+    author_email='rwhitt2049@gmail.om',
+    license='MIT',
+    url='https://github.com/rwhitt2049/nimble',
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Cython',
+    ],
+    keywords='time_series, timeseries, iot, sensor',
+    packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
+    install_requires=install_requires(),
+    package_data={},
+    data_files=[],
+    entry_points={},
+    test_suite='tests',
+    tests_require=dev_requires()
+)
+
 try:
-    setup(
-        name='nimble',
-        ext_modules=extensions,
-        include_dirs=[numpy.get_include()],
-        extras_require=extras,
-        version=__version__,
-        description=long_description()[0],
-        long_description=long_description(),
-        author='Ry Whittington',
-        author_email='rwhitt2049@gmail.om',
-        license='MIT',
-        classifiers=[
-            'Development Status :: 3 - Alpha',
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: MIT License',
-            'Programming Language :: Python :: 3.5',
-            'Programming Language :: Cython',
-        ],
-        keywords='time_series, timeseries, iot, sensor',
-        packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
-        install_requires=install_requires(),
-        package_data={},
-        data_files=[],
-        entry_points={},
-        test_suite='tests',
-        tests_require=dev_requires()
-    )
+    setup(ext_modules=extensions,
+          include_dirs=[numpy.get_include()],
+          extras_require=extras,
+          **kwargs)
 except SystemExit:
-    setup(
-        name='nimble',
-        version=__version__,
-        description=long_description()[0],
-        long_description=long_description(),
-        author='Ry Whittington',
-        author_email='rwhitt2049@gmail.om',
-        license='MIT',
-        classifiers=[
-            'Development Status :: 3 - Alpha',
-            'Intended Audience :: Developers',
-            'License :: OSI Approved :: MIT License',
-            'Programming Language :: Python :: 3.5',
-            'Programming Language :: Cython',
-        ],
-        keywords='time_series, timeseries, iot, sensor',
-        packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
-        install_requires=install_requires(),
-        package_data={},
-        data_files=[],
-        entry_points={},
-        test_suite='tests',
-        tests_require=dev_requires()
-    )
+    setup(**kwargs)
