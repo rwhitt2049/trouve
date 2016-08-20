@@ -267,13 +267,16 @@ class Events(object):
             identified.
 
         """
+        output = np.ones(self.condition.size, dtype=np.float) * false_values
         try:
             from nimble.cyfunc.as_array import as_array
+            starts = np.array(self._starts, dtype=np.float)
+            stops = np.array(self._stops, dtype=np.float)
         except ImportError:
             from nimble.as_array import as_array
+            starts, stops = self._starts, self._stops
 
-        output = np.ones(self.condition.size) * false_values
-        output = as_array(self._starts, self._stops, output, true_values)
+        output = as_array(starts, stops, output, true_values)
         return output.astype(dtype)
 
     def as_series(self, false_values=0, true_values=1, name='events'):
@@ -460,6 +463,8 @@ def main():
                     min_duration=3,
                     start_offset=-1).find()
 
+    x = events.as_array(false_values=2.33, true_values=5.35)
+    print(x[:20])
     events2 = Events(mask > 0, sample_period=1,
                      activation_debounce=1,
                      min_duration=3,
