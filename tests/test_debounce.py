@@ -59,7 +59,8 @@ class TestCyDebounceFunction(TestCase):
     def test_exit_debounce(self):
         starts_validation = np.array([2, 6])
         stops_validation = np.array([4, 11])
-        starts, stops = cy.debounce(np.array([2, 6, 10]), np.array([4, 9, 11]),
+        starts, stops = cy.debounce(np.array([2, 6, 10], dtype=np.int32),
+                                    np.array([4, 9, 11], dtype=np.int32),
                                     np.double(0), np.double(2))
 
         npt.assert_array_equal(starts_validation, starts)
