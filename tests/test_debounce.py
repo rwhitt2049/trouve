@@ -51,7 +51,7 @@ class TestCyDebounceFunction(TestCase):
         starts_validation = np.array([2, 6])
         stops_validation = np.array([4, 9])
         starts, stops = cy.debounce(np.array([2, 6, 10]), np.array([4, 9, 11]),
-                                    2,  0)
+                                    np.double(2), np.double(0))
 
         npt.assert_array_equal(starts_validation, starts)
         npt.assert_array_equal(stops_validation, stops)
@@ -60,7 +60,7 @@ class TestCyDebounceFunction(TestCase):
         starts_validation = np.array([2, 6])
         stops_validation = np.array([4, 11])
         starts, stops = cy.debounce(np.array([2, 6, 10]), np.array([4, 9, 11]),
-                                    0, 2)
+                                    np.double(0), np.double(2))
 
         npt.assert_array_equal(starts_validation, starts)
         npt.assert_array_equal(stops_validation, stops)
@@ -69,7 +69,7 @@ class TestCyDebounceFunction(TestCase):
         starts_validation = np.array([2, 6])
         stops_validation = np.array([4, 11])
         starts, stops = cy.debounce(np.array([2, 6, 10]), np.array([4, 9, 11]),
-                                    2, 2)
+                                    np.double(2), np.double(2))
 
         npt.assert_array_equal(starts_validation, starts)
         npt.assert_array_equal(stops_validation, stops)
@@ -78,7 +78,7 @@ class TestCyDebounceFunction(TestCase):
         starts_validation = np.array([6])
         stops_validation = np.array([9])
         starts, stops = py.debounce(np.array([2, 6, 10]), np.array([4, 9, 11]),
-                                    2.000001, 0.999999)
+                                    np.double(2.000001), np.double(0.999999))
 
         npt.assert_array_equal(starts_validation, starts)
         npt.assert_array_equal(stops_validation, stops)
