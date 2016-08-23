@@ -36,8 +36,8 @@ class TestCyAsArrayFunction(TestCase):
 
     def test_c_as_array(self):
         """Test as_array() with default settings"""
-        test_array = cy.as_array(np.array(self.starts, dtype=np.float),
-                                 np.array(self.stops, dtype=np.float),
+        test_array = cy.as_array(np.array(self.starts, dtype=np.int32),
+                                 np.array(self.stops, dtype=np.int32),
                                  self.mask, true_values=1)
         npt.assert_array_equal(self.validation_array, test_array)
 
@@ -53,8 +53,8 @@ class TestCyvPy(TestCase):
 
     def test_large_array_compare(self):
         py_arr = py.as_array(self.starts, self.stops, self.mask)
-        cy_arr = cy.as_array(np.array(self.starts, dtype=np.float),
-                             np.array(self.stops, dtype=np.float),
+        cy_arr = cy.as_array(np.array(self.starts, dtype=np.int32),
+                             np.array(self.stops, dtype=np.int32),
                              self.mask, true_values=1)
 
         npt.assert_array_equal(py_arr, cy_arr)

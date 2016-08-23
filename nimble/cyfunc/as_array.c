@@ -954,6 +954,8 @@ static Py_ssize_t __Pyx_minusones[] = {-1, -1, -1, -1, -1, -1, -1, -1};
 
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_Py_intptr_t(Py_intptr_t value);
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_npy_int32(npy_int32 value);
+
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
     #define __Pyx_CREAL(z) ((z).real())
@@ -1111,6 +1113,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, cha
 /* Module declarations from 'cython' */
 
 /* Module declarations from 'as_array' */
+static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_int32_t = { "int32_t", NULL, sizeof(__pyx_t_5numpy_int32_t), { 0 }, 0, IS_UNSIGNED(__pyx_t_5numpy_int32_t) ? 'U' : 'I', IS_UNSIGNED(__pyx_t_5numpy_int32_t), 0 };
 static __Pyx_TypeInfo __Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t = { "float64_t", NULL, sizeof(__pyx_t_5numpy_float64_t), { 0 }, 0, 'R', 0, 0 };
 #define __Pyx_MODULE_NAME "as_array"
 int __pyx_module_is_main_as_array = 0;
@@ -1197,7 +1200,7 @@ static PyObject *__pyx_codeobj__8;
 /* "as_array.pyx":8
  * @cython.wraparound(False)
  * @cython.nonecheck(False)
- * def as_array(np.ndarray[np.float64_t, ndim=1] starts, np.ndarray[np.float64_t, ndim=1] stops,             # <<<<<<<<<<<<<<
+ * def as_array(np.ndarray[np.int32_t, ndim=1] starts, np.ndarray[np.int32_t, ndim=1] stops,             # <<<<<<<<<<<<<<
  *              np.ndarray[np.float64_t, ndim=1] mask_array, double true_values):
  * 
  */
@@ -1324,12 +1327,12 @@ static PyObject *__pyx_pf_8as_array_as_array(CYTHON_UNUSED PyObject *__pyx_self,
   __pyx_pybuffernd_mask_array.rcbuffer = &__pyx_pybuffer_mask_array;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_starts.rcbuffer->pybuffer, (PyObject*)__pyx_v_starts, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_starts.rcbuffer->pybuffer, (PyObject*)__pyx_v_starts, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int32_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_pybuffernd_starts.diminfo[0].strides = __pyx_pybuffernd_starts.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_starts.diminfo[0].shape = __pyx_pybuffernd_starts.rcbuffer->pybuffer.shape[0];
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_stops.rcbuffer->pybuffer, (PyObject*)__pyx_v_stops, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float64_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_stops.rcbuffer->pybuffer, (PyObject*)__pyx_v_stops, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int32_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   }
   __pyx_pybuffernd_stops.diminfo[0].strides = __pyx_pybuffernd_stops.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_stops.diminfo[0].shape = __pyx_pybuffernd_stops.rcbuffer->pybuffer.shape[0];
   {
@@ -1357,7 +1360,7 @@ static PyObject *__pyx_pf_8as_array_as_array(CYTHON_UNUSED PyObject *__pyx_self,
  *         mask_array[start:stop] = true_values
  */
     __pyx_t_3 = __pyx_v_index;
-    __pyx_t_4 = PyFloat_FromDouble((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_starts.rcbuffer->pybuffer.buf, __pyx_t_3, __pyx_pybuffernd_starts.diminfo[0].strides))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_From_npy_int32((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_starts.rcbuffer->pybuffer.buf, __pyx_t_3, __pyx_pybuffernd_starts.diminfo[0].strides))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_XDECREF_SET(__pyx_v_start, __pyx_t_4);
     __pyx_t_4 = 0;
@@ -1370,7 +1373,7 @@ static PyObject *__pyx_pf_8as_array_as_array(CYTHON_UNUSED PyObject *__pyx_self,
  *     return mask_array
  */
     __pyx_t_5 = __pyx_v_index;
-    __pyx_t_4 = PyFloat_FromDouble((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_float64_t *, __pyx_pybuffernd_stops.rcbuffer->pybuffer.buf, __pyx_t_5, __pyx_pybuffernd_stops.diminfo[0].strides))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = __Pyx_PyInt_From_npy_int32((*__Pyx_BufPtrStrided1d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_stops.rcbuffer->pybuffer.buf, __pyx_t_5, __pyx_pybuffernd_stops.diminfo[0].strides))); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_XDECREF_SET(__pyx_v_stop, __pyx_t_4);
     __pyx_t_4 = 0;
@@ -1400,7 +1403,7 @@ static PyObject *__pyx_pf_8as_array_as_array(CYTHON_UNUSED PyObject *__pyx_self,
   /* "as_array.pyx":8
  * @cython.wraparound(False)
  * @cython.nonecheck(False)
- * def as_array(np.ndarray[np.float64_t, ndim=1] starts, np.ndarray[np.float64_t, ndim=1] stops,             # <<<<<<<<<<<<<<
+ * def as_array(np.ndarray[np.int32_t, ndim=1] starts, np.ndarray[np.int32_t, ndim=1] stops,             # <<<<<<<<<<<<<<
  *              np.ndarray[np.float64_t, ndim=1] mask_array, double true_values):
  * 
  */
@@ -3702,7 +3705,7 @@ static int __Pyx_InitCachedConstants(void) {
   /* "as_array.pyx":8
  * @cython.wraparound(False)
  * @cython.nonecheck(False)
- * def as_array(np.ndarray[np.float64_t, ndim=1] starts, np.ndarray[np.float64_t, ndim=1] stops,             # <<<<<<<<<<<<<<
+ * def as_array(np.ndarray[np.int32_t, ndim=1] starts, np.ndarray[np.int32_t, ndim=1] stops,             # <<<<<<<<<<<<<<
  *              np.ndarray[np.float64_t, ndim=1] mask_array, double true_values):
  * 
  */
@@ -3843,7 +3846,7 @@ PyMODINIT_FUNC PyInit_as_array(void)
   /* "as_array.pyx":8
  * @cython.wraparound(False)
  * @cython.nonecheck(False)
- * def as_array(np.ndarray[np.float64_t, ndim=1] starts, np.ndarray[np.float64_t, ndim=1] stops,             # <<<<<<<<<<<<<<
+ * def as_array(np.ndarray[np.int32_t, ndim=1] starts, np.ndarray[np.int32_t, ndim=1] stops,             # <<<<<<<<<<<<<<
  *              np.ndarray[np.float64_t, ndim=1] mask_array, double true_values):
  * 
  */
@@ -5246,6 +5249,32 @@ static void __Pyx_ReleaseBuffer(Py_buffer *view) {
         int one = 1; int little = (int)*(unsigned char *)&one;
         unsigned char *bytes = (unsigned char *)&value;
         return _PyLong_FromByteArray(bytes, sizeof(Py_intptr_t),
+                                     little, !is_unsigned);
+    }
+}
+
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_npy_int32(npy_int32 value) {
+    const npy_int32 neg_one = (npy_int32) -1, const_zero = (npy_int32) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(npy_int32) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(npy_int32) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(npy_int32) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+        }
+    } else {
+        if (sizeof(npy_int32) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(npy_int32) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(npy_int32),
                                      little, !is_unsigned);
     }
 }

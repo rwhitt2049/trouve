@@ -104,8 +104,8 @@ class Events(object):
     >>> len(events)
     4
     >>> events.as_array()
-    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,
-            0.,  0.,  0.,  1.,  0.,  0.,  0.,  0.])
+    array([ 1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,
+            0.,  0.,  1.,  0.,  0.,  0.,  0.])
     >>> events.as_series()
     0     1.0
     1     1.0
@@ -270,13 +270,10 @@ class Events(object):
         output = np.ones(self.condition.size, dtype=np.float) * false_values
         try:
             from nimble.cyfunc.as_array import as_array
-            starts = np.array(self._starts, dtype=np.float)
-            stops = np.array(self._stops, dtype=np.float)
         except ImportError:
             from nimble.as_array import as_array
-            starts, stops = self._starts, self._stops
 
-        output = as_array(starts, stops, output, true_values)
+        output = as_array(self._starts, self._stops, output, true_values)
         return output.astype(dtype)
 
     def as_series(self, false_values=0, true_values=1, name='events'):
@@ -355,8 +352,8 @@ class Events(object):
             from nimble.debounce import debounce
 
         self._starts, self._stops = debounce(self._starts, self._stops,
-                                             self._activation_debounce,
-                                             self._deactivation_debounce)
+                                             np.double(self._activation_debounce),
+                                             np.double(self._deactivation_debounce))
 
     @skip_check('_min_duration', '_max_duration')
     def apply_event_length_filter(self):
@@ -465,6 +462,7 @@ def main():
 
     x = events.as_array(false_values=2.33, true_values=5.35)
     print(x[:20])
+    print(mask[:20])
     events2 = Events(mask > 0, sample_period=1,
                      activation_debounce=1,
                      min_duration=3,

@@ -5,7 +5,7 @@ import cython
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def as_array(np.ndarray[np.float64_t, ndim=1] starts, np.ndarray[np.float64_t, ndim=1] stops,
+def as_array(np.ndarray[np.int32_t, ndim=1] starts, np.ndarray[np.int32_t, ndim=1] stops,
              np.ndarray[np.float64_t, ndim=1] mask_array, double true_values):
 
     cdef Py_ssize_t index
