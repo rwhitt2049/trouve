@@ -5,12 +5,12 @@ import cython
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def debounce(np.ndarray[long, ndim=1] starts,
-             np.ndarray[long, ndim=1] stops,
-             long entrydb, long exitdb):
+def debounce(np.ndarray[np.int32_t, ndim=1] starts,
+             np.ndarray[np.int32_t, ndim=1] stops,
+             double entrydb, double exitdb):
 
         cdef Py_ssize_t index
-        cdef long event_length, reset_length, next_index
+        cdef double event_length, reset_length, next_index
         cdef np.ndarray[np.int_t] start_mask = np.zeros(starts.shape[0], dtype=np.int)
         cdef np.ndarray[np.int_t] stop_mask = np.zeros(stops.shape[0], dtype=np.int)
         event_active = False
