@@ -297,7 +297,11 @@ class Events(object):
             Series of specified values that identify where events were
             identified.
         """
-        index = pd.RangeIndex(self.condition.size, step=self.sample_period)
+        try:
+            index = pd.RangeIndex(self.condition.size, step=self.sample_period)
+        except AttributeError:
+            index = np.arange(self.condition.size, step=self.sample_period)
+
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, index=index, name=name)
 
