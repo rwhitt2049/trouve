@@ -50,9 +50,15 @@ kwargs = dict(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Cython',
+        'Topic :: Scientific/Engineering'
     ],
     keywords='time_series, timeseries, iot, sensor',
     packages=find_packages(exclude=['contrib', 'documentation', 'tests*']),
