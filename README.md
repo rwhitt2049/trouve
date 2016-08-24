@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/rwhitt2049/nimble.svg?branch=development)](https://travis-ci.org/rwhitt2049/nimble)
 
 # Nimble Quickstart
 
