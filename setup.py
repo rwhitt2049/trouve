@@ -44,11 +44,11 @@ kwargs = dict(
     description=long_description()[0],
     long_description=long_description(),
     author='Ry Whittington',
-    author_email='rwhitt2049@gmail.om',
+    author_email='rwhitt2049@gmail.com',
     license='MIT',
     url='https://github.com/rwhitt2049/nimble',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',
