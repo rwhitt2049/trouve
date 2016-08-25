@@ -35,7 +35,7 @@ events = Events(x>0, sample_period=1).find()
 
 One can also convert the found events to a time series array using the `Events.as_array()` method. This is helpful in visualizing your identified events for inspection and troubleshooting.
 
-![output_9_0](https://cloud.githubusercontent.com/assets/4194594/17647052/7e2b7202-61a7-11e6-967f-d94d810d762a.png)
+![output_9_0](https://cloud.githubusercontent.com/assets/4194594/17954308/b27f2e36-6a3f-11e6-940b-9d988dab1548.png)
 
 ## Debouncing
 
