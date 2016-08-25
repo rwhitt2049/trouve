@@ -41,46 +41,46 @@ class Events(object):
     filters.
 
     Filtering methods are applied in the following order
-    1. Events.apply_debounce_filter
-    2. Events.apply_event_length_filter
-    3. Events.apply_offsets
+    1. Events.debounce
+    2. Events.filter_durations
+    3. Events.offset
 
     Attributes
     ----------
         condition: array_like, shape (M, )
             Conditional mask of booleans derived from either numpy
             arrays or pandas series.
-        sample_period: float, units=seconds
+        period: float, units=seconds
             The sample period of the conditional array in seconds.
             Events.condition must be of a univariate sample_period.
             Default is None
-        activation_debounce (optional): float, units=seconds
+        adeb (optional): float, units=seconds
             The time in seconds that the condition must be True in order
             to activate event identification. This will prevent events
             lasting less than activation_debounce from being identified
             as an event.
             Default is None
-        deactivation_debounce (optional): float, units=seconds
+        ddeb (optional): float, units=seconds
             The time in seconds that the condition must be False in
             order to deactivate event identification. This will prevent
             events lasting less than activation_debounce from
             deactivating an identified event.
             Default is None
-        min_duration (optional): float, units=seconds
+        mindur (optional): float, units=seconds
             The minimum time in seconds that the condition must be True
             to be identified as an event. Any event of a duration less
             than min_duration will be ignored.
             Default is None
-        max_duration (optional): float, units=seconds
+        maxdur (optional): float, units=seconds
             The maximum time in seconds that the condition may be True
             to be identified as an event. Any event of a duration
             greater than max_duration will be ignored.
             Default is None
-        start_offset (optional): float, units=seconds
+        startoffset (optional): float, units=seconds
             This will offset every identified event's start index back
             this many seconds. Must be a negative value.
             Default is None
-        stop_offset (optional): float, units=seconds
+        stopoffset (optional): float, units=seconds
             This will offset every identified event's stop index forward
             this many seconds. Must be a positive value.
             Default is None
@@ -98,7 +98,7 @@ class Events(object):
     >>> np.random.seed(10)
     >>> x = np.random.random_integers(0, 1, 20)
     >>> y = np.random.random_integers(2, 4, 20)
-    >>> events = Events(((x>0) & (y<=3)), sample_period=1).find()
+    >>> events = Events(((x>0) & (y<=3)), period=1).find()
     >>> events.durations
     array([2, 2, 1, 1])
     >>> len(events)
@@ -155,19 +155,19 @@ class Events(object):
     Event 2, first y val is 3, last is 3 and slice is [3]
     Event 3, first y val is 3, last is 3 and slice is [3]
 
-    >>> events2 = Events(((x>0) & (y<=3)), sample_period=1).find()
+    >>> events2 = Events(((x>0) & (y<=3)), period=1).find()
     >>> events2 == events
     True
     """
-    def __init__(self, condition, sample_period,
-                 activation_debounce=None, deactivation_debounce=None,
-                 min_duration=None, max_duration=None,
-                 start_offset=None, stop_offset=None):
+    def __init__(self, condition, period,
+                 adeb=None, ddeb=None,
+                 mindur=None, maxdur=None,
+                 startoffset=None, stopoffset=None):
 
-        self.activation_debounce = activation_debounce
-        self.deactivation_debounce = deactivation_debounce
-        self.min_duration = min_duration
-        self.max_duration = max_duration
+        self.activation_debounce = adeb
+        self.deactivation_debounce = ddeb
+        self.min_duration = mindur
+        self.max_duration = maxdur
         self._starts = None
         self._stops = None
 
@@ -176,21 +176,21 @@ class Events(object):
         else:
             self.condition = condition
 
-        if not sample_period or sample_period <= 0:
-            raise ValueError('sample_period must be a positive value '
+        if not period or period <= 0:
+            raise ValueError('Period must be a positive value '
                              'of the time in seconds between two samples')
         else:
-            self.sample_period = sample_period  # Assumes univariate time series
+            self.sample_period = period  # Assumes univariate time series
 
-        if start_offset and start_offset > 0:
-            raise ValueError('Currently only negative start offsets are supported')
+        if startoffset and startoffset > 0:
+            raise ValueError('Start offset must be negative')
         else:
-            self.start_offset = start_offset
+            self.start_offset = startoffset
 
-        if stop_offset and stop_offset < 0:
-            raise ValueError('Currently only positive stop offsets are supported')
+        if stopoffset and stopoffset < 0:
+            raise ValueError('Stop offset must be positive')
         else:
-            self.stop_offset = stop_offset
+            self.stop_offset = stopoffset
         # TODO - work out strategy for multivariate data. Pass index?
 
     @property
@@ -313,19 +313,19 @@ class Events(object):
 
         Order
         -----
-        apply_condition_filter()
-        apply_debounce_filter()
-        apply_event_length_filter()
-        apply_offsets()
+        apply_condition()
+        debounce()
+        filter_durations()
+        offset()
         """
-        self.apply_condition_filter()
-        self.apply_debounce_filter()
-        self.apply_event_length_filter()
-        self.apply_offsets()
+        self.apply_condition()
+        self.debounce()
+        self.filter_durations()
+        self.offset()
 
         return self
 
-    def apply_condition_filter(self):
+    def apply_condition(self):
         """Apply initial masking conditions"""
         mask = (self.condition > 0).view('i1')
         slice_index = np.arange(mask.size + 1, dtype='int32')
@@ -348,7 +348,7 @@ class Events(object):
         self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
     @skip_check('_activation_debounce', '_deactivation_debounce')
-    def apply_debounce_filter(self):
+    def debounce(self):
         """ Apply debounce parameters"""
         try:
             from nimble.cyfunc.debounce import debounce
@@ -360,7 +360,7 @@ class Events(object):
                                              np.double(self._deactivation_debounce))
 
     @skip_check('_min_duration', '_max_duration')
-    def apply_event_length_filter(self):
+    def filter_durations(self):
         event_lengths = self._stops - self._starts
         condition = ((event_lengths < self._min_duration) |
                      (event_lengths > self._max_duration))
@@ -369,7 +369,7 @@ class Events(object):
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
     @skip_check('_start_offset', '_stop_offset')
-    def apply_offsets(self):
+    def offset(self):
         """Applies offset parameters"""
         min_index = 0
         max_index = self.condition.size
@@ -399,7 +399,8 @@ class Events(object):
         return self._starts.size
 
     def __repr__(self):
-        # TODO - due to the size of condition, this should take an optional path and serialize as pickle, yaml, or json
+        # TODO - due to the size of condition, this should take an optional path and
+        # serialize as pickle, yaml, or json
         return ('{__class__.__name__}(condition={condition!r}, '
                 'sample_period={sample_period!r}, '
                 'activation_debounce={_activation_debounce!r}, '
@@ -433,16 +434,16 @@ class Events(object):
             '\nstart_offset: {start_offset}, stop_offset: {stop_offset}'
         ).format(*args, **kwargs)
 
-    def __eq__(self, other):
+    def __eq__(self, scnd_event):
         """Determine if two Events objects are identical
 
         Compares starts, stops, sample_period and condition.size to
         determine if two events are identical.
         """
-        if (np.all(self._starts == other._starts)
-                and np.all(self._stops == other._stops)
-                and self.sample_period == other.sample_period
-                and self.condition.size == other.condition.size):
+        if (np.all(self._starts == scnd_event._starts)
+                and np.all(self._stops == scnd_event._stops)
+                and self.sample_period == scnd_event.sample_period
+                and self.condition.size == scnd_event.condition.size):
             return True
         else:
             return False
@@ -459,17 +460,17 @@ class Events(object):
 def main():
     np.random.seed(15)
     mask = np.random.random_integers(0, 1, 1000000)
-    events = Events(mask > 0, sample_period=1,
-                    activation_debounce=1,
-                    min_duration=3,
-                    start_offset=-1).find()
+    events = Events(mask > 0, period=1,
+                    adeb=1,
+                    mindur=3,
+                    startoffset=-1).find()
 
     x = events.as_array(false_values=2.33, true_values=5.35)
 
-    events2 = Events(mask > 0, sample_period=1,
-                     activation_debounce=1,
-                     min_duration=3,
-                     start_offset=-1).find()
+    events2 = Events(mask > 0, period=1,
+                     adeb=1,
+                     mindur=3,
+                     startoffset=-1).find()
 
     print(events)
     print(events == events2)

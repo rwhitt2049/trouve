@@ -11,7 +11,7 @@ class TestAsPandasCondition(TestCase):
     def setUp(self):
         conditional_series = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_series > 0)
-        self.events = Events(condition, sample_period=1).find()
+        self.events = Events(condition, period=1).find()
 
     def test_as_series(self):
         validation_series = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
@@ -29,7 +29,7 @@ class TestAsNpArrCondition(TestCase):
     def setUp(self):
         conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         condition = (conditional_array > 0)
-        self.events = Events(condition, sample_period=1).find()
+        self.events = Events(condition, period=1).find()
 
     def test_as_series(self):
         validation_series = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
