@@ -465,8 +465,7 @@ def main():
                     start_offset=-1).find()
 
     x = events.as_array(false_values=2.33, true_values=5.35)
-    print(x[:20])
-    print(mask[:20])
+
     events2 = Events(mask > 0, sample_period=1,
                      activation_debounce=1,
                      min_duration=3,
