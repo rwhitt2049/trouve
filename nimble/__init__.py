@@ -1,3 +1,3 @@
 from .event_detection import Events
 
-__version__ = '0.3.dev9'
+__version__ = '0.3.dev10'
