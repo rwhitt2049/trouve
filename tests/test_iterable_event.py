@@ -27,7 +27,7 @@ class TestClassIterable(TestCase):
         validation_durations = [1.5, 1, 1]
         test_durations = []
         for event in self.events:
-            test_durations.append(event.iduration)
+            test_durations.append(event.idur)
 
         npt.assert_array_equal(validation_durations, test_durations)
 

@@ -52,29 +52,29 @@ class Events(object):
             arrays or pandas series.
         period: float, units=seconds
             The sample period of the conditional array in seconds.
-            Events.condition must be of a univariate sample_period.
+            Events.condition must be of a univariate period.
             Default is None
         adeb (optional): float, units=seconds
             The time in seconds that the condition must be True in order
             to activate event identification. This will prevent events
-            lasting less than activation_debounce from being identified
+            lasting less than adeb from being identified
             as an event.
             Default is None
         ddeb (optional): float, units=seconds
             The time in seconds that the condition must be False in
             order to deactivate event identification. This will prevent
-            events lasting less than activation_debounce from
+            events lasting less than adeb from
             deactivating an identified event.
             Default is None
         mindur (optional): float, units=seconds
             The minimum time in seconds that the condition must be True
             to be identified as an event. Any event of a duration less
-            than min_duration will be ignored.
+            than mindur will be ignored.
             Default is None
         maxdur (optional): float, units=seconds
             The maximum time in seconds that the condition may be True
             to be identified as an event. Any event of a duration
-            greater than max_duration will be ignored.
+            greater than maxdur will be ignored.
             Default is None
         startoffset (optional): float, units=seconds
             This will offset every identified event's start index back
@@ -132,14 +132,14 @@ class Events(object):
     >>> print(events)
     Number of events: 4
     Min, Max, Mean Duration: 1.000s, 2.000s, 1.500s
-    sample_period: 1s,
-    activation_debounce: None, deactivation_debounce: None,
-    min_duration: None, max_duration: None,
-    start_offset: None, stop_offset: None
+    period: 1s,
+    adeb: None, ddeb: None,
+    mindur: None, maxdur: None,
+    startoffset: None, stopoffset: None
 
     >>> string = 'Event {} was {}s in duration'
     >>> for event in events:
-    ...     print(string.format(event.i, event.iduration))
+    ...     print(string.format(event.i, event.idur))
     Event 0 was 2s in duration
     Event 1 was 2s in duration
     Event 2 was 1s in duration
@@ -164,10 +164,10 @@ class Events(object):
                  mindur=None, maxdur=None,
                  startoffset=None, stopoffset=None):
 
-        self.activation_debounce = adeb
-        self.deactivation_debounce = ddeb
-        self.min_duration = mindur
-        self.max_duration = maxdur
+        self.adeb = adeb
+        self.ddeb = ddeb
+        self.mindur = mindur
+        self.maxdur = maxdur
         self._starts = None
         self._stops = None
 
@@ -180,71 +180,71 @@ class Events(object):
             raise ValueError('Period must be a positive value '
                              'of the time in seconds between two samples')
         else:
-            self.sample_period = period  # Assumes univariate time series
+            self.period = period  # Assumes univariate time series
 
         if startoffset and startoffset > 0:
             raise ValueError('Start offset must be negative')
         else:
-            self.start_offset = startoffset
+            self.startoffset = startoffset
 
         if stopoffset and stopoffset < 0:
             raise ValueError('Stop offset must be positive')
         else:
-            self.stop_offset = stopoffset
+            self.stopoffset = stopoffset
         # TODO - work out strategy for multivariate data. Pass index?
 
     @property
-    def _activation_debounce(self):
-        """Convert activation_debounce to number of points"""
+    def _adeb(self):
+        """Convert adeb to number of points"""
         try:
-            return np.ceil(self.activation_debounce / self.sample_period)
+            return np.ceil(self.adeb / self.period)
         except TypeError:
             return 0
 
     @property
-    def _deactivation_debounce(self):
-        """Convert deactivation_debounce to number of points"""
+    def _ddeb(self):
+        """Convert ddeb to number of points"""
         try:
-            return np.ceil(self.deactivation_debounce / self.sample_period)
+            return np.ceil(self.ddeb / self.period)
         except TypeError:
             return 0
 
     @property
-    def _min_duration(self):
-        """Convert min_duration to number of points"""
+    def _mindur(self):
+        """Convert mindur to number of points"""
         try:
-            return np.ceil(self.min_duration / self.sample_period)
+            return np.ceil(self.mindur / self.period)
         except TypeError:
             return 0
 
     @property
-    def _max_duration(self):
-        """Convert max_duration to number of points"""
+    def _maxdur(self):
+        """Convert maxdur to number of points"""
         try:
-            return np.floor(self.max_duration / self.sample_period)
+            return np.floor(self.maxdur / self.period)
         except TypeError:
             return self.condition.size
 
     @property
-    def _start_offset(self):
-        """Convert start_offset to number of points"""
+    def _startoffset(self):
+        """Convert startoffset to number of points"""
         try:
-            return np.ceil(self.start_offset / self.sample_period).astype('int32')
+            return np.ceil(self.startoffset / self.period).astype('int32')
         except TypeError:
             return 0
 
     @property
-    def _stop_offset(self):
-        """Convert stop_offset to number of poitns"""
+    def _stopoffset(self):
+        """Convert stopoffset to number of poitns"""
         try:
-            return np.ceil(self.stop_offset / self.sample_period).astype('int32')
+            return np.ceil(self.stopoffset / self.period).astype('int32')
         except TypeError:
             return 0
 
     @lazyproperty
     def durations(self):
         """Return a numpy.array of event durations in seconds."""
-        return (self._stops - self._starts)*self.sample_period
+        return (self._stops - self._starts)*self.period
 
     def as_array(self, false_values=0, true_values=1, dtype='float'):
         """Returns a numpy.array that identifies events
@@ -298,9 +298,9 @@ class Events(object):
             identified.
         """
         try:
-            index = pd.RangeIndex(self.condition.size, step=self.sample_period)
+            index = pd.RangeIndex(self.condition.size, step=self.period)
         except AttributeError:
-            index = np.arange(self.condition.size, step=self.sample_period)
+            index = np.arange(self.condition.size, step=self.period)
 
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, index=index, name=name)
@@ -347,7 +347,7 @@ class Events(object):
         self._starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
         self._stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
-    @skip_check('_activation_debounce', '_deactivation_debounce')
+    @skip_check('_adeb', '_ddeb')
     def debounce(self):
         """ Apply debounce parameters"""
         try:
@@ -356,26 +356,26 @@ class Events(object):
             from nimble.debounce import debounce
 
         self._starts, self._stops = debounce(self._starts, self._stops,
-                                             np.double(self._activation_debounce),
-                                             np.double(self._deactivation_debounce))
+                                             np.double(self._adeb),
+                                             np.double(self._ddeb))
 
-    @skip_check('_min_duration', '_max_duration')
+    @skip_check('_mindur', '_maxdur')
     def filter_durations(self):
         event_lengths = self._stops - self._starts
-        condition = ((event_lengths < self._min_duration) |
-                     (event_lengths > self._max_duration))
+        condition = ((event_lengths < self._mindur) |
+                     (event_lengths > self._maxdur))
 
         self._starts = np.ma.masked_where(condition, self._starts).compressed()
         self._stops = np.ma.masked_where(condition, self._stops).compressed()
 
-    @skip_check('_start_offset', '_stop_offset')
+    @skip_check('_startoffset', '_stopoffset')
     def offset(self):
         """Applies offset parameters"""
         min_index = 0
         max_index = self.condition.size
 
-        self._starts += self._start_offset
-        self._stops += self._stop_offset
+        self._starts += self._startoffset
+        self._stops += self._stopoffset
 
         np.clip(self._starts, min_index, max_index, out=self._starts)
         np.clip(self._stops, min_index, max_index, out=self._stops)
@@ -389,7 +389,7 @@ class Events(object):
         try:
             self.istart = self._starts[self.i]
             self.istop = self._stops[self.i]-1
-            self.iduration = (self._stops[self.i] - self._starts[self.i])*self.sample_period
+            self.idur = (self._stops[self.i] - self._starts[self.i]) * self.period
             self.islice = slice(self._starts[self.i], self._stops[self.i])
             return self
         except IndexError:
@@ -402,47 +402,47 @@ class Events(object):
         # TODO - due to the size of condition, this should take an optional path and
         # serialize as pickle, yaml, or json
         return ('{__class__.__name__}(condition={condition!r}, '
-                'sample_period={sample_period!r}, '
-                'activation_debounce={_activation_debounce!r}, '
-                'deactivation_debounce={_deactivation_debounce!r}, '
-                'min_duration={_min_duration!r}, '
-                'max_duration={_max_duration!r}, '
-                'start_offset={_start_offset!r}, '
-                'stop_offset={_stop_offset!r}').format(__class__=self.__class__,
-                                                       **self.__dict__)
+                'period={period!r}, '
+                'adeb={_adeb!r}, '
+                'ddeb={_ddeb!r}, '
+                'mindur={_mindur!r}, '
+                'maxdur={_maxdur!r}, '
+                'startoffset={_startoffset!r}, '
+                'stopoffset={_stopoffset!r}').format(__class__=self.__class__,
+                                                      **self.__dict__)
 
     def __str__(self):
         args = [len(self), np.min(self.durations),
                 np.max(self.durations), np.mean(self.durations)]
         kwargs = {
-            'sample_period': '{}s'.format(self.sample_period),
-            'activation_debounce': '{}s'.format(self.activation_debounce)
-                if self.activation_debounce else None,
-            'deactivation_debounce': '{}s'.format(self.deactivation_debounce)
-                if self.deactivation_debounce else None,
-            'min_duration': '{}s'.format(self.min_duration) if self.min_duration else None,
-            'max_duration': '{}s'.format(self.max_duration) if self.max_duration else None,
-            'start_offset': '{}s'.format(self.start_offset) if self.start_offset else None,
-            'stop_offset': '{}s'.format(self.stop_offset) if self.stop_offset else None
+            'period': '{}s'.format(self.period),
+            'adeb': '{}s'.format(self.adeb)
+                if self.adeb else None,
+            'ddeb': '{}s'.format(self.ddeb)
+                if self.ddeb else None,
+            'mindur': '{}s'.format(self.mindur) if self.mindur else None,
+            'maxdur': '{}s'.format(self.maxdur) if self.maxdur else None,
+            'startoffset': '{}s'.format(self.startoffset) if self.startoffset else None,
+            'stopoffset': '{}s'.format(self.stopoffset) if self.stopoffset else None
         }
         return (
             'Number of events: {0}'
             '\nMin, Max, Mean Duration: {1:.3f}s, {2:.3f}s, {3:.3f}s'
-            '\nsample_period: {sample_period},'
-            '\nactivation_debounce: {activation_debounce}, deactivation_debounce: {deactivation_debounce},'
-            '\nmin_duration: {min_duration}, max_duration: {max_duration},'
-            '\nstart_offset: {start_offset}, stop_offset: {stop_offset}'
+            '\nperiod: {period},'
+            '\nadeb: {adeb}, ddeb: {ddeb},'
+            '\nmindur: {mindur}, maxdur: {maxdur},'
+            '\nstartoffset: {startoffset}, stopoffset: {stopoffset}'
         ).format(*args, **kwargs)
 
     def __eq__(self, scnd_event):
         """Determine if two Events objects are identical
 
-        Compares starts, stops, sample_period and condition.size to
+        Compares starts, stops, period and condition.size to
         determine if two events are identical.
         """
         if (np.all(self._starts == scnd_event._starts)
                 and np.all(self._stops == scnd_event._stops)
-                and self.sample_period == scnd_event.sample_period
+                and self.period == scnd_event.period
                 and self.condition.size == scnd_event.condition.size):
             return True
         else:
