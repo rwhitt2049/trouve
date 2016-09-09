@@ -52,13 +52,30 @@ class TestDebouncing(EvTestCase):
         events = Events(self.cond, period=0.12, adeb=0.15, ddeb=0.2).find()
         self.assertStartStops(events, vstarts, vstops)
 
-# Test debounce
-        # adeb
-        # ddeb
-        # both
-        # event active at start
-        # event active at stop
-        # different sample periods: 1, .1, .12
+    def test_no_events_found(self):
+        vstarts = np.array([])
+        vstops = np.array([])
+        x = np.array([0, 0, 0, 0, 0, 0, 0, 0])
+        events = Events(x > 0, period=1, adeb=0.15, ddeb=0.2).find()
+        self.assertStartStops(events, vstarts, vstops)
+
+    def test_event_always_active(self):
+        vstarts = np.array([0])
+        vstops = np.array([8])
+        x = np.array([0, 0, 0, 0, 0, 0, 0, 0])
+        events = Events(x == 0, period=1, adeb=0.15, ddeb=0.2).find()
+        self.assertStartStops(events, vstarts, vstops)
+
+    def test_end_conditions(self):
+        vstarts = np.array([0, 6])
+        vstops = np.array([2, 8])
+        x = np.array([1, 1, 0, 0, 0, 0, 1, 1])
+        events = Events(x == 1, period=1, adeb=2, ddeb=2).find()
+        self.assertStartStops(events, vstarts, vstops)
+
+
+
+
 
 # Test durations
         # min
