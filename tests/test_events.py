@@ -144,69 +144,56 @@ class TestEventOffset(EvTestCase):
         self.cond = condarr > 0
 
     def test_startoffset(self):
-        vstarts = np.array([2, 7])
-        vstops = np.array([4, 10])
-        events = Events(self.cond, period=1, mindur=2).find()
+        vstarts = np.array([1, 6, 10])
+        vstops = np.array([4, 10, 12])
+        events = Events(self.cond, period=1, startoffset=-1).find()
         self.assertStartStops(events, vstarts, vstops)
 
-    def test_maxdur(self):
-        vstarts = np.array([2, 11])
-        vstops = np.array([4, 12])
-        events = Events(self.cond, period=1, maxdur=2).find()
+    def test_stopoffset(self):
+        vstarts = np.array([2, 7, 11])
+        vstops = np.array([5, 11, 12])
+        events = Events(self.cond, period=1, stopoffset=1).find()
         self.assertStartStops(events, vstarts, vstops)
 
-    def test_mindur_maxdur(self):
-        vstarts = np.array([2])
-        vstops = np.array([4])
-        events = Events(self.cond, period=1, mindur=2, maxdur=2.5).find()
-        self.assertStartStops(events, vstarts, vstops)
-
-    def test_nonint_durs(self):
-        vstarts = np.array([2])
-        vstops = np.array([4])
-        events = Events(self.cond, period=1, mindur=float(1.00000001),
-                        maxdur=float(2.99999999)).find()
+    def test_startoffset_stopoffset(self):
+        vstarts = np.array([1, 6, 10])
+        vstops = np.array([5, 11, 12])
+        events = Events(self.cond, period=1, startoffset=-1, stopoffset=1).find()
         self.assertStartStops(events, vstarts, vstops)
 
     def test_period_100ms(self):
-        vstarts = np.array([2])
-        vstops = np.array([4])
-        events = Events(self.cond, period=0.1, mindur=0.15, maxdur=0.2).find()
+        vstarts = np.array([1, 6, 10])
+        vstops = np.array([5, 11, 12])
+        events = Events(self.cond, period=0.1, startoffset=-0.1, stopoffset=0.1).find()
         self.assertStartStops(events, vstarts, vstops)
 
     def test_period_120ms(self):
-        vstarts = np.array([2])
-        vstops = np.array([4])
-        events = Events(self.cond, period=0.12, mindur=0.15, maxdur=0.35).find()
+        vstarts = np.array([1, 6, 10])
+        vstops = np.array([5, 11, 12])
+        events = Events(self.cond, period=0.12, startoffset=-0.1, stopoffset=0.1).find()
         self.assertStartStops(events, vstarts, vstops)
 
     def test_no_events_found(self):
         vstarts = np.array([])
         vstops = np.array([])
         x = np.array([0, 0, 0, 0, 0, 0, 0, 0])
-        events = Events(x > 0, period=1, mindur=0.15, maxdur=0.2).find()
+        events = Events(x > 0, period=1, startoffset=-1, stopoffset=1).find()
         self.assertStartStops(events, vstarts, vstops)
 
     def test_event_always_active(self):
         vstarts = np.array([0])
         vstops = np.array([8])
         x = np.array([0, 0, 0, 0, 0, 0, 0, 0])
-        events = Events(x == 0, period=1, mindur=0.15, maxdur=20).find()
+        events = Events(x == 0, period=1, startoffset=-1, stopoffset=1).find()
         self.assertStartStops(events, vstarts, vstops)
 
     def test_end_conditions(self):
-        vstarts = np.array([0, 6])
-        vstops = np.array([2, 8])
+        vstarts = np.array([0, 5])
+        vstops = np.array([3, 8])
         x = np.array([1, 1, 0, 0, 0, 0, 1, 1])
-        events = Events(x == 1, period=1, mindur=2, maxdur=2).find()
+        events = Events(x == 1, period=1, startoffset=-1, stopoffset=1).find()
         self.assertStartStops(events, vstarts, vstops)
-# Test offsets
-        # start
-        # stop
-        # both
-        # event active at start
-        # event active at stop
-        # different sample periods: 1, .1, .12
+
 
 # Test constructor
     #property tests
