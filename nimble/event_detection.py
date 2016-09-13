@@ -229,7 +229,7 @@ class Events(object):
     def _startoffset(self):
         """Convert startoffset to number of points"""
         try:
-            return np.ceil(self.startoffset / self.period).astype('int32')
+            return np.floor(self.startoffset / self.period).astype('int32')
         except TypeError:
             return 0
 
