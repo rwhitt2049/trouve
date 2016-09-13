@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.testing as npt
 import pandas as pd
-from unittest import TestCase
-from nimble import Events, main
+from unittest import TestCase, main
+from nimble import Events
 
 
 class EvTestCase(TestCase):
