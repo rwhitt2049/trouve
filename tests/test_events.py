@@ -2,7 +2,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 from unittest import TestCase
-from nimble import Events
+from nimble import Events, main
 
 
 class EvTestCase(TestCase):
@@ -359,3 +359,6 @@ class TestProperties(TestCase):
 
     def test_stopoffset(self):
         self.assertEqual(self.events._stopoffset, 9)
+
+if __name__ == '__main__':
+    main()
