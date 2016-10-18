@@ -1,19 +1,14 @@
 language: python
-notifications:
-  email: false
 python:
   - "3.3"
   - "3.4"
   - "3.5"
+  - "3.5-dev" # 3.5 development branch
+  - "3.6-dev" # 3.6 development branch
+# command to install dependencies
 install:
-  # Install conda
-  - sudo pip install conda
-  # install deps
-  - sudo conda init
-  - deps='pip numpy pandas nose'
-  - conda create -p $HOME/py --yes $deps "python=$TRAVIS_PYTHON_VERSION"
-  - export PATH=$HOME/py/bin:$PATH
-  # install your own package into the environment
-  - python setup.py install
+  - pip install Cython --install-option="--no-cython-compile"
+  - pip install -r requirements.txt
+# command to run tests
 script:
-- "nosetests -w tests/ -v"
+  - "nosetests -w tests/ -v"
