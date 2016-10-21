@@ -1,4 +1,8 @@
-[![Build Status](https://travis-ci.org/rwhitt2049/nimble.svg?branch=development)](https://travis-ci.org/rwhitt2049/nimble)
+[![Build Status](https://travis-ci.org/rwhitt2049/nimble.svg?branch=development)][1]
+[![Code Health](https://landscape.io/github/rwhitt2049/nimble/development/landscape.svg?style=flat)][2]
+
+[1]: https://travis-ci.org/rwhitt2049/nimble
+[2]: https://landscape.io/github/rwhitt2049/nimble/development
 
 # Nimble Quickstart
 
