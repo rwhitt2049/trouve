@@ -100,7 +100,7 @@ class Events(object):
     >>> y = np.random.random_integers(2, 4, 20)
     >>> events = Events(((x>0) & (y<=3)), period=1).find()
     >>> print(events.durations)
-    [2, 2, 1, 1]
+    [2 2 1 1]
     >>> len(events)
     4
     >>> events.as_array()
