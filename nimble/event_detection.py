@@ -403,14 +403,14 @@ class Events(object):
         # serialize as pickle, yaml, or json
         return ('{__class__.__name__}(condition={condition!r}, '
                 'period={period!r}, '
-                'adeb={_adeb!r}, '
-                'ddeb={_ddeb!r}, '
-                'mindur={_mindur!r}, '
-                'maxdur={_maxdur!r}, '
-                'startoffset={_startoffset!r}, '
-                'stopoffset={_stopoffset!r}').format(__class__=self.__class__,
-                                                      **self.__dict__)
-
+                'adeb={adeb!r}, '
+                'ddeb={ddeb!r}, '
+                'mindur={mindur!r}, '
+                'maxdur={maxdur!r}, '
+                'startoffset={startoffset!r}, '
+                'stopoffset={stopoffset!r}').format(__class__=self.__class__,
+                                                    **self.__dict__)
+    
     def __str__(self):
         args = [len(self), np.min(self.durations),
                 np.max(self.durations), np.mean(self.durations)]
