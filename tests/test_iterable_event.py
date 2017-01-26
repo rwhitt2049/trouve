@@ -3,7 +3,7 @@ from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
 
-from nimble import Events
+from trouver import Events
 
 
 class TestClassIterable(TestCase):

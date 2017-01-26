@@ -1,19 +1,19 @@
-[![Build Status](https://travis-ci.org/rwhitt2049/nimble.svg?branch=development)][1]
-[![Code Health](https://landscape.io/github/rwhitt2049/nimble/development/landscape.svg?style=flat)][2]
+[![Build Status](https://travis-ci.org/rwhitt2049/trouver.svg?branch=development)][1]
+[![Code Health](https://landscape.io/github/rwhitt2049/trouver/development/landscape.svg?style=flat)][2]
 
-[1]: https://travis-ci.org/rwhitt2049/nimble
-[2]: https://landscape.io/github/rwhitt2049/nimble/development
+[1]: https://travis-ci.org/rwhitt2049/trouver
+[2]: https://landscape.io/github/rwhitt2049/trouver/development
 
-# Nimble Quickstart
+# Trouver Quickstart
 
-Nimble is built to find and filter events that meet user specified, multivariate criteria. Once the events are found, it can then return a mask, a Numpy array representation, or a Pandas series representation of the found events that coincides with their location in an array of identical shape to the condition.
+Trouver is built to find and filter events that meet user specified, multivariate criteria. Once the events are found, it can then return a mask, a Numpy array representation, or a Pandas series representation of the found events that coincides with their location in an array of identical shape to the condition.
 
-Nimble has optional C extensions to return arrays, masks, series and to apply a debounce to events (`Events.as_array()`, `Events.as_series()` and `Events.debounce()`. While there are Python back up functionality to all C implementations, it is strongly recommended that you install a C compiler to take advantage of these optimizations, especially if you plan to work with large arrays (500k points and larger) or make use of the `debounce` method. More information on installing a C compiler for Windows can be found here: [https://matthew-brett.github.io/pydagogue/python_msvc.html](https://matthew-brett.github.io/pydagogue/python_msvc.html)
+Trouver has optional C extensions to return arrays, masks, series and to apply a debounce to events (`Events.as_array()`, `Events.as_series()` and `Events.debounce()`. While there are Python back up functionality to all C implementations, it is strongly recommended that you install a C compiler to take advantage of these optimizations, especially if you plan to work with large arrays (500k points and larger) or make use of the `debounce` method. More information on installing a C compiler for Windows can be found here: [https://matthew-brett.github.io/pydagogue/python_msvc.html](https://matthew-brett.github.io/pydagogue/python_msvc.html)
 
 
 ```python
 import numpy as np
-from nimble import Events
+from trouver import Events
 ```
 
 ## Getting Started
@@ -176,14 +176,3 @@ events = Events((x>0) & (y>3), period=1,
 ## Quickstart
 
 A quickstart jupyter notebook has been provided in the install directory.
-
-```python
-import inspect
-import nimble
-import os
-
-path_to_init = inspect.getfile(nimble)
-install_dir = os.path.dirname(path_to_init)
-path_to_qs = os.path.join(install_dir, 'Nimble_Quickstart.ipynb')
-print(path_to_qs)
-```

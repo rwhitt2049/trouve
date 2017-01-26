@@ -1,9 +1,9 @@
 from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
-import nimble.as_array as py
-import nimble.cyfunc.as_array as cy
-from nimble import Events
+import trouver.as_array as py
+import trouver.cyfunc.as_array as cy
+from trouver import Events
 
 
 class TestPyAsArrayFunction(TestCase):

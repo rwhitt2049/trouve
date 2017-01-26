@@ -93,7 +93,7 @@ class Events(object):
 
     Examples
     --------
-    >>> from nimble import Events
+    >>> from trouver import Events
     >>> import numpy as np
     >>> np.random.seed(10)
     >>> x = np.random.random_integers(0, 1, 20)
@@ -269,9 +269,9 @@ class Events(object):
         """
         output = np.ones(self.condition.size, dtype=np.float) * false_values
         try:
-            from nimble.cyfunc.as_array import as_array
+            from trouver.cyfunc.as_array import as_array
         except ImportError:
-            from nimble.as_array import as_array
+            from trouver.as_array import as_array
 
         output = as_array(self._starts, self._stops, output, true_values)
         return output.astype(dtype)
@@ -351,9 +351,9 @@ class Events(object):
     def debounce(self):
         """ Apply debounce parameters"""
         try:
-            from nimble.cyfunc.debounce import debounce
+            from trouver.cyfunc.debounce import debounce
         except ImportError:
-            from nimble.debounce import debounce
+            from trouver.debounce import debounce
 
         self._starts, self._stops = debounce(self._starts, self._stops,
                                              np.double(self._adeb),

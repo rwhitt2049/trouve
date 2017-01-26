@@ -5,15 +5,15 @@ from codecs import open
 from os import path
 from setuptools import find_packages, setup, Extension
 import numpy
-from nimble import __version__
+from trouver import __version__
 
 USE_CYTHON = False
 base = path.abspath(path.dirname(__file__))
 
 ext = '.pyx' if USE_CYTHON else '.c'
 
-extensions = [Extension('nimble.cyfunc.debounce', ['nimble/cyfunc/debounce'+ext]),
-              Extension('nimble.cyfunc.as_array', ['nimble/cyfunc/as_array'+ext])]
+extensions = [Extension('trouver.cyfunc.debounce', ['trouver/cyfunc/debounce'+ext]),
+              Extension('trouver.cyfunc.as_array', ['trouver/cyfunc/as_array'+ext])]
 
 if USE_CYTHON:
     from Cython.Build import cythonize
@@ -39,14 +39,14 @@ extras = {
 }
 
 kwargs = dict(
-    name='nimble',
+    name='trouver',
     version=__version__,
     description=long_description()[0],
     long_description=long_description(),
     author='Ry Whittington',
     author_email='rwhitt2049@gmail.com',
     license='MIT',
-    url='https://github.com/rwhitt2049/nimble',
+    url='https://github.com/rwhitt2049/trouver',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

@@ -1,9 +1,9 @@
 from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
-import nimble.debounce as py
-import nimble.cyfunc.debounce as cy
-from nimble import Events
+import trouver.debounce as py
+import trouver.cyfunc.debounce as cy
+from trouver import Events
 
 
 class TestPyDebounceFunction(TestCase):

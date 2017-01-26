@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import numpy.testing as npt
 
-from nimble import Events
+from trouver import Events
 
 
 class TestAsPandasCondition(TestCase):

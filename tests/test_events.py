@@ -2,7 +2,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 from unittest import TestCase, main
-from nimble import Events
+from trouver import Events
 
 
 class EvTestCase(TestCase):
