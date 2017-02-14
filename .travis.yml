@@ -13,4 +13,4 @@ install:
 # command to run tests
 script:
   - "nosetests -w tests/ -v"
-  - "python -m doctest -v nimble/event_detection.py"
+  - "python -m doctest -v trouver/events.py"
