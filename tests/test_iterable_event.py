@@ -1,0 +1,46 @@
+from unittest import TestCase, main
+
+import numpy as np
+import numpy.testing as npt
+
+from trouver.events import Events
+
+
+class TestClassIterable(TestCase):
+    def setUp(self):
+        array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
+        starts = np.array([1, 7, 10])
+        stops = np.array([4, 9, 12])
+        period = 1
+        self.events = Events(starts, stops, period, 'control', array.size)
+
+    def test_start_stop_loc(self):
+        test_starts = []
+        test_stops = []
+
+        for event in self.events:
+            test_starts.append(event.istart)
+            test_stops.append(event.istop)
+
+        npt.assert_array_equal([1, 7, 10], test_starts)
+        npt.assert_array_equal([3, 8, 11], test_stops)
+
+    def test_durations(self):
+        validation_durations = [3, 2, 2]
+        test_durations = []
+        for event in self.events:
+            test_durations.append(event.idur)
+
+        npt.assert_array_equal(validation_durations, test_durations)
+
+    def test_index(self):
+        validation_index = [0, 1, 2]
+        test_index = []
+        for event in self.events:
+            test_index.append(event.i)
+
+        npt.assert_array_equal(validation_index, test_index)
+
+
+if __name__ == '__main__':
+    main()
