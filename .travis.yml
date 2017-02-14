@@ -8,7 +8,6 @@ python:
   - "3.6-dev" # 3.6 development branch
 # command to install dependencies
 install:
-  - pip install Cython --install-option="--no-cython-compile"
   - pip install -r requirements.txt
   - python setup.py install
 # command to run tests

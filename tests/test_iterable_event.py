@@ -3,14 +3,16 @@ from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
 
-from trouver import Events
+from trouver.events import Events
 
 
 class TestClassIterable(TestCase):
     def setUp(self):
-        conditional_array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
-        condition = (conditional_array > 0)
-        self.events = Events(condition, period=0.5).find()
+        array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
+        starts = np.array([1, 7, 10])
+        stops = np.array([4, 9, 12])
+        period = 1
+        self.events = Events(starts, stops, period, 'control', array.size)
 
     def test_start_stop_loc(self):
         test_starts = []
@@ -24,7 +26,7 @@ class TestClassIterable(TestCase):
         npt.assert_array_equal([3, 8, 11], test_stops)
 
     def test_durations(self):
-        validation_durations = [1.5, 1, 1]
+        validation_durations = [3, 2, 2]
         test_durations = []
         for event in self.events:
             test_durations.append(event.idur)
@@ -38,6 +40,7 @@ class TestClassIterable(TestCase):
             test_index.append(event.i)
 
         npt.assert_array_equal(validation_index, test_index)
+
 
 if __name__ == '__main__':
     main()

@@ -3,21 +3,12 @@
 
 from codecs import open
 from os import path
-from setuptools import find_packages, setup, Extension
-import numpy
+
+from setuptools import find_packages, setup
+
 from trouver import __version__
 
-USE_CYTHON = False
 base = path.abspath(path.dirname(__file__))
-
-ext = '.pyx' if USE_CYTHON else '.c'
-
-extensions = [Extension('trouver.cyfunc.debounce', ['trouver/cyfunc/debounce'+ext]),
-              Extension('trouver.cyfunc.as_array', ['trouver/cyfunc/as_array'+ext])]
-
-if USE_CYTHON:
-    from Cython.Build import cythonize
-    extensions = cythonize(extensions)
 
 
 def install_requires():
@@ -34,9 +25,6 @@ def long_description():
     with open(path.join(base, 'README.md'), encoding='utf-8') as file:
         return file.read()
 
-extras = {
-    'Cython': ['Cython']
-}
 
 kwargs = dict(
     name='trouver',
@@ -56,8 +44,7 @@ kwargs = dict(
         'Operating System :: POSIX',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Cython',
+        'Programming Language :: Python :: 3.5'
         'Topic :: Scientific/Engineering'
     ],
     keywords='time_series, timeseries, iot, sensor',
@@ -70,10 +57,4 @@ kwargs = dict(
     tests_require=dev_requires()
 )
 
-try:
-    setup(ext_modules=extensions,
-          include_dirs=[numpy.get_include()],
-          extras_require=extras,
-          **kwargs)
-except SystemExit:
-    setup(**kwargs)
+setup(**kwargs)
