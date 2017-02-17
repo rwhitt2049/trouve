@@ -1,3 +1,4 @@
+from collections import namedtuple
 from functools import wraps
 from inspect import signature
 
@@ -8,12 +9,11 @@ from toolz import pipe
 from trouver.as_array import as_array
 from trouver.transformations import apply_condition
 
-
 # from memory_profiler import profile
 
-# TODO add get_item magic method
-# TODO get_item and iter should return an occurrence class (named tuple) not self
 # TODO update all docs
+
+Occurrence = namedtuple('Occurrence', 'istart istop slice duration')
 
 
 def curry_func(func, period, condition_size):
@@ -32,7 +32,7 @@ def curry_func(func, period, condition_size):
         condition_size (int): Size of condition numpy array
 
     Returns:
-        callable:
+        callable: Curried function with period and/or condition_size
 
     """
     sig = signature(func)
@@ -271,19 +271,30 @@ class Events(object):
         return pd.Series(data=data, name=name)
 
     def __iter__(self):
-        self.i = -1
+        self.i = 0
         return self
 
     def __next__(self):
-        self.i += 1
         try:
-            self.istart = self._starts[self.i]
-            self.istop = self._stops[self.i] - 1
-            self.idur = (self._stops[self.i] - self._starts[self.i]) * self._period
-            self.islice = slice(self._starts[self.i], self._stops[self.i])
-            return self
+            occurrence = Occurrence(
+                istart=self._starts[self.i],
+                istop=self._stops[self.i] - 1,
+                slice=slice(self._starts[self.i], self._stops[self.i]),
+                duration=(self._stops[self.i] - self._starts[self.i]) * self._period
+            )
+            self.i += 1
+            return occurrence
         except IndexError:
             raise StopIteration
+
+    def __getitem__(self, item):
+        occurrence = Occurrence(
+            istart=self._starts[item],
+            istop=self._stops[item]-1,
+            slice=slice(self._starts[item], self._stops[item]),
+            duration=(self._stops[item] - self._starts[item]) * self._period
+        )
+        return occurrence
 
     def __len__(self):
         return self._starts.size

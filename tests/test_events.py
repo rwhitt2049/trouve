@@ -94,6 +94,18 @@ class TestSpecialMethods(EventTestCase):
     def test_len(self):
         self.assertEquals(3, len(self.events))
 
+    def test_getitem_duration(self):
+        pass
+
+    def test_getitem_istart(self):
+        pass
+
+    def test_getitem_istop(self):
+        pass
+
+    def test_getitem_slice(self):
+        pass
+
     def test_eq(self):
         array = np.array([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
         starts = np.array([1, 7, 10])
