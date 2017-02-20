@@ -325,6 +325,14 @@ def _offset_events(events, period, condition_size, start_offset, stop_offset):
     return RawEvents(starts, stops)
 
 
+def merge_overlap(events):
+    _mask = np.array([False])
+    mask = (events.starts[1:] < events.stops[:-1])
+    starts = np.ma.masked_where(np.append(_mask, mask), events.starts).compressed()
+    stops = np.ma.masked_where(np.append(mask, _mask), events.stops).compressed()
+
+    return RawEvents(starts, stops)
+
 def main():
     input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
     #test_events = _debounce(input_events, period=1, entry_debounce=2, exit_debounce=0)

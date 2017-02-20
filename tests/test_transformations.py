@@ -6,7 +6,8 @@ import pandas as pd
 
 from trouver.transformations import (_filter_durations, _offset_events,
                                      _debounce, RawEvents, filter_durations,
-                                     offset_events, debounce, apply_condition)
+                                     offset_events, debounce, apply_condition,
+                                     merge_overlap)
 
 
 class FilterTestCase(TestCase):
@@ -160,6 +161,19 @@ class TestOffsets(FilterTestCase):
         test_events = _offset_events(self.input_events, period=1,
                                      condition_size=self.condition.size,
                                      start_offset=-0.1, stop_offset=0.1)
+        self.assertEvents(control_events, test_events)
+
+
+class TestOverlaps(FilterTestCase):
+    def test_merge_overlap(self):
+        input_events = RawEvents(np.array([1, 3, 13]),
+                                 np.array([5, 7, 15]))
+
+        control_events = RawEvents(np.array([1, 13]),
+                                   np.array([7, 15]))
+
+        test_events = merge_overlap(input_events)
+
         self.assertEvents(control_events, test_events)
 
 
