@@ -88,7 +88,7 @@ def find_events(condition, period, *transformations, name='events'):
         ... filter_durations, offset_events, name='example')
 
         >>> events.durations
-        array([ 7.])
+        array([7])
 
         >>> len(events)
         1
@@ -154,7 +154,7 @@ class Events(object):
 
         >>> events = find_events(condition, 1, debounce, filter_durations, offset_events, name='example')
         >>> events.durations
-        array([ 7.])
+        array([7])
 
         >>> len(events)
         1
@@ -195,15 +195,15 @@ class Events(object):
         Min, Max, Mean Duration: 7.000s, 7.000s, 7.000s
 
         >>> string = 'Event {} was {}s in duration'
-        >>> for event in events:
-        ...     print(string.format(event.i, event.idur))
-        Event 0 was 7.0s in duration
+        >>> for i, event in enumerate(events):
+        ...     print(string.format(i, event.duration))
+        Event 0 was 7s in duration
 
         >>> string = ('Event {}, first y val is {}, last is {} and'
         ... ' slice is {}')
-        >>> for event in events:
-        ...     print(string.format(event.i, y[event.istart],
-        ...     y[event.istop], y[event.islice]))
+        >>> for i, event in enumerate(events):
+        ...     print(string.format(i, y[event.istart],
+        ...     y[event.istop], y[event.slice]))
         Event 0, first y val is 3, last is 3 and slice is [3 2 2 4 3 4 3]
 
         >>> events2 = find_events(condition, 1, debounce,
@@ -221,7 +221,8 @@ class Events(object):
     @lazyproperty
     def durations(self):
         """Return a numpy.array of event durations in seconds."""
-        return (self._stops - self._starts) * self._period
+        durations = (self._stops - self._starts) * self._period
+        return durations
 
     def as_array(self, false_values=0, true_values=1, dtype=np.float):
         """Returns a numpy.array that identifies events
