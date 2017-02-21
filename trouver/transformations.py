@@ -5,10 +5,13 @@ import numpy as np
 import pandas as pd
 from toolz import curry
 
-RawEvents = namedtuple('RawEvents', 'starts stops')
+__all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
 
 logger = logging.getLogger('trouver.transformations')
 logger.setLevel(logging.DEBUG)
+
+RawEvents = namedtuple('RawEvents', 'starts stops')
+
 
 def apply_condition(condition):
     """Convert an array of bool to starts and stops
@@ -28,10 +31,6 @@ def apply_condition(condition):
         Both entries in `Rawevents`, starts and stops, are both numpy
         arrays of integers. Starts is where conditions go from False to
         True. Stops is where conditions go from True to False.
-
-    Examples:
-
-
     """
     if isinstance(condition, pd.core.series.Series):
         condition = condition.values
@@ -70,9 +69,6 @@ def debounce(entry_debounce=None, exit_debounce=None):
     See mechanical debounce in mechanical switches and relays for a
     similar concept.
 
-    See Also:
-        trouver.transfomations._debounce
-
     Args:
         adeb (float): Time in seconds. Default is None. An event
             must be active >= adeb to activate event.
@@ -83,7 +79,16 @@ def debounce(entry_debounce=None, exit_debounce=None):
         callable: Partial function
 
     Examples:
-
+        >>> from trouver import find_events, debounce
+        >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
+        >>> condition = y > 2
+        >>> test_events = find_events(condition, 1)
+        >>> debounce = debounce(2, 2)
+        >>> example_events = find_events(condition, 1, debounce)
+        >>> test_events.as_array()
+        array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
+        >>> example_events.as_array()
+        array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
     """
     return partial(_debounce, entry_debounce=entry_debounce, exit_debounce=exit_debounce)
 
@@ -179,9 +184,6 @@ def filter_durations(mindur=None, maxdur=None):
 
     Filter out events that are < mindur and > maxdur (time in seconds).
 
-    See Also:
-        trouver.transfomations._filter_durations
-
     Args:
         mindur (float): Time in seconds. Default is None. Any
         occurrence whose time is < mindur is filtered out.
@@ -192,7 +194,16 @@ def filter_durations(mindur=None, maxdur=None):
         callable: Partial function
 
     Examples:
-
+        >>> from trouver import find_events, filter_durations
+        >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
+        >>> condition = y > 2
+        >>> test_events = find_events(condition, 1)
+        >>> filter_durations = filter_durations(1.5, 2.5)
+        >>> example_events = find_events(condition, 1, filter_durations)
+        >>> test_events.as_array()
+        array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
+        >>> example_events.as_array()
+        array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
     """
     return partial(_filter_durations, mindur=mindur, maxdur=maxdur)
 
@@ -261,9 +272,6 @@ def offset_events(start_offset=None, stop_offset=None):
     Offset the starts and stops of events by the time in seconds
     specified by start_offset and stop_offset
 
-    See Also:
-        trouver.transfomations._offset_events
-
     Args:
         start_offset (float): Time in seconds. Default is None. Value
             must be <= 0
@@ -274,7 +282,16 @@ def offset_events(start_offset=None, stop_offset=None):
         callable: Partial function
 
     Examples:
-
+        >>> from trouver import find_events, offset_events
+        >>> y = np.array([2, 2, 2, 3, 4, 5, 2, 2, 2])
+        >>> condition = y > 2
+        >>> test_events = find_events(condition, 1)
+        >>> offset_events = offset_events(-1, 1)
+        >>> example_events = find_events(condition, 1, offset_events)
+        >>> test_events.as_array()
+        array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
+        >>> example_events.as_array()
+        array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
     """
     return partial(_offset_events, start_offset=start_offset, stop_offset=stop_offset)
 
@@ -284,7 +301,7 @@ def _offset_events(events, period, condition_size, start_offset, stop_offset):
     """Apply an offset to event start and stops
 
     See Also:
-        trouver.transfomations._offset_events
+        trouver.transfomations.offset_events
 
     Args:
         events (:obj: `collections.namedtuple` of int):
@@ -325,13 +342,70 @@ def _offset_events(events, period, condition_size, start_offset, stop_offset):
     return RawEvents(starts, stops)
 
 
-def merge_overlap(events):
-    _mask = np.array([False])
-    mask = (events.starts[1:] < events.stops[:-1])
-    starts = np.ma.masked_where(np.append(_mask, mask), events.starts).compressed()
-    stops = np.ma.masked_where(np.append(mask, _mask), events.stops).compressed()
+def merge_overlap(flag=True):
+    """Merge any events that overlap into one contiguous event
 
-    return RawEvents(starts, stops)
+    Some events such as offset_events can cause events to overlap. If
+    this transformation is applied, any events that overlap will become
+    one contiguous event.
+
+    Args:
+        flag (bool): Default is True. If True, merge events that overlap
+            If False, don't merge overlapped events.
+
+    Returns callable: Partial function
+
+    Examples:
+        >>> from trouver import find_events, offset_events
+        >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 2, 2])
+        >>> condition = y > 2
+        >>> offset_events = offset_events(-1, 1)
+        >>> test_events = find_events(condition, 1, offset_events)
+        >>> merge_overlap = merge_overlap()
+        >>> example_events = find_events(condition, 1, offset_events,
+        ... merge_overlap)
+        >>> test_events.as_array()
+        array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
+        >>> example_events.as_array()
+        array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
+        >>> len(test_events)
+        2
+        >>> len(example_events)
+        1
+    """
+    return partial(_merge_overlap, flag=flag)
+
+
+def _merge_overlap(events, flag):
+    """Merge events that overlap into a contiguous event
+
+    See Also:
+        trouver.transfomations.merge_overlap
+
+    Args:
+        events (:obj: `collections.namedtuple` of int):
+            trouver.transformations.RawEvents(starts, stops)
+            starts (np.ndarry of int): Index values for event starts
+            stops (np.ndarry of int): Index values for event stops
+        flag (bool): Default is True. If True, merge events that overlap
+            If False, don't merge overlapped events.
+
+    Returns:
+        collections.namedtuple:
+            trouver.transformations.RawEvents(starts, stops)
+            starts (np.ndarry of int): Index values for event starts
+            stops (np.ndarry of int): Index values for event stops
+
+    """
+    if flag:
+        _mask = np.array([False])
+        mask = (events.starts[1:] <= events.stops[:-1])
+        starts = np.ma.masked_where(np.append(_mask, mask), events.starts).compressed()
+        stops = np.ma.masked_where(np.append(mask, _mask), events.stops).compressed()
+
+        return RawEvents(starts, stops)
+    else:
+        return events
 
 def main():
     input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))

@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 from toolz import pipe
 
-from trouver.as_array import as_array
 from trouver.transformations import apply_condition
 
 # from memory_profiler import profile
@@ -96,72 +95,6 @@ def find_events(condition, period, *transformations, name='events'):
         >>> events.name
         'example'
 
-    """
-    if type(condition) is pd.core.series.Series:
-        condition = condition.values
-
-    raw_events = apply_condition(condition)
-    curried_funcs = [curry_func(func, period, condition.size) for func in transformations]
-    transformed_events = pipe(raw_events, *curried_funcs)
-
-    starts = transformed_events.starts
-    stops = transformed_events.stops
-
-    return Events(starts, stops, period, name, condition.size)
-
-
-def lazyproperty(func):
-    """Cache a property as an attr"""
-    name = '_lazy_' + func.__name__
-
-    @property
-    @wraps(func)
-    def lazy(self):
-        if hasattr(self, name):
-            return getattr(self, name)
-        else:
-            value = func(self)
-            setattr(self, name, value)
-            return value
-    return lazy
-
-
-class Events(object):
-    """Object to represent events in time series data
-
-
-
-    Attributes:
-        name (:obj: `str`): User provided name for events.
-        _starts (:obj: `np.array` of int):
-        _stops (:obj: `np.array` of int):
-        _period (float):
-        _condition_size (int):
-
-    Examples:
-
-        >>> from trouver import find_events, debounce, offset_events, filter_durations
-        >>> import numpy as np
-        >>> np.random.seed(10)
-
-        >>> debounce = debounce(2, 2)
-        >>> offset_events = offset_events(-1,2)
-        >>> filter_durations = filter_durations(3, 5)
-
-        >>> x = np.random.random_integers(0, 1, 20)
-        >>> y = np.random.random_integers(2, 4, 20)
-        >>> condition = (x>0) & (y<=3)
-
-        >>> events = find_events(condition, 1, debounce, filter_durations, offset_events, name='example')
-        >>> events.durations
-        array([7])
-
-        >>> len(events)
-        1
-
-        >>> events.name
-        'example'
-
         >>> events.as_array()
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.,
                 1.,  0.,  0.,  0.,  0.,  0.,  0.])
@@ -211,6 +144,44 @@ class Events(object):
         >>> events2 == events
         True
     """
+    if type(condition) is pd.core.series.Series:
+        condition = condition.values
+
+    raw_events = apply_condition(condition)
+    curried_funcs = [curry_func(func, period, condition.size) for func in transformations]
+    transformed_events = pipe(raw_events, *curried_funcs)
+
+    starts = transformed_events.starts
+    stops = transformed_events.stops
+
+    return Events(starts, stops, period, name, condition.size)
+
+
+def lazyproperty(func):
+    """Cache a property as an attr"""
+    name = '_lazy_' + func.__name__
+    @property
+    @wraps(func)
+    def lazy(self):
+        if hasattr(self, name):
+            return getattr(self, name)
+        else:
+            value = func(self)
+            setattr(self, name, value)
+            return value
+    return lazy
+
+
+class Events(object):
+    """Object to represent events in time series data
+
+    Attributes:
+        name (:obj: `str`): User provided name for events.
+        _starts (:obj: `np.array` of int):
+        _stops (:obj: `np.array` of int):
+        _period (float):
+        _condition_size (int):
+    """
     def __init__(self, starts, stops, period, name, condition_size):
         self.name = name
         self._starts = starts
@@ -244,7 +215,8 @@ class Events(object):
 
         """
         output = np.ones(self._condition_size, dtype=dtype) * false_values
-        output = as_array(self._starts, self._stops, output, true_values)
+        for start, stop in zip(self._starts, self._stops):
+            output[start:stop] = 1 * true_values
         return output.astype(dtype)
 
     def as_series(self, false_values=0, true_values=1, name=None):

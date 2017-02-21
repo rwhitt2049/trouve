@@ -4,10 +4,11 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 
-from trouver.transformations import (_filter_durations, _offset_events,
-                                     _debounce, RawEvents, filter_durations,
-                                     offset_events, debounce, apply_condition,
-                                     merge_overlap)
+from trouver.transformations import (RawEvents, apply_condition,
+                                     debounce, _debounce,
+                                     filter_durations, _filter_durations,
+                                     offset_events, _offset_events,
+                                     merge_overlap, _merge_overlap)
 
 
 class FilterTestCase(TestCase):
@@ -172,7 +173,18 @@ class TestOverlaps(FilterTestCase):
         control_events = RawEvents(np.array([1, 13]),
                                    np.array([7, 15]))
 
-        test_events = merge_overlap(input_events)
+        test_events = _merge_overlap(input_events, flag=True)
+
+        self.assertEvents(control_events, test_events)
+
+    def test_events_where_edges_touch(self):
+        input_events = RawEvents(np.array([1, 3, 13]),
+                                 np.array([3, 7, 15]))
+
+        control_events = RawEvents(np.array([1, 13]),
+                                   np.array([7, 15]))
+
+        test_events = _merge_overlap(input_events, flag=True)
 
         self.assertEvents(control_events, test_events)
 
