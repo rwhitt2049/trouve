@@ -31,6 +31,7 @@ def apply_condition(condition):
         Both entries in `Rawevents`, starts and stops, are both numpy
         arrays of integers. Starts is where conditions go from False to
         True. Stops is where conditions go from True to False.
+
     """
     if isinstance(condition, pd.core.series.Series):
         condition = condition.values
@@ -70,10 +71,10 @@ def debounce(entry_debounce=None, exit_debounce=None):
     similar concept.
 
     Args:
-        adeb (float): Time in seconds. Default is None. An event
-            must be active >= adeb to activate event.
-        ddeb (float): Time in seconds. Default is None. An event
-            must be inactive >= ddeb to deactivate event.
+        entry_debounce (float): Time in seconds. Default is None. An
+            event must be active >= adeb to activate event.
+        exit_debounce (float): Time in seconds. Default is None. An 
+            event must be inactive >= ddeb to deactivate event.
 
     Returns:
         callable: Partial function
@@ -89,6 +90,7 @@ def debounce(entry_debounce=None, exit_debounce=None):
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> example_events.as_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
+
     """
     return partial(_debounce, entry_debounce=entry_debounce, exit_debounce=exit_debounce)
 
@@ -204,6 +206,7 @@ def filter_durations(mindur=None, maxdur=None):
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> example_events.as_array()
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
+
     """
     return partial(_filter_durations, mindur=mindur, maxdur=maxdur)
 
@@ -292,6 +295,7 @@ def offset_events(start_offset=None, stop_offset=None):
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
         >>> example_events.as_array()
         array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
+
     """
     return partial(_offset_events, start_offset=start_offset, stop_offset=stop_offset)
 
@@ -342,7 +346,7 @@ def _offset_events(events, period, condition_size, start_offset, stop_offset):
     return RawEvents(starts, stops)
 
 
-def merge_overlap(flag=True):
+def merge_overlap(events):
     """Merge any events that overlap into one contiguous event
 
     Some events such as offset_events can cause events to overlap. If
@@ -350,10 +354,16 @@ def merge_overlap(flag=True):
     one contiguous event.
 
     Args:
-        flag (bool): Default is True. If True, merge events that overlap
-            If False, don't merge overlapped events.
+        events (:obj: `collections.namedtuple` of int):
+            trouver.transformations.RawEvents(starts, stops)
+            starts (np.ndarry of int): Index values for event starts
+            stops (np.ndarry of int): Index values for event stops
 
-    Returns callable: Partial function
+    Returns:
+        collections.namedtuple:
+            trouver.transformations.RawEvents(starts, stops)
+            starts (np.ndarry of int): Index values for event starts
+            stops (np.ndarry of int): Index values for event stops
 
     Examples:
         >>> from trouver import find_events, offset_events
@@ -361,7 +371,6 @@ def merge_overlap(flag=True):
         >>> condition = y > 2
         >>> offset_events = offset_events(-1, 1)
         >>> test_events = find_events(condition, 1, offset_events)
-        >>> merge_overlap = merge_overlap()
         >>> example_events = find_events(condition, 1, offset_events,
         ... merge_overlap)
         >>> test_events.as_array()
@@ -372,40 +381,17 @@ def merge_overlap(flag=True):
         2
         >>> len(example_events)
         1
-    """
-    return partial(_merge_overlap, flag=flag)
-
-
-def _merge_overlap(events, flag):
-    """Merge events that overlap into a contiguous event
-
-    See Also:
-        trouver.transfomations.merge_overlap
-
-    Args:
-        events (:obj: `collections.namedtuple` of int):
-            trouver.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
-        flag (bool): Default is True. If True, merge events that overlap
-            If False, don't merge overlapped events.
-
-    Returns:
-        collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
 
     """
-    if flag:
-        _mask = np.array([False])
-        mask = (events.starts[1:] <= events.stops[:-1])
-        starts = np.ma.masked_where(np.append(_mask, mask), events.starts).compressed()
-        stops = np.ma.masked_where(np.append(mask, _mask), events.stops).compressed()
+    _mask = np.array([False])
+    mask = (events.starts[1:] <= events.stops[:-1])
+    starts = np.ma.masked_where(np.append(_mask, mask),
+                                events.starts).compressed()
+    stops = np.ma.masked_where(np.append(mask, _mask),
+                               events.stops).compressed()
 
-        return RawEvents(starts, stops)
-    else:
-        return events
+    return RawEvents(starts, stops)
+
 
 def main():
     input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))

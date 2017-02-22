@@ -8,7 +8,7 @@ from trouver.transformations import (RawEvents, apply_condition,
                                      debounce, _debounce,
                                      filter_durations, _filter_durations,
                                      offset_events, _offset_events,
-                                     merge_overlap, _merge_overlap)
+                                     merge_overlap)
 
 
 class FilterTestCase(TestCase):
@@ -165,7 +165,7 @@ class TestOffsets(FilterTestCase):
         self.assertEvents(control_events, test_events)
 
 
-class TestOverlaps(FilterTestCase):
+class TestMergeOverlap(FilterTestCase):
     def test_merge_overlap(self):
         input_events = RawEvents(np.array([1, 3, 13]),
                                  np.array([5, 7, 15]))
@@ -173,7 +173,7 @@ class TestOverlaps(FilterTestCase):
         control_events = RawEvents(np.array([1, 13]),
                                    np.array([7, 15]))
 
-        test_events = _merge_overlap(input_events, flag=True)
+        test_events = merge_overlap(input_events)
 
         self.assertEvents(control_events, test_events)
 
@@ -184,7 +184,7 @@ class TestOverlaps(FilterTestCase):
         control_events = RawEvents(np.array([1, 13]),
                                    np.array([7, 15]))
 
-        test_events = _merge_overlap(input_events, flag=True)
+        test_events = merge_overlap(input_events)
 
         self.assertEvents(control_events, test_events)
 
