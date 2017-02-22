@@ -86,8 +86,8 @@ def find_events(condition, period, *transformations, name='events'):
         >>> events = find_events(condition, 1, debounce,
         ... filter_durations, offset_events, name='example')
 
-        >>> events.durations
-        array([7])
+        >>> print(events.durations)
+        [7]
 
         >>> len(events)
         1

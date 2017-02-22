@@ -14,3 +14,4 @@ install:
 script:
   - "nosetests -w tests/ -v"
   - "python -m doctest -v trouver/events.py"
+  - "python -m doctest -v trouver/transformations.py"
