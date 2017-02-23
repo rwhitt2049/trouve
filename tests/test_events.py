@@ -46,6 +46,14 @@ class TestAsArray(EventTestCase):
         self.assertIsInstance(test, np.ndarray)
 
 
+class TestAsMask(EventTestCase):
+    def test_as_mask(self):
+        test = self.events.as_mask()
+        control = np.array([True, False, False, False, True, True,
+                            True, False, False, True, False, False])
+        npt.assert_array_equal(control, test)
+
+
 class TestAsSeries(EventTestCase):
     def test_default_parameters(self):
         """Test as_array() with default settings"""

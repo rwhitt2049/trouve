@@ -195,6 +195,9 @@ class Events(object):
         durations = (self._stops - self._starts) * self._period
         return durations
 
+    # TODO force defaults to np.int8 datatype
+    # specify false and true values as None, check if values and dtype is noe
+    # and specify appropriately
     def as_array(self, false_values=0, true_values=1, dtype=np.float):
         """Returns a numpy.array that identifies events
 
@@ -235,13 +238,42 @@ class Events(object):
 
         Returns:
             series: pandas.Series
-                Series of specified values that identify where
-                events found.
+                Series of specified values that identify events
         """
         if name is None:
             name = self.name
         data = self.as_array(false_values=false_values, true_values=true_values)
         return pd.Series(data=data, name=name)
+
+    def as_mask(self):
+        """Returns an np.ndarray bool mask
+
+        This method returns a numpy.ndarray of bools where values are
+        False where the condition is met, and True where the condition
+        are not met. Trouver treats conditionals opposite of how numpy
+        treats them. That is to say that numpy will mask out values in
+        an array that meet the condition, however trouver is by design
+        more interested in finding and keeping events that meet the
+        given condition. This method makes it more convenient to
+        interact with the numpy masked array module.
+
+        Examples:
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x > 2
+            >>> print(condition)
+            [False False  True  True  True False]
+            >>> events = find_events(condition, 1)
+            >>> print(events.as_array())
+            [ 0.  0.  1.  1.  1.  0.]
+            >>> print(events.as_mask())
+            [ True  True False False False  True]
+            >>> print(np.ma.masked_where(events.as_mask(), x))
+            [-- -- 4 5 3 --]
+
+        Returns:
+            np.ndarray of bool:
+        """
+        return self.as_array(1, 0, np.int8).view(bool)
 
     def __iter__(self):
         self.i = 0
@@ -329,13 +361,12 @@ def main():
     offset_events = offset_events(-11, 2)
     filter_durations = filter_durations(3, 5)
 
-
-
     x = np.random.random_integers(0, 1, 20)
     y = np.random.random_integers(2, 4, 20)
     condition = (x > 0) & (y <= 3)
 
-    events = find_events(condition, 1, debounce, filter_durations, offset_events, name = 'example')
+    events = find_events(condition, 1, debounce, filter_durations,
+                         offset_events, name='example')
     print(repr(events))
     print(events.as_array())
     print(events.durations)
