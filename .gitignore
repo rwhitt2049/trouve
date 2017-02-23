@@ -10,3 +10,5 @@ _templates
 documentation/make.bat
 documentation/Makefile
 *ipynb_checkpoints*
+
+trouver\.egg-info/
