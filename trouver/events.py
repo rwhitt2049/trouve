@@ -12,7 +12,7 @@ from trouver.transformations import apply_condition
 
 # TODO update all docs
 
-Occurrence = namedtuple('Occurrence', 'istart istop slice duration')
+Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 
 
 def curry_func(func, period, condition_size):
@@ -128,15 +128,15 @@ def find_events(condition, period, *transformations, name='events'):
         Min, Max, Mean Duration: 7.000s, 7.000s, 7.000s
 
         >>> string = 'Event {} was {}s in duration'
-        >>> for i, event in enumerate(events):
-        ...     print(string.format(i, event.duration))
+        >>> for _i, event in enumerate(events):
+        ...     print(string.format(_i, event.duration))
         Event 0 was 7s in duration
 
         >>> string = ('Event {}, first y val is {}, last is {} and'
         ... ' slice is {}')
-        >>> for i, event in enumerate(events):
-        ...     print(string.format(i, y[event.istart],
-        ...     y[event.istop], y[event.slice]))
+        >>> for _i, event in enumerate(events):
+        ...     print(string.format(_i, y[event.start],
+        ...     y[event.stop], y[event.slice]))
         Event 0, first y val is 3, last is 3 and slice is [3 2 2 4 3 4 3]
 
         >>> events2 = find_events(condition, 1, debounce,
@@ -276,18 +276,18 @@ class Events(object):
         return self.as_array(1, 0, np.int8).view(bool)
 
     def __iter__(self):
-        self.i = 0
+        self._i = 0
         return self
 
     def __next__(self):
         try:
             occurrence = Occurrence(
-                istart=self._starts[self.i],
-                istop=self._stops[self.i] - 1,
-                slice=slice(self._starts[self.i], self._stops[self.i]),
-                duration=(self._stops[self.i] - self._starts[self.i]) * self._period
+                start=self._starts[self._i],
+                stop=self._stops[self._i] - 1,
+                slice=slice(self._starts[self._i], self._stops[self._i]),
+                duration=(self._stops[self._i] - self._starts[self._i]) * self._period
             )
-            self.i += 1
+            self._i += 1
             return occurrence
         except IndexError:
             raise StopIteration
@@ -335,9 +335,9 @@ class Events(object):
         can have different names and still be equal.
         """
         if (np.all(self._starts == other._starts)
-            and np.all(self._stops == other._stops)
-            and self._period == other._period
-            and self._condition_size == other._condition_size):
+                and np.all(self._stops == other._stops)
+                and self._period == other._period
+                and self._condition_size == other._condition_size):
             return True
         else:
             return False

@@ -19,8 +19,8 @@ class TestClassIterable(TestCase):
         test_stops = []
 
         for event in self.events:
-            test_starts.append(event.istart)
-            test_stops.append(event.istop)
+            test_starts.append(event.start)
+            test_stops.append(event.stop)
 
         npt.assert_array_equal([1, 7, 10], test_starts)
         npt.assert_array_equal([3, 8, 11], test_stops)
