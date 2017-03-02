@@ -1,160 +1,14 @@
 from collections import namedtuple
 from functools import wraps
-from inspect import signature
 
 import numpy as np
 import pandas as pd
-from toolz import pipe
-
-from trouver.transformations import apply_condition
 
 # from memory_profiler import profile
 
 # TODO update all docs
 
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
-
-
-def curry_func(func, period, condition_size):
-    """Add _period and condition_size arguments if required
-
-    Allows any transformation function that decorated with toolz.curry
-    to have access to both the _period and condition_size arguments.
-    If func requires neither _period or condition_size, then no
-    operations are performed and the original function is returned.
-
-    See Also: toolz.curry
-
-    Args:
-        func: A curried transformation function
-        period (float): Sample _period from time series data
-        condition_size (int): Size of condition numpy array
-
-    Returns:
-        callable: Curried function with period and/or condition_size
-
-    """
-    sig = signature(func)
-    if 'period' in sig.parameters.keys():
-        func = func(period=period)
-
-    if 'condition_size' in sig.parameters.keys():
-        func = func(condition_size=condition_size)
-
-    return func
-
-
-def find_events(condition, period, *transformations, name='events'):
-    """Find events based off a condition
-
-    Find events based off a bool conditional array and apply a sequence
-    of transformation functions to them.
-
-    See Also:
-        trouver.events.Events
-
-    Args:
-        condition (:obj: `np.ndarray` or :obj: `pd.core.Series` bool):
-            User supplied boolean conditional array.
-        period (float): Time in seconds between each data point.
-            Requires constant increment data that is uniform across
-            all data. (1/Hz = s)
-        *transformations (functions, optional): Sequence of
-            transformation functions to apply to events derived from
-            supplied condition. Supplied functions are applied via
-            toolz.pipe()
-        name (:obj: `str`, optional): Default is `'events'`.
-            User provided name for events.
-
-    Returns:
-        trouver.events.Events: Returns events found from condition with
-        any supplied transformation applied.
-
-    Examples:
-        >>> from trouver import find_events, debounce, offset_events, filter_durations
-        >>> import numpy as np
-        >>> np.random.seed(10)
-
-        >>> debounce = debounce(2, 2)
-        >>> offset_events = offset_events(-1,2)
-        >>> filter_durations = filter_durations(3, 5)
-
-        >>> x = np.random.random_integers(0, 1, 20)
-        >>> y = np.random.random_integers(2, 4, 20)
-        >>> condition = (x>0) & (y<=3)
-
-        >>> events = find_events(condition, 1, debounce,
-        ... filter_durations, offset_events, name='example')
-
-        >>> print(events.durations)
-        [7]
-
-        >>> len(events)
-        1
-
-        >>> events.name
-        'example'
-
-        >>> events.as_array()
-        array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.,
-                1.,  0.,  0.,  0.,  0.,  0.,  0.])
-
-        >>> events.as_series()
-        0     0.0
-        1     0.0
-        2     0.0
-        3     0.0
-        4     0.0
-        5     0.0
-        6     0.0
-        7     1.0
-        8     1.0
-        9     1.0
-        10    1.0
-        11    1.0
-        12    1.0
-        13    1.0
-        14    0.0
-        15    0.0
-        16    0.0
-        17    0.0
-        18    0.0
-        19    0.0
-        Name: example, dtype: float64
-
-        >>> print(events)
-        example
-        Number of events: 1
-        Min, Max, Mean Duration: 7.000s, 7.000s, 7.000s
-
-        >>> string = 'Event {} was {}s in duration'
-        >>> for _i, event in enumerate(events):
-        ...     print(string.format(_i, event.duration))
-        Event 0 was 7s in duration
-
-        >>> string = ('Event {}, first y val is {}, last is {} and'
-        ... ' slice is {}')
-        >>> for _i, event in enumerate(events):
-        ...     print(string.format(_i, y[event.start],
-        ...     y[event.stop], y[event.slice]))
-        Event 0, first y val is 3, last is 3 and slice is [3 2 2 4 3 4 3]
-
-        >>> events2 = find_events(condition, 1, debounce,
-        ... filter_durations, offset_events, name='example')
-        >>> events2 == events
-        True
-    """
-    if type(condition) is pd.core.series.Series:
-        condition = condition.values
-
-    raw_events = apply_condition(condition)
-    curried_funcs = [curry_func(func, period, condition.size) for func in transformations]
-    transformed_events = pipe(raw_events, *curried_funcs)
-
-    starts = transformed_events.starts
-    stops = transformed_events.stops
-
-    return Events(starts, stops, period, name, condition.size)
 
 
 def lazyproperty(func):
@@ -258,6 +112,7 @@ class Events(object):
         interact with the numpy masked array module.
 
         Examples:
+            >>> from trouver import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
@@ -372,7 +227,6 @@ def main():
     print(events.durations)
     events.as_array()
     print(events)
-
 
 
 if __name__ == '__main__':
