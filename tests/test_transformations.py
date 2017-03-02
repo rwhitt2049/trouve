@@ -2,217 +2,208 @@ from unittest import TestCase, main
 
 import numpy as np
 import numpy.testing as npt
-import pandas as pd
 
-from trouver.transformations import (RawEvents, apply_condition,
-                                     debounce, _debounce,
-                                     filter_durations, _filter_durations,
-                                     offset_events, _offset_events,
-                                     merge_overlap)
+from trouver.events import Events
+from trouver.transformations import (_debounce, _filter_durations,
+                                     _offset_events, merge_overlap)
+from trouver.transformations import debounce, filter_durations, offset_events
 
 
-class FilterTestCase(TestCase):
-    @staticmethod
-    def assertEvents(one, two):
-        npt.assert_array_equal(one.starts, two.starts)
-        npt.assert_array_equal(one.stops, two.stops)
+class TransformationTestFixture(TestCase):
+    def setUp(self):
+        raise NotImplementedError
+
+    def fixture(self, control_starts, control_stops, period, **kwargs):
+        input_events = Events(self.starts, self.stops, period, 'input', self.condition.size)
+
+        test_events = self.transformation(input_events, **kwargs)
+        test_starts, test_stops = test_events._starts, test_events._stops
+
+        npt.assert_array_equal(control_starts, test_starts)
+        npt.assert_array_equal(control_stops, test_stops)
 
 
-class TestApplyCondition(FilterTestCase):
-    def test_apply_condition_pd_series(self):
-        condition = pd.Series([True, False, True, True])
-        test_events = apply_condition(condition)
-        control_events = RawEvents(np.array([0, 2]), np.array([1, 4]))
-        self.assertEvents(control_events, test_events)
-
-    def test_apply_condition_ndarray(self):
-        condition = np.array([True, False, True, True])
-        test_events = apply_condition(condition)
-        control_events = RawEvents(np.array([0, 2]), np.array([1, 4]))
-        self.assertEvents(control_events, test_events)
-
-
-class TestDebounce(FilterTestCase):
+class TestDebounce(TransformationTestFixture):
     def setUp(self):
         self.condition = np.array([0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1])
-        self.input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
+        self.starts = np.array([2, 7, 11])
+        self.stops = np.array([4, 10, 12])
+        self.transformation = _debounce
 
     def test_entry_debounce(self):
-        test_events = _debounce(self.input_events, period=1,
-                                entry_debounce=2, exit_debounce=0)
-
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 10]))
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 10])
+        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=0)
 
     def test_exit_debounce(self):
-        test_events = _debounce(self.input_events, period=1,
-                                entry_debounce=0, exit_debounce=2)
-
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 12]))
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 12])
+        self.fixture(control_starts, control_stops, period, entry_debounce=0, exit_debounce=2)
 
     def test_entry_and_exit_debounce(self):
-        test_events = _debounce(self.input_events, period=1,
-                                entry_debounce=2, exit_debounce=3.1)
-
-        control_events = RawEvents(np.array([2]), np.array([12]))
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([2])
+        control_stops = np.array([12])
+        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=3.1)
 
     def test_non_int_debounces(self):
-        test_events = _debounce(self.input_events, period=1,
-                                entry_debounce=float(0.00000001),
-                                exit_debounce=float(0.99999999))
-
-        control_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
-        self.assertEvents(control_events, test_events)
-
-    def test_period_100ms(self):
-        test_events = _debounce(self.input_events, period=0.1,
-                                entry_debounce=0.15, exit_debounce=0.2)
-
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 12]))
-        self.assertEvents(control_events, test_events)
-
-    def test_period_120ms(self):
-        test_events = _debounce(self.input_events, period=0.12,
-                                entry_debounce=0.15, exit_debounce=0.2)
-
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 12]))
-        self.assertEvents(control_events, test_events)
-
-
-class TestDurationFilter(FilterTestCase):
-    def setUp(self):
-        # condition array: np.array([0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1])
-        self.input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
-
-    def test_mindur(self):
-        test_events = _filter_durations(self.input_events, period=1,
-                                        mindur=2, maxdur=None)
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 10]))
-        self.assertEvents(control_events, test_events)
-
-    def test_maxdur(self):
-        test_events = _filter_durations(self.input_events, period=1,
-                                        mindur=0, maxdur=2)
-        control_events = RawEvents(np.array([2, 11]), np.array([4, 12]))
-        self.assertEvents(control_events, test_events)
-
-    def test_mindur_maxdur(self):
-        test_events = _filter_durations(self.input_events, period=1,
-                                        mindur=2, maxdur=3.1)
-        control_events = RawEvents(np.array([2, 7]), np.array([4, 10]))
-        self.assertEvents(control_events, test_events)
-
-    def test_nonint_durs(self):
-        test_events = _filter_durations(self.input_events, period=1,
-                                        mindur=float(1.00000001),
-                                        maxdur=float(2.99999999))
-        control_events = RawEvents(np.array([2]), np.array([4]))
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([2, 7, 11])
+        control_stops = np.array([4, 10, 12])
+        self.fixture(control_starts, control_stops, period,
+                     entry_debounce=float(0.00000001),
+                     exit_debounce=float(0.99999999))
 
     def test_period_100ms(self):
-        test_events = _filter_durations(self.input_events, period=0.1,
-                                        mindur=0.15, maxdur=0.2)
-        control_events = RawEvents(np.array([2]), np.array([4]))
-        self.assertEvents(control_events, test_events)
+        period = 0.1
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 12])
+        self.fixture(control_starts, control_stops, period, entry_debounce=0.15, exit_debounce=0.2)
 
     def test_period_120ms(self):
-        test_events = _filter_durations(self.input_events, period=0.12,
-                                        mindur=0.15, maxdur=0.35)
-        control_events = RawEvents(np.array([2]), np.array([4]))
-        self.assertEvents(control_events, test_events)
+        period = 0.12
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 12])
+        self.fixture(control_starts, control_stops, period, entry_debounce=0.15, exit_debounce=0.2)
 
 
-class TestOffsets(FilterTestCase):
+class TestDurationFilter(TransformationTestFixture):
     def setUp(self):
         self.condition = np.array([0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1])
-        self.input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
+        self.starts = np.array([2, 7, 11])
+        self.stops = np.array([4, 10, 12])
+        self.transformation = _filter_durations
+
+    def test_mindur(self):
+        period = 1
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 10])
+        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=None)
+
+    def test_maxdur(self):
+        period = 1
+        control_starts = np.array([2, 11])
+        control_stops = np.array([4, 12])
+        self.fixture(control_starts, control_stops, period, mindur=0, maxdur=2)
+
+    def test_mindur_maxdur(self):
+        period = 1
+        control_starts = np.array([2, 7])
+        control_stops = np.array([4, 10])
+        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=3.1)
+
+    def test_nonint_durs(self):
+        period = 1
+        control_starts = np.array([2])
+        control_stops = np.array([4])
+        self.fixture(control_starts, control_stops, period,
+                     mindur=float(1.00000001),
+                     maxdur=float(2.99999999))
+
+    def test_period_100ms(self):
+        period = 0.1
+        control_starts = np.array([2])
+        control_stops = np.array([4])
+        self.fixture(control_starts, control_stops, period, mindur=0.15, maxdur=0.2)
+
+    def test_period_120ms(self):
+        period = 0.12
+        control_starts = np.array([2])
+        control_stops = np.array([4])
+        self.fixture(control_starts, control_stops, period, mindur=0.15, maxdur=0.35)
+
+
+class TestOffsets(TransformationTestFixture):
+    def setUp(self):
+        self.condition = np.array([0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1])
+        self.starts = np.array([2, 7, 11])
+        self.stops = np.array([4, 10, 12])
+        self.transformation = _offset_events
 
     def test_start_offset(self):
-        control_events = RawEvents(np.array([1, 6, 10]), np.array([4, 10, 12]))
-        test_events = _offset_events(self.input_events, period=1,
-                                     condition_size=self.condition.size,
-                                     start_offset=-1, stop_offset=0)
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([1, 6, 10])
+        control_stops = np.array([4, 10, 12])
+        self.fixture(control_starts, control_stops, period, start_offset=-1, stop_offset=0)
 
     def test_stop_offset(self):
-        control_events = RawEvents(np.array([2, 7, 11]), np.array([5, 11, 12]))
-        test_events = _offset_events(self.input_events, period=1,
-                                     condition_size=self.condition.size,
-                                     start_offset=0, stop_offset=1)
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([2, 7, 11])
+        control_stops = np.array([5, 11, 12])
+        self.fixture(control_starts, control_stops, period, start_offset=0, stop_offset=1)
 
     def test_start_stop_offset(self):
-        control_events = RawEvents(np.array([1, 6, 10]), np.array([5, 11, 12]))
-        test_events = _offset_events(self.input_events, period=1,
-                                     condition_size=self.condition.size,
-                                     start_offset=-1, stop_offset=1)
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([1, 6, 10])
+        control_stops = np.array([5, 11, 12])
+        self.fixture(control_starts, control_stops, period, start_offset=-1, stop_offset=1)
 
     def test_period_100ms_start_stop_offset(self):
-        control_events = RawEvents(np.array([1, 6, 10]), np.array([5, 11, 12]))
-        test_events = _offset_events(self.input_events, period=0.1,
-                                     condition_size=self.condition.size,
-                                     start_offset=-0.1, stop_offset=0.1)
-        self.assertEvents(control_events, test_events)
+        period = 0.1
+        control_starts = np.array([1, 6, 10])
+        control_stops = np.array([5, 11, 12])
+        self.fixture(control_starts, control_stops, period, start_offset=-0.1, stop_offset=0.1)
 
     def test_period_120ms_start_stop_offset(self):
-        control_events = RawEvents(np.array([1, 6, 10]), np.array([5, 11, 12]))
-        test_events = _offset_events(self.input_events, period=1,
-                                     condition_size=self.condition.size,
-                                     start_offset=-0.1, stop_offset=0.1)
-        self.assertEvents(control_events, test_events)
+        period = 0.12
+        control_starts = np.array([1, 6, 10])
+        control_stops = np.array([5, 11, 12])
+        self.fixture(control_starts, control_stops, period, start_offset=-0.1, stop_offset=0.1)
 
 
-class TestMergeOverlap(FilterTestCase):
+class TestMergeOverlap(TransformationTestFixture):
+    def setUp(self):
+        self.condition = np.ones(15)
+        self.starts = np.array([1, 3, 13])
+        self.stops = np.array([5, 7, 15])
+        self.transformation = merge_overlap
+
     def test_merge_overlap(self):
-        input_events = RawEvents(np.array([1, 3, 13]),
-                                 np.array([5, 7, 15]))
-
-        control_events = RawEvents(np.array([1, 13]),
-                                   np.array([7, 15]))
-
-        test_events = merge_overlap(input_events)
-
-        self.assertEvents(control_events, test_events)
+        period = 1
+        control_starts = np.array([1, 13])
+        control_stops = np.array([7, 15])
+        self.fixture(control_starts, control_stops, period)
 
     def test_events_where_edges_touch(self):
-        input_events = RawEvents(np.array([1, 3, 13]),
-                                 np.array([3, 7, 15]))
-
-        control_events = RawEvents(np.array([1, 13]),
-                                   np.array([7, 15]))
-
-        test_events = merge_overlap(input_events)
-
-        self.assertEvents(control_events, test_events)
+        period = 1
+        self.starts = np.array([1, 7])
+        self.stops = np.array([7, 15])
+        control_starts = np.array([1])
+        control_stops = np.array([15])
+        self.fixture(control_starts, control_stops, period)
 
 
-class TestNoEvents(FilterTestCase):
+class TestNoEvents(TransformationTestFixture):
+    def setUp(self):
+        self.condition = np.ones(10)
+        self.starts = np.array([])
+        self.stops = np.array([])
+
     def test_debounce_no_events(self):
-        input_events = RawEvents(np.array([]), np.array([]))
-        test_events = _debounce(input_events, period=0.12,
-                                entry_debounce=0.15, exit_debounce=0.2)
-        control_events = RawEvents(np.array([]), np.array([]))
-        self.assertEvents(control_events, test_events)
+        self.transformation = _debounce
+        period = 1
+        control_starts = np.array([])
+        control_stops = np.array([])
+        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=3.1)
 
     def test_duration_filter_no_events(self):
-        input_events = RawEvents(np.array([]), np.array([]))
-        test_events = _filter_durations(input_events, period=0.12,
-                                        mindur=0.15, maxdur=0.2)
-        control_events = RawEvents(np.array([]), np.array([]))
-        self.assertEvents(control_events, test_events)
+        self.transformation = _filter_durations
+        period = 1
+        control_starts = np.array([])
+        control_stops = np.array([])
+        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=3.1)
 
     def test_offsets_no_events(self):
-        input_events = RawEvents(np.array([]), np.array([]))
-        test_events = _offset_events(input_events, period=0.12, condition_size=10,
-                                     start_offset=-0.15, stop_offset=0.2)
-        control_events = RawEvents(np.array([]), np.array([]))
-        self.assertEvents(control_events, test_events)
+        self.transformation = _offset_events
+        period = 1
+        control_starts = np.array([])
+        control_stops = np.array([])
+        self.fixture(control_starts, control_stops, period, start_offset=-2, stop_offset=3.1)
 
 
-class TestDefaultArguments(FilterTestCase):
+class TestDefaultArguments(TransformationTestFixture):
     """Test default arguments of all functions
 
     The input of these functions should match the output exactly.
@@ -220,23 +211,27 @@ class TestDefaultArguments(FilterTestCase):
     """
     def setUp(self):
         self.condition = np.array([0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1])
-        self.input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
+        self.period = 1
+        self.starts = np.array([2, 7, 11])
+        self.stops = np.array([4, 10, 12])
 
     def test_debounce_defaults(self):
-        test_func = debounce()
-        test_events = test_func(self.input_events, 1)
-        self.assertEvents(self.input_events, test_events)
+        self.transformation = debounce()
+        control_starts = self.starts
+        control_stops = self.stops
+        self.fixture(control_starts, control_stops, self.period)
 
     def test_duration_filter_defaults(self):
-        test_func = filter_durations()
-        test_events = test_func(self.input_events, 1)
-        self.assertEvents(self.input_events, test_events)
+        self.transformation = filter_durations()
+        control_starts = self.starts
+        control_stops = self.stops
+        self.fixture(control_starts, control_stops, self.period)
 
     def test_offset_defaults(self):
-        test_func = offset_events()
-        test_func = test_func(condition_size=self.condition.size)
-        test_events = test_func(self.input_events, 1)
-        self.assertEvents(self.input_events, test_events)
+        self.transformation = offset_events()
+        control_starts = self.starts
+        control_stops = self.stops
+        self.fixture(control_starts, control_stops, self.period)
 
 
 if __name__ == '__main__':

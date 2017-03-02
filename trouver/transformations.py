@@ -1,16 +1,10 @@
-from collections import namedtuple
 from functools import partial
-import logging
+
 import numpy as np
 import pandas as pd
 from toolz import curry
 
 __all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
-
-logger = logging.getLogger('trouver.transformations')
-logger.setLevel(logging.DEBUG)
-
-RawEvents = namedtuple('RawEvents', 'starts stops')
 
 
 def apply_condition(condition):
@@ -96,7 +90,7 @@ def debounce(entry_debounce=None, exit_debounce=None):
 
 
 @curry
-def _debounce(events, period, entry_debounce, exit_debounce):
+def _debounce(events, entry_debounce, exit_debounce):
     """Debounce activate and deactivation of events
 
     See Also:
@@ -124,7 +118,7 @@ def _debounce(events, period, entry_debounce, exit_debounce):
     if entry_debounce is None:
         _entry_debounce = 0
     elif entry_debounce >= 0:
-        _entry_debounce = np.ceil(entry_debounce / period)
+        _entry_debounce = np.ceil(entry_debounce / events._period)
     else:
         raise TypeError('entry_debounce should be a value >= 0 or None')
 
@@ -132,23 +126,23 @@ def _debounce(events, period, entry_debounce, exit_debounce):
     if exit_debounce is None:
         _exit_debounce = 0
     elif exit_debounce >= 0:
-        _exit_debounce = np.ceil(exit_debounce / period)
+        _exit_debounce = np.ceil(exit_debounce / events._period)
     else:
         raise TypeError('exit_debounce should be a value >= 0 or None')
 
     # from here on out, all calculations are in number of points, not seconds
 
-    start_mask = np.zeros(events.starts.size)
-    stop_mask = np.zeros(events.stops.size)
+    start_mask = np.zeros(events._starts.size)
+    stop_mask = np.zeros(events._stops.size)
     event_active = False
 
-    for index in np.arange(events.starts.size):
+    for index in np.arange(events._starts.size):
         # get time of the event
-        event_length = events.stops[index] - events.starts[index]
+        event_length = events._stops[index] - events._starts[index]
 
         # get time to the next event
         try:
-            reset_length = events.starts[index + 1] - events.stops[index]
+            reset_length = events._starts[index + 1] - events._stops[index]
         except IndexError:
             reset_length = None
 
@@ -175,10 +169,10 @@ def _debounce(events, period, entry_debounce, exit_debounce):
         else:
             raise ValueError
 
-    starts = np.ma.masked_where(start_mask > 0, events.starts).compressed()
-    stops = np.ma.masked_where(stop_mask > 0, events.stops).compressed()
+    events._starts = np.ma.masked_where(start_mask > 0, events._starts).compressed()
+    events._stops = np.ma.masked_where(stop_mask > 0, events._stops).compressed()
 
-    return RawEvents(starts, stops)
+    return events
 
 
 def filter_durations(mindur=None, maxdur=None):
@@ -212,7 +206,7 @@ def filter_durations(mindur=None, maxdur=None):
 
 
 @curry
-def _filter_durations(events, period, mindur, maxdur):
+def _filter_durations(events, mindur, maxdur):
     """Filter out events based  on duration
 
     See Also:
@@ -242,7 +236,7 @@ def _filter_durations(events, period, mindur, maxdur):
     if mindur is None:
         _mindur = 0
     elif mindur >= 0:
-        _mindur = np.ceil(mindur / period)
+        _mindur = np.ceil(mindur / events._period)
     else:
         raise TypeError('mindur should be a value >= 0 or None')
 
@@ -250,23 +244,23 @@ def _filter_durations(events, period, mindur, maxdur):
     if maxdur is None:
         _maxdur = None
     elif maxdur >= 0:
-        _maxdur = np.floor(maxdur / period)
+        _maxdur = np.floor(maxdur / events._period)
     else:
         raise TypeError('maxdur should be a value >= 0 or None')
 
     # from here on out, all calculations are in number of points, not seconds
 
-    event_lengths = events.stops - events.starts
+    event_lengths = events._stops - events._starts
     if _maxdur is not None:
         condition = ((event_lengths < _mindur) |
                      (event_lengths > _maxdur))
     else:
         condition = (event_lengths < _mindur)
 
-    starts = np.ma.masked_where(condition, events.starts).compressed()
-    stops = np.ma.masked_where(condition, events.stops).compressed()
+    events._starts = np.ma.masked_where(condition, events._starts).compressed()
+    events._stops = np.ma.masked_where(condition, events._stops).compressed()
 
-    return RawEvents(starts, stops)
+    return events
 
 
 def offset_events(start_offset=None, stop_offset=None):
@@ -301,7 +295,7 @@ def offset_events(start_offset=None, stop_offset=None):
 
 
 @curry
-def _offset_events(events, period, condition_size, start_offset, stop_offset):
+def _offset_events(events, start_offset, stop_offset):
     """Apply an offset to event start and stops
 
     See Also:
@@ -327,23 +321,23 @@ def _offset_events(events, period, condition_size, start_offset, stop_offset):
 
     """
     if start_offset is None:
-        starts = events.starts
+        starts = events._starts
     elif start_offset <= 0:
-        starts = events.starts + np.floor(start_offset/period).astype(np.int32)
+        starts = events._starts + np.floor(start_offset/events._period).astype(np.int32)
     else:
         raise ValueError('start_offset must be None or <= 0')
 
     if stop_offset is None:
-        stops = events.stops
+        stops = events._stops
     elif stop_offset >= 0:
-        stops = events.stops + np.ceil(stop_offset/period).astype(np.int32)
+        stops = events._stops + np.ceil(stop_offset/events._period).astype(np.int32)
     else:
         raise ValueError('stop_offset must be None or >= 0')
 
-    np.clip(starts, 0, condition_size, out=starts)
-    np.clip(stops, 0, condition_size, out=stops)
+    np.clip(starts, 0, events._condition_size, out=events._starts)
+    np.clip(stops, 0, events._condition_size, out=events._stops)
 
-    return RawEvents(starts, stops)
+    return events
 
 
 def merge_overlap(events):
@@ -384,13 +378,13 @@ def merge_overlap(events):
 
     """
     _mask = np.array([False])
-    mask = (events.starts[1:] <= events.stops[:-1])
-    starts = np.ma.masked_where(np.append(_mask, mask),
-                                events.starts).compressed()
-    stops = np.ma.masked_where(np.append(mask, _mask),
-                               events.stops).compressed()
+    mask = (events._starts[1:] <= events._stops[:-1])
+    events._starts = np.ma.masked_where(np.append(_mask, mask),
+                                        events._starts).compressed()
+    events._stops = np.ma.masked_where(np.append(mask, _mask),
+                                       events._stops).compressed()
 
-    return RawEvents(starts, stops)
+    return events
 
 
 def main():

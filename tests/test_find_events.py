@@ -1,38 +1,31 @@
 from unittest import TestCase, main
 
 import numpy as np
-from toolz import curry
+import numpy.testing as npt
+import pandas as pd
 
 import trouver
-from trouver.events import find_events, curry_func
+from trouver.find_events import find_events, _apply_condition
 
 
-def func_no_sample_period():
-    return
+class TestApplyCondition(TestCase):
+    @staticmethod
+    def condition_type_fixture(condition):
+        test_starts, test_stops = _apply_condition(condition)
 
+        control_starts = np.array([0, 2])
+        control_stops = np.array([1, 4])
 
-@curry
-def func_with_sample_period(sample_period, an_arg):
-    return
+        npt.assert_array_equal(control_starts, test_starts)
+        npt.assert_array_equal(control_stops, test_stops)
 
+    def test_apply_condition_pd_series(self):
+        condition = pd.Series([True, False, True, True])
+        self.condition_type_fixture(condition)
 
-@curry
-def func_with_condition_size(condition_size, an_arg):
-    return
-
-
-class TestCurrySamplePeriod(TestCase):
-    def test_without_without_sample_period(self):
-        test = curry_func(func_no_sample_period, 1, 5)
-        self.assertTrue(callable(test))
-
-    def test_function_with_sample_period(self):
-        test = curry_func(func_with_sample_period, 1, 5)
-        self.assertTrue(callable(test))
-
-    def test_function_with_condition_size(self):
-        test = curry_func(func_with_condition_size, 1, 5)
-        self.assertTrue(callable(test))
+    def test_apply_condition_ndarray(self):
+        condition = np.array([True, False, True, True])
+        self.condition_type_fixture(condition)
 
 
 class TestFindEvents(TestCase):
