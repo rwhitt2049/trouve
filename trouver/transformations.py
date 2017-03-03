@@ -1,56 +1,9 @@
 from functools import partial
 
 import numpy as np
-import pandas as pd
 from toolz import curry
 
 __all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
-
-
-def apply_condition(condition):
-    """Convert an array of bool to starts and stops
-
-    Convert a conditional array of bools into two numpy.ndarrays of
-    integers where starts are the indexes where condition goes from
-    False to True. Stops are the indexes where condition goes from
-    True to False.
-
-    Args:
-        condition (:obj: `np.array` of bool):
-
-    Returns:
-        collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
-
-        Both entries in `Rawevents`, starts and stops, are both numpy
-        arrays of integers. Starts is where conditions go from False to
-        True. Stops is where conditions go from True to False.
-
-    """
-    if isinstance(condition, pd.core.series.Series):
-        condition = condition.values
-
-    mask = (condition > 0).view('i1')
-    slice_index = np.arange(mask.size + 1, dtype=np.int32)
-
-    # Determine if condition is active at array start, set to_begin accordingly
-    if mask[0] == 0:
-        to_begin = np.array([0], dtype='i1')
-    else:
-        to_begin = np.array([1], dtype='i1')
-
-    # Determine if condition is active at array end, set to_end accordingly
-    if mask[-1] == 0:
-        to_end = np.array([0], dtype='i1')
-    else:
-        to_end = np.array([-1], dtype='i1')
-
-    deltas = np.ediff1d(mask, to_begin=to_begin, to_end=to_end)
-
-    starts = np.ma.masked_where(deltas < 1, slice_index).compressed()
-    stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
-
-    return RawEvents(starts, stops)
 
 
 def debounce(entry_debounce=None, exit_debounce=None):
