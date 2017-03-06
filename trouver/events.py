@@ -14,6 +14,7 @@ Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 def lazyproperty(func):
     """Cache a property as an attr"""
     name = '_lazy_' + func.__name__
+
     @property
     @wraps(func)
     def lazy(self):
@@ -27,14 +28,17 @@ def lazyproperty(func):
 
 
 class Events(object):
-    """Object to represent events in time series data
+    """Object to represent events found in time series data
+
+    A representation of events based off a ``bool`` conditional array.
 
     Attributes:
-        name (:obj: `str`): User provided name for events.
-        _starts (:obj: `np.array` of int):
-        _stops (:obj: `np.array` of int):
-        _period (float):
-        _condition_size (int):
+        name (``str``): User provided name for events.
+        _starts (``np.array`` of ``int``): The index for event starts
+        _stops (``np.array`` of ``int``): The index for event stops
+        _period (``float``): Time between each value of the original condition array
+        _condition_size (``int``): The size of the original condition array
+
     """
     def __init__(self, starts, stops, period, name, condition_size):
         self.name = name
@@ -45,7 +49,19 @@ class Events(object):
 
     @lazyproperty
     def durations(self):
-        """Return a numpy.array of event durations in seconds."""
+        """Return a ``numpy.ndarray`` of event durations in seconds.
+
+        Examples:
+            >>> from trouver import find_events
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x == 2
+            >>> events = find_events(condition, 1)
+            >>> print(events.as_array())
+            [ 1.  1.  0.  0.  0.  1.]
+            >>> events.durations
+            array([2, 1])
+
+        """
         durations = (self._stops - self._starts) * self._period
         return durations
 
@@ -53,22 +69,32 @@ class Events(object):
     # specify false and true values as None, check if values and dtype is noe
     # and specify appropriately
     def as_array(self, false_values=0, true_values=1, dtype=np.float):
-        """Returns a numpy.array that identifies events
+        """Returns a ``numpy.ndarray`` identifying found events
 
-        Useful for plotting or for creating a new mask.
+        Useful for plotting.
 
         Parameters:
-            false_values(float, optional): Default is 0. Value of array
-                where events are not active.
-            true_values (float, optional): Default is 1. Value of array
-                where events are active.
-            dtype (numpy.dtype, optional): Default is' numpy.float.
+            false_values(``float``, optional): Default is 0.
+                Value of array where events are not active.
+            true_values (``float``, optional): Default is 1.
+                Value of array where events are active.
+            dtype (``numpy.dtype``, optional): Default is ``numpy.float``.
                 Datatype of returned array.
 
         Returns:
-            array: numpy.ndarray
-                Ndarray of specified values that identify where events
-                were found.
+            ``numpy.ndarray``:
+                An array where values are coded to identify when events are active
+                or inactive.
+
+        Examples:
+            >>> from trouver import find_events
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x > 2
+            >>> print(condition)
+            [False False  True  True  True False]
+            >>> events = find_events(condition, 1)
+            >>> print(events.as_array())
+            [ 0.  0.  1.  1.  1.  0.]
 
         """
         output = np.ones(self._condition_size, dtype=dtype) * false_values
@@ -77,22 +103,39 @@ class Events(object):
         return output.astype(dtype)
 
     def as_series(self, false_values=0, true_values=1, name=None):
-        """Returns a pandas.series that identifies events
+        """Returns a ``pandas.Series`` identifying found events
 
-        Useful for plotting, for creating a new mask, or using for
-        group_by functionality in dataframes
+        Useful for plotting and for filtering a ``pandas.DataFrame``
 
         Parameters:
-            false_values (float, optional): Default is 0. Value of
-                array where events are not active.
-            true_values (float, optional): Default is 1. Value of array
-                where events are active.
-            name: str, optional
-                The name of the event. Default is 'events'
+            false_values(``float``, optional): Default is 0.
+                Value of array where events are not active.
+            true_values (``float``, optional): Default is 1.
+                Value of array where events are active.
+            name (``str``, optional): Default is :attr:`Events.name`.
+                Name of series.
 
         Returns:
-            series: pandas.Series
-                Series of specified values that identify events
+            ``pandas.Series``:
+                A series where values are coded to identify when events are active
+                or inactive.
+
+        Examples:
+            >>> from trouver import find_events
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x > 2
+            >>> print(condition)
+            [False False  True  True  True False]
+            >>> events = find_events(condition, 1)
+            >>> print(events.as_series())
+            0    0.0
+            1    0.0
+            2    1.0
+            3    1.0
+            4    1.0
+            5    0.0
+            Name: events, dtype: float64
+
         """
         if name is None:
             name = self.name
@@ -100,16 +143,23 @@ class Events(object):
         return pd.Series(data=data, name=name)
 
     def as_mask(self):
-        """Returns an np.ndarray bool mask
+        """Returns a ``numpy.ndarray`` ``bool`` mask for use with ``numpy.ma``
 
-        This method returns a numpy.ndarray of bools where values are
-        False where the condition is met, and True where the condition
+        This method returns a ``np.ndarray`` of ``bool`` where values are
+        False where the condition is met, and True where the conditions
         are not met. Trouver treats conditionals opposite of how numpy
         treats them. That is to say that numpy will mask out values in
-        an array that meet the condition, however trouver is by design
+        an array that meet the condition, however Trouver is by design
         more interested in finding and keeping events that meet the
         given condition. This method makes it more convenient to
-        interact with the numpy masked array module.
+        interact with the numpy masked array module as it will return
+        a mask that can be directly used by the ``numpy.ma`` module.
+        This is similar to what the tilde does for bool arrays.
+
+        Returns:
+            ``np.ndarray``:
+                An array of bools where the values are ``True`` when the condition
+                isn't met and ``False`` when the conditions are met.
 
         Examples:
             >>> from trouver import find_events
@@ -125,8 +175,6 @@ class Events(object):
             >>> print(np.ma.masked_where(events.as_mask(), x))
             [-- -- 4 5 3 --]
 
-        Returns:
-            np.ndarray of bool:
         """
         return self.as_array(1, 0, np.int8).view(bool)
 
@@ -135,6 +183,20 @@ class Events(object):
         return self
 
     def __next__(self):
+        """Iterate through ``Events._starts`` and ``Events._stops`` and return an :class:`.Occurrence`
+
+        Examples:
+            >>> import numpy as np
+            >>> from trouver import find_events
+            >>> x = np.array([0, 1, 1, 0, 1, 0])
+            >>> example = find_events(x, 1, name='example')
+            >>> for event in example:
+            ...     print(event)
+            ...
+            Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
+            Occurrence(start=4, stop=4, slice=slice(4, 5, None), duration=1)
+
+        """
         try:
             occurrence = Occurrence(
                 start=self._starts[self._i],
@@ -148,15 +210,40 @@ class Events(object):
             raise StopIteration
 
     def __getitem__(self, item):
+        """Get a specific :class:`.Occurrence`
+
+        Examples:
+            >>> import numpy as np
+            >>> from trouver import find_events
+            >>> x = np.array([0, 1, 1, 0, 1, 0])
+            >>> example = find_events(x, 1, name='example')
+            >>> first_event = example[0]
+            >>> print(first_event)
+            Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
+
+        """
         occurrence = Occurrence(
-            istart=self._starts[item],
-            istop=self._stops[item]-1,
+            start=self._starts[item],
+            stop=self._stops[item]-1,
             slice=slice(self._starts[item], self._stops[item]),
             duration=(self._stops[item] - self._starts[item]) * self._period
         )
         return occurrence
 
     def __len__(self):
+        """Returns the number of events found
+
+        Redirects to :any:`Events._starts` and returns ``Events._starts.size``
+
+        Examples:
+            >>> import numpy as np
+            >>> from trouver import find_events
+            >>> x = np.array([0, 1, 1, 0, 1, 0])
+            >>> example = find_events(x, 1, name='example')
+            >>> len(example)
+            2
+
+        """
         return self._starts.size
 
     def __repr__(self):
@@ -169,6 +256,19 @@ class Events(object):
         ).format(__class__=self.__class__, **self.__dict__)
 
     def __str__(self):
+        """Prints a summary of the events
+
+        Examples:
+            >>> import numpy as np
+            >>> from trouver import find_events
+            >>> x = np.array([0, 1, 1, 0, 1, 0])
+            >>> example = find_events(x, 1, name='example')
+            >>> print(example)
+            example
+            Number of events: 2
+            Min, Max, Mean Duration: 1.000s, 2.000s, 1.500s
+
+        """
         args = [len(self),
                 np.min(self.durations),
                 np.max(self.durations),
@@ -185,9 +285,25 @@ class Events(object):
     def __eq__(self, other):
         """Determine if two Events objects are identical
 
-        Compares _starts, _stops, _period and condition.size to
-        determine if two events are identical. Identical events objects
-        can have different names and still be equal.
+        Compares :attr:`Events._starts`, :attr:`Events._stops`, :attr:`Events._period`
+        and :attr:`Events.condition.size` to determine if equality of two events.
+        Events objects can have different names and still be equal.
+
+        Examples:
+            >>> import numpy as np
+            >>> from trouver import find_events
+            >>> x = np.array([0, 1, 1, 0, 1, 0])
+            >>> example = find_events(x, 1, name='example')
+            >>> other = find_events(x, 1, name='other')
+            >>> id(example) # doctest: +SKIP
+            2587452050568
+            >>> id(other) # doctest: +SKIP
+            2587452084352
+            >>> example == other
+            True
+            >>> example != other
+            False
+
         """
         if (np.all(self._starts == other._starts)
                 and np.all(self._stops == other._stops)

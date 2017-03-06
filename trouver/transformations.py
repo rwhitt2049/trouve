@@ -6,28 +6,33 @@ from toolz import curry
 __all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
 
 
-def debounce(entry_debounce=None, exit_debounce=None):
+def debounce(activate_debounce=None, deactivate_debounce=None):
     """Debounce activation and deactivation of events
 
-    Find an occurrence that is active for time >= adeb and activate
-    event. Deactivate event only after an occurrence is found that
-    is inactive for time >= to ddeb. Filter out all events that fall
-    outside of these bounds. This function is used to prevent short
-    lived occurrences from activating or deactivating longer events.
-    See mechanical debounce in mechanical switches and relays for a
-    similar concept.
+    Find an occurrence that is active for time >= activate_debounce and
+    activate event. Deactivate event only after an occurrence is found
+    that is inactive for time >= to deactivate_debounce. Filter out all events
+    that fall outside of these bounds. This function is used to prevent
+    short duration occurrences from activating or deactivating longer
+    events. See mechanical debounce in mechanical switches and relays
+    for a similar concept.
 
     Args:
-        entry_debounce (float): Time in seconds. Default is None. An
-            event must be active >= adeb to activate event.
-        exit_debounce (float): Time in seconds. Default is None. An 
-            event must be inactive >= ddeb to deactivate event.
+        activate_debounce (``float``): Default is ``None``.
+            Default value does not apply an activate_debounce. Minimum time
+            in seconds an occurrence must be active to activate an event.
+            (>= activate_debounce)
+        deactivate_debounce (``float``): Default is ``None``.
+            Default value does not apply an deactivate_debounce. Maximum time
+            in seconds an occurrence must be inactive to deactivate an event.
+            (>= deactivate_debounce)
 
     Returns:
-        callable: Partial function
+        ``callable``: Partial function
 
     Examples:
         >>> from trouver import find_events, debounce
+        >>> import numpy as np
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
         >>> test_events = find_events(condition, 1)
@@ -39,10 +44,9 @@ def debounce(entry_debounce=None, exit_debounce=None):
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
 
     """
-    return partial(_debounce, entry_debounce=entry_debounce, exit_debounce=exit_debounce)
+    return partial(_debounce, entry_debounce=activate_debounce, exit_debounce=deactivate_debounce)
 
 
-@curry
 def _debounce(events, entry_debounce, exit_debounce):
     """Debounce activate and deactivation of events
 
@@ -128,19 +132,23 @@ def _debounce(events, entry_debounce, exit_debounce):
     return events
 
 
-def filter_durations(mindur=None, maxdur=None):
+def filter_durations(min_duration=None, max_duration=None):
     """Filter out durations based on length of time active
 
-    Filter out events that are < mindur and > maxdur (time in seconds).
+    Filter out events that are < min_duration and > max_duration
+    (time in seconds).
 
     Args:
-        mindur (float): Time in seconds. Default is None. Any
-        occurrence whose time is < mindur is filtered out.
-        maxdur (float): Time in seconds. Default is None. Any
-            occurrence whose time is > maxdur is filtered out.
+        min_duration (``float``): Default is ``None``.
+            Default value does not apply a min_duration filter.
+            Filter out events whose duration in seconds is < min_duration.
+        max_duration (``float``): Default is ``None``.
+            Default value does not apply a max_duration filter. Filter
+            out events whose duration in seconds is > max_duration.
 
     Returns:
-        callable: Partial function
+        ``callable``:
+            Partial function
 
     Examples:
         >>> from trouver import find_events, filter_durations
@@ -155,10 +163,9 @@ def filter_durations(mindur=None, maxdur=None):
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
 
     """
-    return partial(_filter_durations, mindur=mindur, maxdur=maxdur)
+    return partial(_filter_durations, mindur=min_duration, maxdur=max_duration)
 
 
-@curry
 def _filter_durations(events, mindur, maxdur):
     """Filter out events based  on duration
 
@@ -220,16 +227,17 @@ def offset_events(start_offset=None, stop_offset=None):
     """Apply an offset to event start and stops
 
     Offset the starts and stops of events by the time in seconds
-    specified by start_offset and stop_offset
+    specified by start_offset and stop_offset.
 
     Args:
-        start_offset (float): Time in seconds. Default is None. Value
-            must be <= 0
-        stop_offset (float): Time in seconds. Default is None. Value
-            must be >= 0
+        start_offset (``float``): Default is ``None``.
+            Time in seconds to offset event starts. Value must be <= 0.
+        stop_offset (float): Default is ``None``.
+            Time in seconds to offset event stops. Value must be >= 0.
 
     Returns:
-        callable: Partial function
+        ``callable``:
+            Partial function
 
     Examples:
         >>> from trouver import find_events, offset_events
@@ -247,7 +255,6 @@ def offset_events(start_offset=None, stop_offset=None):
     return partial(_offset_events, start_offset=start_offset, stop_offset=stop_offset)
 
 
-@curry
 def _offset_events(events, start_offset, stop_offset):
     """Apply an offset to event start and stops
 
@@ -294,26 +301,20 @@ def _offset_events(events, start_offset, stop_offset):
 
 
 def merge_overlap(events):
-    """Merge any events that overlap into one contiguous event
+    """Merge any events that overlap
 
     Some events such as offset_events can cause events to overlap. If
     this transformation is applied, any events that overlap will become
     one contiguous event.
 
     Args:
-        events (:obj: `collections.namedtuple` of int):
-            trouver.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
+        events (:any:`Events`):
 
     Returns:
-        collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
+        :any:`Events`:
 
     Examples:
-        >>> from trouver import find_events, offset_events
+        >>> from trouver import find_events, offset_events, merge_overlap
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
         >>> offset_events = offset_events(-1, 1)
