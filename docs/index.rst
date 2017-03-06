@@ -6,12 +6,19 @@
 Welcome to Trouver's documentation!
 ===================================
 
+Trouver specializes in finding discrete events in uniformly sampled,
+time-series data such as IoT and sensor data based on boolean
+conditional arrays. It currently only supports Python 3 on both Windows
+and Linux.
+
 .. toctree::
    :maxdepth: 2
 
    install.rst
-   quickstart.rst
-   api.rst
+   quick_start.rst
+   events.rst
+   transformations.rst
+   tips_and_tricks.rst
 
 
 

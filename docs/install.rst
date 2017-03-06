@@ -1,9 +1,14 @@
 Installation and Dependencies
 =============================
 
-Trouver is easily installable by the standard dependency manager ``pip``::
+Install ``trouver`` using the standard dependency manager ``pip``::
 
     pip install trouver
 
-Toolz, Numpy and Pandas are dependencies. Trouver was developed and tested
-on Python 3.
+Dependencies:
+
+* Toolz
+* Numpy
+* Pandas
+
+Trouver has been tested on both Windows and Linux on Python 3 only.
