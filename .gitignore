@@ -1,14 +1,12 @@
 *.pyc
 *.idea/
-nimble.egg-info/*
+trouve.egg-info/*
 build/*
 *.pyd
 *.orig
 _build
 _static
 _templates
-documentation/make.bat
-documentation/Makefile
 *ipynb_checkpoints*
 
 trouver\.egg-info/
