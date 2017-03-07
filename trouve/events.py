@@ -58,8 +58,8 @@ class Events(object):
             >>> events = find_events(condition, 1)
             >>> print(events.as_array())
             [ 1.  1.  0.  0.  0.  1.]
-            >>> events.durations
-            array([2, 1])
+            >>> print(events.durations)
+            [2 1]
 
         """
         durations = (self._stops - self._starts) * self._period
