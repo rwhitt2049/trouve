@@ -6,25 +6,7 @@ import pandas as pd
 
 # from memory_profiler import profile
 
-# TODO update all docs
-
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
-
-
-def lazyproperty(func):
-    """Cache a property as an attr"""
-    name = '_lazy_' + func.__name__
-
-    @property
-    @wraps(func)
-    def lazy(self):
-        if hasattr(self, name):
-            return getattr(self, name)
-        else:
-            value = func(self)
-            setattr(self, name, value)
-            return value
-    return lazy
 
 
 class Events(object):
