@@ -1,9 +1,9 @@
 Installation and Dependencies
 =============================
 
-Install ``trouver`` using the standard dependency manager ``pip``::
+Install ``trouve`` using the standard dependency manager ``pip``::
 
-    pip install trouver
+    pip install trouve
 
 Dependencies:
 
@@ -11,4 +11,6 @@ Dependencies:
 * Numpy
 * Pandas
 
-Trouver has been tested on both Windows and Linux on Python 3 only.
+Source code can be found on `github <https://github.com/rwhitt2049/trouve>`_
+
+Trouve has been tested on both Windows and Linux on Python 3 only.

@@ -13,5 +13,5 @@ install:
 # command to run tests
 script:
   - "nosetests -w tests/ -v"
-  - "python -m doctest -v trouver/events.py"
-  - "python -m doctest -v trouver/transformations.py"
+  - "python -m doctest -v trouve/events.py"
+  - "python -m doctest -v trouve/transformations.py"

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from toolz import pipe, curry
 
-from trouver.events import Events
+from trouve.events import Events
 
 
 @curry
@@ -25,12 +25,13 @@ def find_events(condition, period, *transformations, name='events'):
             User provided name for events.
 
     Returns:
-        :class:`trouver.events.Events`:
+        :class:`trouve.events.Events`:
             Returns events found from ``condition`` with any supplied
             ``*transformations`` applied.
 
     Examples:
-        >>> from trouver import find_events, debounce, offset_events, filter_durations
+        >>> from trouve import find_events
+        >>> from trouve.transformations import *
         >>> import numpy as np
         >>> deb = debounce(2, 2)
         >>> offsets = offset_events(-1,2)

@@ -47,12 +47,12 @@ class Events(object):
         self._period = period
         self._condition_size = condition_size
 
-    @lazyproperty
+    @property
     def durations(self):
         """Return a ``numpy.ndarray`` of event durations in seconds.
 
         Examples:
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x == 2
             >>> events = find_events(condition, 1)
@@ -87,7 +87,7 @@ class Events(object):
                 or inactive.
 
         Examples:
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
@@ -121,7 +121,7 @@ class Events(object):
                 or inactive.
 
         Examples:
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
@@ -147,9 +147,9 @@ class Events(object):
 
         This method returns a ``np.ndarray`` of ``bool`` where values are
         False where the condition is met, and True where the conditions
-        are not met. Trouver treats conditionals opposite of how numpy
+        are not met. Trouve treats conditionals opposite of how numpy
         treats them. That is to say that numpy will mask out values in
-        an array that meet the condition, however Trouver is by design
+        an array that meet the condition, however Trouve is by design
         more interested in finding and keeping events that meet the
         given condition. This method makes it more convenient to
         interact with the numpy masked array module as it will return
@@ -162,7 +162,7 @@ class Events(object):
                 isn't met and ``False`` when the conditions are met.
 
         Examples:
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
@@ -187,7 +187,7 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
             >>> example = find_events(x, 1, name='example')
             >>> for event in example:
@@ -214,7 +214,7 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
             >>> example = find_events(x, 1, name='example')
             >>> first_event = example[0]
@@ -237,7 +237,7 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
             >>> example = find_events(x, 1, name='example')
             >>> len(example)
@@ -260,7 +260,7 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
             >>> example = find_events(x, 1, name='example')
             >>> print(example)
@@ -291,7 +291,7 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouver import find_events
+            >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
             >>> example = find_events(x, 1, name='example')
             >>> other = find_events(x, 1, name='other')
@@ -324,8 +324,8 @@ class Events(object):
 
 def main():
     import logging
-    from trouver import debounce, offset_events, filter_durations
-    logger = logging.getLogger('trouver')
+    from trouve import debounce, offset_events, filter_durations
+    logger = logging.getLogger('trouve')
     logger.setLevel(logging.DEBUG)
     np.random.seed(10)
     debounce = debounce(2, 2)

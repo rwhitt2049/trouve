@@ -2,9 +2,9 @@ Transformations
 ===============
 
 This page contains all available transformations, relevant functions, and
-classes available in ``trouver``.
+classes available in ``trouve``.
 
-.. currentmodule:: trouver.transformations
+.. currentmodule:: trouve.transformations
 
 .. autosummary::
     debounce
@@ -15,6 +15,6 @@ classes available in ``trouver``.
 Definitions
 -----------
 
-.. automodule:: trouver.transformations
+.. automodule:: trouve.transformations
    :members:
 

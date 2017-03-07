@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 
-from trouver.events import Events
+from trouve.events import Events
 
 
 class EventTestCase(TestCase):

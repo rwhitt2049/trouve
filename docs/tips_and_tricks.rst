@@ -1,14 +1,15 @@
 Tips and Tricks
 ===============
 
-Here are some recipes to effectively use Trouver to it's full potential.
+Here are some recipes to effectively use Trouve to it's full potential.
 
 
 .. testsetup:: *
 
     import numpy as np
     import pandas as pd
-    from trouver import find_events, debounce, merge_overlap, offset_events
+    from trouve import find_events
+    from trouve.transformations import *
 
 Curry Your Sample Period
 ------------------------
@@ -76,7 +77,7 @@ min/max of arrays based on your condition.
 Getting Events into a ``pandas.DataFrame``
 ------------------------------------------
 
-The ``pandas.DataFrame`` data structure and ``trouver`` fit nicely together. You can loop through
+The ``pandas.DataFrame`` data structure and ``trouve`` fit nicely together. You can loop through
 each occurrence and append a statistical description to the dataframe. This is helpful you
 your trying to pull features out of time-series data for a machine learning algorithm,
 or you want to describe all events found in a data set and then use ``pandas`` idioms to

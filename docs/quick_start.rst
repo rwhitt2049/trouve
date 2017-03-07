@@ -7,7 +7,8 @@ Setup
 .. testsetup:: *
 
     import numpy as np
-    from trouver import find_events, debounce, merge_overlap, offset_events, filter_durations
+    from trouve import find_events
+    from trouve.transformations import *
     x = np.array([0, 1, 1, 0, 1, 0])
     example = find_events(x > 0, 1, name='example')
     example_2 = find_events(x > 0, 1, name='example_2')
@@ -17,8 +18,8 @@ Example events for quickstart.
 .. code-block:: python
 
     >>> import numpy as np
-    >>> from trouver import find_events
-    >>> from trouver.transformation import *
+    >>> from trouve import find_events
+    >>> from trouve.transformation import *
     >>> x = np.array([0, 1, 1, 0, 1, 0])
     >>> example = find_events(x > 0, 1, name='example')
 
@@ -102,7 +103,7 @@ Boolean masks via :any:`Events.as_mask` for use with the ``numpy.ma.`` module.
 Inspecting Events
 -----------------
 
-The ``trouver.Events`` class implements ``__getitem__`` which returns an
+The ``trouve.Events`` class implements ``__getitem__`` which returns an
 :any:`Occurrence` .
 
 .. doctest:: inspection
@@ -113,7 +114,7 @@ The ``trouver.Events`` class implements ``__getitem__`` which returns an
     >>> x[first_event.slice]
     array([1, 1])
 
-``trouver.Events`` is also an iterable through implementation of both ``__iter__`` and
+``trouve.Events`` is also an iterable through implementation of both ``__iter__`` and
 ``__next__``. Every iteration returns an :any:`Occurrence` .
 
 .. doctest:: inspection
@@ -126,7 +127,7 @@ The ``trouver.Events`` class implements ``__getitem__`` which returns an
 Magic Methods
 -------------
 
-``Trouver`` implements several magic methods including:
+``Trouve`` implements several magic methods including:
 
 ``__len__`` for determining the number of events found using ``len``.
 

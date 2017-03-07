@@ -1,23 +1,23 @@
 Events
 ======
 
-The primary function of ``trouver`` is to find events in time-series data and apply
+The primary function of ``trouve`` is to find events in time-series data and apply
 functional transformations in a specified order. The main function is :any:`find_events`.
 This function takes in a condtional ``bool`` and then returns the class :any:`Events`.
 The :any:`Events` class finds each distinct occurrence and records it's start and stop
 index value. These values then allow a user to inspect each event in a Pythonic manner.
 
-.. autofunction:: trouver.find_events.find_events
+.. autofunction:: trouve.find_events.find_events
 
-.. autoclass:: trouver.events.Events
+.. autoclass:: trouve.events.Events
     :members:
     :exclude-members: __init__, __hash__, __weakref__
     :member-order: bysource
     :special-members:
 
-.. autoclass:: trouver.events.Occurrence
+.. autoclass:: trouve.events.Occurrence
 
-``trouver.events.Occurrence`` is a ``collections.namedtuple`` that is returned by both
+``trouve.events.Occurrence`` is a ``collections.namedtuple`` that is returned by both
 :any:`Events.__getitem__` and :any:`Events.__next__`
 
     Parameters:
@@ -31,7 +31,7 @@ index value. These values then allow a user to inspect each event in a Pythonic 
     .. doctest:: python
 
         >>> import numpy as np
-        >>> from trouver import find_events
+        >>> from trouve import find_events
         >>> x = np.array([0, 1, 1, 0, 1, 0])
         >>> example = find_events(x, 1, name='example')
         >>> first_event = example[0]

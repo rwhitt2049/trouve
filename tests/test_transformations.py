@@ -3,10 +3,10 @@ from unittest import TestCase, main
 import numpy as np
 import numpy.testing as npt
 
-from trouver.events import Events
-from trouver.transformations import (_debounce, _filter_durations,
-                                     _offset_events, merge_overlap)
-from trouver.transformations import debounce, filter_durations, offset_events
+from trouve.events import Events
+from trouve.transformations import (_debounce, _filter_durations,
+                                    _offset_events, merge_overlap)
+from trouve.transformations import debounce, filter_durations, offset_events
 
 
 class TransformationTestFixture(TestCase):

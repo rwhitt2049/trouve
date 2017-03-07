@@ -6,7 +6,7 @@ from os import path
 
 from setuptools import find_packages, setup
 
-from trouver import __version__
+from trouve import __version__
 
 base = path.abspath(path.dirname(__file__))
 
@@ -27,14 +27,14 @@ def long_description():
 
 
 kwargs = dict(
-    name='trouver',
+    name='trouve',
     version=__version__,
     description=long_description()[0],
     long_description=long_description(),
     author='Ry Whittington',
     author_email='rwhitt2049@gmail.com',
     license='MIT',
-    url='https://github.com/rwhitt2049/trouver',
+    url='https://github.com/rwhitt2049/trouve',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

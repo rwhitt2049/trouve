@@ -4,8 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import pandas as pd
 
-import trouver
-from trouver.find_events import find_events, _apply_condition
+import trouve
+from trouve.find_events import find_events, _apply_condition
 
 
 class TestApplyCondition(TestCase):
@@ -35,7 +35,7 @@ class TestFindEvents(TestCase):
 
     def test_return_type(self):
         events = find_events(self.condition, 1)
-        self.assertIsInstance(events, trouver.events.Events)
+        self.assertIsInstance(events, trouve.events.Events)
 
 
 if __name__ == '__main__':

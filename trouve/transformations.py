@@ -31,7 +31,8 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         ``callable``: Partial function
 
     Examples:
-        >>> from trouver import find_events, debounce
+        >>> from trouve import find_events
+        >>> from trouve.transformations import debounce
         >>> import numpy as np
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
@@ -51,11 +52,11 @@ def _debounce(events, entry_debounce, exit_debounce):
     """Debounce activate and deactivation of events
 
     See Also:
-        trouver.transfomations.debounce
+        trouve.transfomations.debounce
 
     Args:
         events(:obj: `collections.namedtuple` of int):
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
         period (float): Time in seconds between each data point.
@@ -66,7 +67,7 @@ def _debounce(events, entry_debounce, exit_debounce):
 
     Returns:
         collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
 
@@ -151,7 +152,8 @@ def filter_durations(min_duration=None, max_duration=None):
             Partial function
 
     Examples:
-        >>> from trouver import find_events, filter_durations
+        >>> from trouve import find_events
+        >>> from trouve.transformations import filter_durations
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
         >>> test_events = find_events(condition, 1)
@@ -170,11 +172,11 @@ def _filter_durations(events, mindur, maxdur):
     """Filter out events based  on duration
 
     See Also:
-        trouver.transfomations.filter_durations
+        trouve.transfomations.filter_durations
 
     Args:
         events (:obj: `collections.namedtuple` of int):
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
         period (float): Time in seconds between each data point.
@@ -187,7 +189,7 @@ def _filter_durations(events, mindur, maxdur):
 
     Returns:
         collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
 
@@ -240,7 +242,8 @@ def offset_events(start_offset=None, stop_offset=None):
             Partial function
 
     Examples:
-        >>> from trouver import find_events, offset_events
+        >>> from trouve import find_events
+        >>> from trouve.transformations import offset_events
         >>> y = np.array([2, 2, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
         >>> test_events = find_events(condition, 1)
@@ -259,11 +262,11 @@ def _offset_events(events, start_offset, stop_offset):
     """Apply an offset to event start and stops
 
     See Also:
-        trouver.transfomations.offset_events
+        trouve.transfomations.offset_events
 
     Args:
         events (:obj: `collections.namedtuple` of int):
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
         period (float): Time in seconds between each data point.
@@ -275,7 +278,7 @@ def _offset_events(events, start_offset, stop_offset):
 
     Returns:
         collections.namedtuple:
-            trouver.transformations.RawEvents(starts, stops)
+            trouve.transformations.RawEvents(starts, stops)
             starts (np.ndarry of int): Index values for event starts
             stops (np.ndarry of int): Index values for event stops
 
@@ -314,7 +317,8 @@ def merge_overlap(events):
         :any:`Events`:
 
     Examples:
-        >>> from trouver import find_events, offset_events, merge_overlap
+        >>> from trouve import find_events
+        >>> from trouve.transformations import offset_events, merge_overlap
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
         >>> offset_events = offset_events(-1, 1)
