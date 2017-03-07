@@ -8,5 +8,4 @@ _build
 _static
 _templates
 *ipynb_checkpoints*
-
-trouver\.egg-info/
+dist/

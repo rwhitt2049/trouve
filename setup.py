@@ -22,7 +22,7 @@ def dev_requires():
 
 
 def long_description():
-    with open(path.join(base, 'README.md'), encoding='utf-8') as file:
+    with open(path.join(base, 'README.rst'), encoding='utf-8') as file:
         return file.read()
 
 
