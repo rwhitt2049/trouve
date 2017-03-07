@@ -1,10 +1,8 @@
 from collections import namedtuple
-from functools import wraps
 
 import numpy as np
 import pandas as pd
 
-# from memory_profiler import profile
 
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 

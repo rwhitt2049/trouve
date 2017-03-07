@@ -22,14 +22,14 @@ def dev_requires():
 
 
 def long_description():
-    with open(path.join(base, 'README.md'), encoding='utf-8') as file:
+    with open(path.join(base, 'README.rst'), encoding='utf-8') as file:
         return file.read()
 
 
 kwargs = dict(
     name='trouve',
     version=__version__,
-    description=long_description()[0],
+    description='Event detection and transformation for time-series data',
     long_description=long_description(),
     author='Ry Whittington',
     author_email='rwhitt2049@gmail.com',
@@ -44,7 +44,8 @@ kwargs = dict(
         'Operating System :: POSIX',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5'
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Scientific/Engineering'
     ],
     keywords='time_series, timeseries, iot, sensor',
