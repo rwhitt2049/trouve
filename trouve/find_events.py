@@ -1,12 +1,13 @@
+from numbers import Number
 import numpy as np
 import pandas as pd
-from toolz import pipe, curry
+from toolz import pipe
+
 
 from trouve.events import Events
 
 
-@curry
-def find_events(condition, period, *transformations, name='events'):
+def find_events(condition, *transformations, name='events', period=None):
     """Find events based off a condition
 
     Find events based off a ``bool`` conditional array and apply a sequence

@@ -11,22 +11,23 @@ Here are some recipes to effectively use Trouve to it's full potential.
     from trouve import find_events
     from trouve.transformations import *
 
-Curry Your Sample Period
-------------------------
+Specify Sample Period with `functools.partial`
+----------------------------------------------
 
-If you're looking for multiple events using different conditions in the same data set, then
-one shortcut is to curry the sample period. You can then call that function instead of
-``find_events``
+If you're looking for multiple events in the same data set, then one shortcut is
+to use ``functools.partial`` and add the period to the partial function.
+You can then call that function instead of ``find_events`` .
 
-.. doctest:: curry
+.. doctest:: partial_period
 
+    >>> from functools import partial
     >>> x = np.array([1, 1, 2, 0, 2])
     >>> period = 1
-    >>> cur_find = find_events(period=period)
-    >>> events_1 = cur_find(x == 1)
+    >>> pfind_events = partial(find_events, period=period)
+    >>> events_1 = pfind_events(x == 1)
     >>> events_1.as_array()
     array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = cur_find(x == 2)
+    >>> events_2 = pfind_events(x == 2)
     >>> events_2.as_array()
     array([ 0.,  0.,  1.,  0.,  1.])
 
