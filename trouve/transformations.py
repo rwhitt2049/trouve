@@ -343,12 +343,3 @@ def merge_overlap(events):
                                        events._stops).compressed()
 
     return events
-
-
-def main():
-    input_events = RawEvents(np.array([2, 7, 11]), np.array([4, 10, 12]))
-    #test_events = _debounce(input_events, period=1, entry_debounce=2, exit_debounce=0)
-    test_events = _filter_durations(input_events, period=1, mindur=2, maxdur=3.1)
-
-if __name__ == '__main__':
-    main()

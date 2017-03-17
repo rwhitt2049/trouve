@@ -300,31 +300,3 @@ class Events(object):
         standard lib.
         """
         return id(self)
-
-
-def main():
-    import logging
-    from trouve import debounce, offset_events, filter_durations
-    logger = logging.getLogger('trouve')
-    logger.setLevel(logging.DEBUG)
-    np.random.seed(10)
-    debounce = debounce(2, 2)
-    offset_events = offset_events(-11, 2)
-    filter_durations = filter_durations(3, 5)
-
-    x = np.random.random_integers(0, 1, 20)
-    y = np.random.random_integers(2, 4, 20)
-    condition = (x > 0) & (y <= 3)
-
-    events = find_events(condition, 1, debounce, filter_durations,
-                         offset_events, name='example')
-    print(repr(events))
-    print(events.as_array())
-    print(events.durations)
-    events.as_array()
-    print(events)
-
-
-if __name__ == '__main__':
-    import sys
-    sys.exit(main())
