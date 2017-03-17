@@ -35,7 +35,7 @@ class Events(object):
             >>> from trouve import find_events
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x == 2
-            >>> events = find_events(condition, 1)
+            >>> events = find_events(condition, period=1)
             >>> print(events.as_array())
             [ 1.  1.  0.  0.  0.  1.]
             >>> print(events.durations)
@@ -72,7 +72,7 @@ class Events(object):
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, 1)
+            >>> events = find_events(condition, period=1)
             >>> print(events.as_array())
             [ 0.  0.  1.  1.  1.  0.]
 
@@ -106,7 +106,7 @@ class Events(object):
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, 1)
+            >>> events = find_events(condition, period=1)
             >>> print(events.as_series())
             0    0.0
             1    0.0
@@ -147,7 +147,7 @@ class Events(object):
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, 1)
+            >>> events = find_events(condition, period=1)
             >>> print(events.as_array())
             [ 0.  0.  1.  1.  1.  0.]
             >>> print(events.as_mask())
@@ -169,7 +169,7 @@ class Events(object):
             >>> import numpy as np
             >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, 1, name='example')
+            >>> example = find_events(x, period=1, name='example')
             >>> for event in example:
             ...     print(event)
             ...
@@ -196,7 +196,7 @@ class Events(object):
             >>> import numpy as np
             >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, 1, name='example')
+            >>> example = find_events(x, period=1, name='example')
             >>> first_event = example[0]
             >>> print(first_event)
             Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
@@ -219,7 +219,7 @@ class Events(object):
             >>> import numpy as np
             >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, 1, name='example')
+            >>> example = find_events(x, period=1, name='example')
             >>> len(example)
             2
 
@@ -242,7 +242,7 @@ class Events(object):
             >>> import numpy as np
             >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, 1, name='example')
+            >>> example = find_events(x, period=1, name='example')
             >>> print(example)
             example
             Number of events: 2
@@ -273,8 +273,8 @@ class Events(object):
             >>> import numpy as np
             >>> from trouve import find_events
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, 1, name='example')
-            >>> other = find_events(x, 1, name='other')
+            >>> example = find_events(x, period=1, name='example')
+            >>> other = find_events(x, period=1, name='other')
             >>> id(example) # doctest: +SKIP
             2587452050568
             >>> id(other) # doctest: +SKIP
@@ -300,31 +300,3 @@ class Events(object):
         standard lib.
         """
         return id(self)
-
-
-def main():
-    import logging
-    from trouve import debounce, offset_events, filter_durations
-    logger = logging.getLogger('trouve')
-    logger.setLevel(logging.DEBUG)
-    np.random.seed(10)
-    debounce = debounce(2, 2)
-    offset_events = offset_events(-11, 2)
-    filter_durations = filter_durations(3, 5)
-
-    x = np.random.random_integers(0, 1, 20)
-    y = np.random.random_integers(2, 4, 20)
-    condition = (x > 0) & (y <= 3)
-
-    events = find_events(condition, 1, debounce, filter_durations,
-                         offset_events, name='example')
-    print(repr(events))
-    print(events.as_array())
-    print(events.durations)
-    events.as_array()
-    print(events)
-
-
-if __name__ == '__main__':
-    import sys
-    sys.exit(main())
