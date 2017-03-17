@@ -39,9 +39,9 @@ def find_events(condition, *transformations, name='events', period=None):
         >>> filt_dur = filter_durations(3, 5)
         >>> x = np.array([4, 5, 1, 2, 3, 4, 5, 1, 3])
         >>> condition = (x > 2)
-        >>> no_transforms = find_events(condition, 1)
-        >>> events = find_events(condition, 1, deb,
-        ... filt_dur, offsets, name='example')
+        >>> no_transforms = find_events(condition, period=1)
+        >>> events = find_events(condition, deb, filt_dur, offsets,
+        ... period=1, name='example')
         >>> no_transforms.as_array()
         array([ 1.,  1.,  0.,  0.,  1.,  1.,  1.,  0.,  1.])
         >>> events.as_array()

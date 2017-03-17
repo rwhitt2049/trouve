@@ -36,9 +36,9 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         >>> import numpy as np
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, 1)
-        >>> debounce = debounce(2, 2)
-        >>> example_events = find_events(condition, 1, debounce)
+        >>> test_events = find_events(condition, period=1)
+        >>> deb = debounce(2, 2)
+        >>> example_events = find_events(condition, deb, period=1)
         >>> test_events.as_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> example_events.as_array()
@@ -156,9 +156,9 @@ def filter_durations(min_duration=None, max_duration=None):
         >>> from trouve.transformations import filter_durations
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, 1)
-        >>> filter_durations = filter_durations(1.5, 2.5)
-        >>> example_events = find_events(condition, 1, filter_durations)
+        >>> test_events = find_events(condition, period=1)
+        >>> filt_dur = filter_durations(1.5, 2.5)
+        >>> example_events = find_events(condition, filt_dur, period=1)
         >>> test_events.as_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> example_events.as_array()
@@ -246,9 +246,9 @@ def offset_events(start_offset=None, stop_offset=None):
         >>> from trouve.transformations import offset_events
         >>> y = np.array([2, 2, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, 1)
-        >>> offset_events = offset_events(-1, 1)
-        >>> example_events = find_events(condition, 1, offset_events)
+        >>> test_events = find_events(condition, period=1)
+        >>> offset = offset_events(-1, 1)
+        >>> example_events = find_events(condition, offset, period=1)
         >>> test_events.as_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
         >>> example_events.as_array()
@@ -321,10 +321,10 @@ def merge_overlap(events):
         >>> from trouve.transformations import offset_events, merge_overlap
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
-        >>> offset_events = offset_events(-1, 1)
-        >>> test_events = find_events(condition, 1, offset_events)
-        >>> example_events = find_events(condition, 1, offset_events,
-        ... merge_overlap)
+        >>> offset = offset_events(-1, 1)
+        >>> test_events = find_events(condition, offset, period=1)
+        >>> example_events = find_events(condition, offset,
+        ... merge_overlap, period=1)
         >>> test_events.as_array()
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
         >>> example_events.as_array()
