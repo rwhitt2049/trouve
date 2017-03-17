@@ -1,7 +1,7 @@
 from functools import partial
 
 import numpy as np
-from toolz import curry
+
 
 __all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
 
