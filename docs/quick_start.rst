@@ -10,8 +10,8 @@ Setup
     from trouve import find_events
     from trouve.transformations import *
     x = np.array([0, 1, 1, 0, 1, 0])
-    example = find_events(x > 0, 1, name='example')
-    example_2 = find_events(x > 0, 1, name='example_2')
+    example = find_events(x > 0, period=1, name='example')
+    example_2 = find_events(x > 0, period=1, name='example_2')
 
 Example events for quickstart.
 
@@ -21,7 +21,7 @@ Example events for quickstart.
     >>> from trouve import find_events
     >>> from trouve.transformation import *
     >>> x = np.array([0, 1, 1, 0, 1, 0])
-    >>> example = find_events(x > 0, 1, name='example')
+    >>> example = find_events(x > 0, period=1, name='example')
 
 Finding Events
 --------------
@@ -32,7 +32,7 @@ period is one second.
 .. doctest:: find_events
 
     >>> sample_period = 1 #second
-    >>> example = find_events(x > 0, sample_period, name='example')
+    >>> example = find_events(x > 0, period=sample_period, name='example')
     >>> len(example)
     2
 
@@ -47,7 +47,7 @@ events inplace to avoid making unnecessary copies.
     >>> deb = debounce(2, 1)
     >>> offset = offset_events(0, 1)
     >>> cond = x > 0
-    >>> deb_first = find_events(cond, 1, deb, offset, name='example')
+    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
     >>> deb_first.as_array()
     array([ 0.,  1.,  1.,  1.,  0.,  0.])
 
@@ -57,7 +57,7 @@ Observe how the events change if the offset is applied before debouncing.
 
 .. doctest:: transformations
 
-    >>> offset_first = find_events(cond, 1, offset, deb, name='example')
+    >>> offset_first = find_events(cond, offset, deb, period=1, name='example')
     >>> offset_first.as_array()
     array([ 0.,  1.,  1.,  1.,  1.,  1.])
     >>> offset_first == deb_first

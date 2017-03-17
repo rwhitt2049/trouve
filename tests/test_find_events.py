@@ -34,7 +34,7 @@ class TestFindEvents(TestCase):
         self.condition = x > 5
 
     def test_return_type(self):
-        events = find_events(self.condition, 1)
+        events = find_events(self.condition, period=1)
         self.assertIsInstance(events, trouve.events.Events)
 
 
