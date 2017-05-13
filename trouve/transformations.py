@@ -79,8 +79,8 @@ def _debounce(events, activate_debounce, deactivate_debounce):
     activate_debounce_ = np.ceil(activate_debounce / events._period)
     deactivate_debounce_ = np.ceil(deactivate_debounce / events._period)
 
-    start_mask = np.zeros(events._starts.size)
-    stop_mask = np.zeros(events._stops.size)
+    start_mask = np.zeros(events._starts.size, dtype=np.bool)
+    stop_mask = np.zeros(events._stops.size, dtype=np.bool)
     event_active = False
 
     for index in np.arange(events._starts.size):
@@ -99,8 +99,8 @@ def _debounce(events, activate_debounce, deactivate_debounce):
         elif not event_active and event_length >= activate_debounce_:
             event_active = True
         elif not event_active and event_length < activate_debounce_:
-            start_mask[index] = 1
-            stop_mask[index] = 1
+            start_mask[index] = True
+            stop_mask[index] = True
         else:
             raise ValueError
 
@@ -111,13 +111,13 @@ def _debounce(events, activate_debounce, deactivate_debounce):
         elif event_active and reset_length >= deactivate_debounce_:
             event_active = False
         elif event_active and reset_length < deactivate_debounce_:
-            start_mask[index + 1] = 1
-            stop_mask[index] = 1
+            start_mask[index + 1] = True
+            stop_mask[index] = True
         else:
             raise ValueError
 
-    events._starts = np.ma.masked_where(start_mask > 0, events._starts).compressed()
-    events._stops = np.ma.masked_where(stop_mask > 0, events._stops).compressed()
+    events._starts = np.ma.masked_where(start_mask, events._starts).compressed()
+    events._stops = np.ma.masked_where(stop_mask, events._stops).compressed()
 
     return events
 
@@ -304,11 +304,9 @@ def merge_overlap(events):
         1
 
     """
-    _mask = np.array([False])
+    init_mask = np.array([False])
     mask = (events._starts[1:] <= events._stops[:-1])
-    events._starts = np.ma.masked_where(np.append(_mask, mask),
-                                        events._starts).compressed()
-    events._stops = np.ma.masked_where(np.append(mask, _mask),
-                                       events._stops).compressed()
+    events._starts = np.ma.masked_where(np.append(init_mask, mask), events._starts).compressed()
+    events._stops = np.ma.masked_where(np.append(mask, init_mask), events._stops).compressed()
 
     return events
