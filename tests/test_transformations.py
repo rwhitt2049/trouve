@@ -30,43 +30,43 @@ class TestDebounce(TransformationTestFixture):
         self.stops = np.array([4, 10, 12])
         self.transformation = _debounce
 
-    def test_entry_debounce(self):
+    def test_activate_debounce(self):
         period = 1
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 10])
-        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=0)
+        self.fixture(control_starts, control_stops, period, activate_debounce=2, deactivate_debounce=0)
 
-    def test_exit_debounce(self):
+    def test_deactivate_debounce(self):
         period = 1
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 12])
-        self.fixture(control_starts, control_stops, period, entry_debounce=0, exit_debounce=2)
+        self.fixture(control_starts, control_stops, period, activate_debounce=0, deactivate_debounce=2)
 
-    def test_entry_and_exit_debounce(self):
+    def test_entry_and_deactivate_debounce(self):
         period = 1
         control_starts = np.array([2])
         control_stops = np.array([12])
-        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=3.1)
+        self.fixture(control_starts, control_stops, period, activate_debounce=2, deactivate_debounce=3.1)
 
     def test_non_int_debounces(self):
         period = 1
         control_starts = np.array([2, 7, 11])
         control_stops = np.array([4, 10, 12])
         self.fixture(control_starts, control_stops, period,
-                     entry_debounce=float(0.00000001),
-                     exit_debounce=float(0.99999999))
+                     activate_debounce=float(0.00000001),
+                     deactivate_debounce=float(0.99999999))
 
     def test_period_100ms(self):
         period = 0.1
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 12])
-        self.fixture(control_starts, control_stops, period, entry_debounce=0.15, exit_debounce=0.2)
+        self.fixture(control_starts, control_stops, period, activate_debounce=0.15, deactivate_debounce=0.2)
 
     def test_period_120ms(self):
         period = 0.12
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 12])
-        self.fixture(control_starts, control_stops, period, entry_debounce=0.15, exit_debounce=0.2)
+        self.fixture(control_starts, control_stops, period, activate_debounce=0.15, deactivate_debounce=0.2)
 
 
 class TestDurationFilter(TransformationTestFixture):
@@ -76,43 +76,46 @@ class TestDurationFilter(TransformationTestFixture):
         self.stops = np.array([4, 10, 12])
         self.transformation = _filter_durations
 
-    def test_mindur(self):
+    def test_min_duration(self):
+        """Default max_duration for filter_durations passes np.nan as the argument for
+        max_duration to _filter_durations
+        """
         period = 1
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 10])
-        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=None)
+        self.fixture(control_starts, control_stops, period, min_duration=2, max_duration=np.nan)
 
-    def test_maxdur(self):
+    def test_max_duration(self):
         period = 1
         control_starts = np.array([2, 11])
         control_stops = np.array([4, 12])
-        self.fixture(control_starts, control_stops, period, mindur=0, maxdur=2)
+        self.fixture(control_starts, control_stops, period, min_duration=0, max_duration=2)
 
-    def test_mindur_maxdur(self):
+    def test_min_duration_max_duration(self):
         period = 1
         control_starts = np.array([2, 7])
         control_stops = np.array([4, 10])
-        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=3.1)
+        self.fixture(control_starts, control_stops, period, min_duration=2, max_duration=3.1)
 
     def test_nonint_durs(self):
         period = 1
         control_starts = np.array([2])
         control_stops = np.array([4])
         self.fixture(control_starts, control_stops, period,
-                     mindur=float(1.00000001),
-                     maxdur=float(2.99999999))
+                     min_duration=float(1.00000001),
+                     max_duration=float(2.99999999))
 
     def test_period_100ms(self):
         period = 0.1
         control_starts = np.array([2])
         control_stops = np.array([4])
-        self.fixture(control_starts, control_stops, period, mindur=0.15, maxdur=0.2)
+        self.fixture(control_starts, control_stops, period, min_duration=0.15, max_duration=0.2)
 
     def test_period_120ms(self):
         period = 0.12
         control_starts = np.array([2])
         control_stops = np.array([4])
-        self.fixture(control_starts, control_stops, period, mindur=0.15, maxdur=0.35)
+        self.fixture(control_starts, control_stops, period, min_duration=0.15, max_duration=0.35)
 
 
 class TestOffsets(TransformationTestFixture):
@@ -186,14 +189,14 @@ class TestNoEvents(TransformationTestFixture):
         period = 1
         control_starts = np.array([])
         control_stops = np.array([])
-        self.fixture(control_starts, control_stops, period, entry_debounce=2, exit_debounce=3.1)
+        self.fixture(control_starts, control_stops, period, activate_debounce=2, deactivate_debounce=3.1)
 
     def test_duration_filter_no_events(self):
         self.transformation = _filter_durations
         period = 1
         control_starts = np.array([])
         control_stops = np.array([])
-        self.fixture(control_starts, control_stops, period, mindur=2, maxdur=3.1)
+        self.fixture(control_starts, control_stops, period, min_duration=2, max_duration=3.1)
 
     def test_offsets_no_events(self):
         self.transformation = _offset_events

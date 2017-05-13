@@ -21,15 +21,15 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         activate_debounce (``float``): Default is ``None``.
             Default value does not apply an activate_debounce. Minimum time
             in seconds an occurrence must be active to activate an event.
-            (>= activate_debounce)
+            (event active >= ``activate_debounce``)
         deactivate_debounce (``float``): Default is ``None``.
             Default value does not apply an deactivate_debounce. Maximum time
             in seconds an occurrence must be inactive to deactivate an event.
-            (>= deactivate_debounce)
+            (event inactive >= ``deactivate_debounce``)
 
     Returns:
         ``callable``: Partial function
-
+    
     Examples:
         >>> from trouve import find_events
         >>> from trouve.transformations import debounce
@@ -43,55 +43,44 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> example_events.as_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
+        
+    Raises:
+        ``ValueError``: If ``activate_debounce`` or ``deactivate_debounce`` < 0
 
     """
-    return partial(_debounce, entry_debounce=activate_debounce, exit_debounce=deactivate_debounce)
+    a_deb = 0 if activate_debounce is None else activate_debounce
+    d_deb = 0 if deactivate_debounce is None else deactivate_debounce
+
+    if a_deb < 0:
+        raise ValueError('activate_debounce must be a value >= 0 or None')
+
+    if d_deb < 0:
+        raise ValueError('deactivate_debounce must be a value >= 0 or None')
+
+    return partial(_debounce, activate_debounce=a_deb, deactivate_debounce=d_deb)
 
 
-def _debounce(events, entry_debounce, exit_debounce):
+def _debounce(events, activate_debounce, deactivate_debounce):
     """Debounce activate and deactivation of events
 
     See Also:
-        trouve.transfomations.debounce
+        :any:`trouve.transfomations.debounce`
 
     Args:
-        events(:obj: `collections.namedtuple` of int):
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
-        period (float): Time in seconds between each data point.
-            Requires constant increment data that is uniform across
-            all data. (1/Hz = s)
-        entry_debounce (float): Time in seconds.
-        exit_debounce (float): Time in seconds.
+        events (:any:`trouve.events.Events`): Events to apply debounce to
+        activate_debounce (``float``): Time in seconds.
+        deactivate_debounce (``float``): Time in seconds.
 
     Returns:
-        collections.namedtuple:
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
+        :any:`trouve.events.Events`: Events with debounces applied
 
     """
-    # convert entry_debounce from time seconds to the number of elements
-    if entry_debounce is None:
-        _entry_debounce = 0
-    elif entry_debounce >= 0:
-        _entry_debounce = np.ceil(entry_debounce / events._period)
-    else:
-        raise TypeError('entry_debounce should be a value >= 0 or None')
+    # convert activate_debounce from time seconds to the number of elements
+    activate_debounce_ = np.ceil(activate_debounce / events._period)
+    deactivate_debounce_ = np.ceil(deactivate_debounce / events._period)
 
-    # convert entry_debounce from time seconds to the number of elements
-    if exit_debounce is None:
-        _exit_debounce = 0
-    elif exit_debounce >= 0:
-        _exit_debounce = np.ceil(exit_debounce / events._period)
-    else:
-        raise TypeError('exit_debounce should be a value >= 0 or None')
-
-    # from here on out, all calculations are in number of points, not seconds
-
-    start_mask = np.zeros(events._starts.size)
-    stop_mask = np.zeros(events._stops.size)
+    start_mask = np.zeros(events._starts.size, dtype=np.bool)
+    stop_mask = np.zeros(events._stops.size, dtype=np.bool)
     event_active = False
 
     for index in np.arange(events._starts.size):
@@ -107,28 +96,28 @@ def _debounce(events, entry_debounce, exit_debounce):
         # determine if event entry conditions are met
         if event_active:
             pass
-        elif not event_active and event_length >= _entry_debounce:
+        elif not event_active and event_length >= activate_debounce_:
             event_active = True
-        elif not event_active and event_length < _entry_debounce:
-            start_mask[index] = 1
-            stop_mask[index] = 1
+        elif not event_active and event_length < activate_debounce_:
+            start_mask[index] = True
+            stop_mask[index] = True
         else:
             raise ValueError
 
-        # determine whether or not an active event stops being
+        # determine whether or not an active event stop is
         # active relative to reset_length
         if not event_active or reset_length is None:
             pass
-        elif event_active and reset_length >= _exit_debounce:
+        elif event_active and reset_length >= deactivate_debounce_:
             event_active = False
-        elif event_active and reset_length < _exit_debounce:
-            start_mask[index + 1] = 1
-            stop_mask[index] = 1
+        elif event_active and reset_length < deactivate_debounce_:
+            start_mask[index + 1] = True
+            stop_mask[index] = True
         else:
             raise ValueError
 
-    events._starts = np.ma.masked_where(start_mask > 0, events._starts).compressed()
-    events._stops = np.ma.masked_where(stop_mask > 0, events._stops).compressed()
+    events._starts = np.ma.masked_where(start_mask, events._starts).compressed()
+    events._stops = np.ma.masked_where(stop_mask, events._stops).compressed()
 
     return events
 
@@ -148,8 +137,10 @@ def filter_durations(min_duration=None, max_duration=None):
             out events whose duration in seconds is > max_duration.
 
     Returns:
-        ``callable``:
-            Partial function
+        ``callable``: Partial function
+        
+    Raises:
+        ``ValueError``: If min_duration or max_duration is < 0
 
     Examples:
         >>> from trouve import find_events
@@ -165,59 +156,47 @@ def filter_durations(min_duration=None, max_duration=None):
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
 
     """
-    return partial(_filter_durations, mindur=min_duration, maxdur=max_duration)
+    min_dur = 0 if min_duration is None else min_duration
+    max_dur = np.nan if max_duration is None else max_duration
+
+    if min_dur < 0:
+        raise ValueError('min_duration must be >= 0 or None')
+
+    if max_dur < 0:
+        raise ValueError('max_duration must be >= 0 or None')
+
+    return partial(_filter_durations, min_duration=min_dur, max_duration=max_dur)
 
 
-def _filter_durations(events, mindur, maxdur):
+def _filter_durations(events, min_duration, max_duration):
     """Filter out events based  on duration
 
     See Also:
-        trouve.transfomations.filter_durations
+        :any:`trouve.transfomations.filter_durations`
 
     Args:
-        events (:obj: `collections.namedtuple` of int):
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
-        period (float): Time in seconds between each data point.
-            Requires constant increment data that is uniform across
-            all data. (1/Hz = s)
-        mindur (float): Time in seconds. Any occurrence whose time is
+        events(:any:`trouve.events.Events`): Events to apply duration filter to.
+        min_duration (float): Time in seconds. Any occurrence whose time is
             < mindur is filtered out.
-        maxdur (float): Time in seconds. Any occurrence whose time is
+        max_duration (float): Time in seconds. Any occurrence whose time is
             > maxdur is filtered out.
 
     Returns:
-        collections.namedtuple:
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
+        :any:`trouve.events.Events`: Events with duration filters applied
 
     """
-    # convert mindur from time seconds to the number of elements
-    if mindur is None:
-        _mindur = 0
-    elif mindur >= 0:
-        _mindur = np.ceil(mindur / events._period)
-    else:
-        raise TypeError('mindur should be a value >= 0 or None')
-
-    # convert maxdur from time seconds to the number of elements
-    if maxdur is None:
-        _maxdur = None
-    elif maxdur >= 0:
-        _maxdur = np.floor(maxdur / events._period)
-    else:
-        raise TypeError('maxdur should be a value >= 0 or None')
+    # convert time in seconds to the number of elements
+    min_duration_ = np.ceil(min_duration / events._period)
+    max_duration_ = np.floor(max_duration / events._period)
 
     # from here on out, all calculations are in number of points, not seconds
 
     event_lengths = events._stops - events._starts
-    if _maxdur is not None:
-        condition = ((event_lengths < _mindur) |
-                     (event_lengths > _maxdur))
+    if not np.isnan(max_duration_):
+        condition = ((event_lengths < min_duration_) |
+                     (event_lengths > max_duration_))
     else:
-        condition = (event_lengths < _mindur)
+        condition = (event_lengths < min_duration_)
 
     events._starts = np.ma.masked_where(condition, events._starts).compressed()
     events._stops = np.ma.masked_where(condition, events._stops).compressed()
@@ -238,8 +217,10 @@ def offset_events(start_offset=None, stop_offset=None):
             Time in seconds to offset event stops. Value must be >= 0.
 
     Returns:
-        ``callable``:
-            Partial function
+        ``callable``: Partial function
+        
+    Raises:
+        ``ValueError``: If ``start_offset`` > 0 or ``stop_offset`` < 0
 
     Examples:
         >>> from trouve import find_events
@@ -255,47 +236,35 @@ def offset_events(start_offset=None, stop_offset=None):
         array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
 
     """
-    return partial(_offset_events, start_offset=start_offset, stop_offset=stop_offset)
+    start_offset_ = 0 if start_offset is None else start_offset
+    stop_offset_ = 0 if stop_offset is None else stop_offset
+
+    if start_offset_ > 0:
+        raise ValueError('start_offset must be None or <= 0')
+
+    if stop_offset_ < 0:
+        raise ValueError('stop_offset must be None or >= 0')
+
+    return partial(_offset_events, start_offset=start_offset_, stop_offset=stop_offset_)
 
 
 def _offset_events(events, start_offset, stop_offset):
     """Apply an offset to event start and stops
 
     See Also:
-        trouve.transfomations.offset_events
+        :any:`trouve.transfomations.offset_events`
 
     Args:
-        events (:obj: `collections.namedtuple` of int):
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
-        period (float): Time in seconds between each data point.
-            Requires constant increment data that is uniform across
-            all data. (1/Hz = s)
-        condition_size (float):
+        events (:any:`trouve.events.Events`): Events to apply offsets.
         start_offset: Time in seconds.
         stop_offset: Time in seconds.
 
     Returns:
-        collections.namedtuple:
-            trouve.transformations.RawEvents(starts, stops)
-            starts (np.ndarry of int): Index values for event starts
-            stops (np.ndarry of int): Index values for event stops
+        :any:`trouve.events.Events`: Events with offsets applied.
 
     """
-    if start_offset is None:
-        starts = events._starts
-    elif start_offset <= 0:
-        starts = events._starts + np.floor(start_offset/events._period).astype(np.int32)
-    else:
-        raise ValueError('start_offset must be None or <= 0')
-
-    if stop_offset is None:
-        stops = events._stops
-    elif stop_offset >= 0:
-        stops = events._stops + np.ceil(stop_offset/events._period).astype(np.int32)
-    else:
-        raise ValueError('stop_offset must be None or >= 0')
+    starts = events._starts + np.floor(start_offset / events._period).astype(np.int32)
+    stops = events._stops + np.ceil(stop_offset / events._period).astype(np.int32)
 
     np.clip(starts, 0, events._condition_size, out=events._starts)
     np.clip(stops, 0, events._condition_size, out=events._stops)
@@ -311,10 +280,10 @@ def merge_overlap(events):
     one contiguous event.
 
     Args:
-        events (:any:`Events`):
+        events (:any:`trouve.events.Events`):
 
     Returns:
-        :any:`Events`:
+        :any:`trouve.events.Events`: Any overlapping events merged into one event.
 
     Examples:
         >>> from trouve import find_events
@@ -335,11 +304,9 @@ def merge_overlap(events):
         1
 
     """
-    _mask = np.array([False])
+    init_mask = np.array([False])
     mask = (events._starts[1:] <= events._stops[:-1])
-    events._starts = np.ma.masked_where(np.append(_mask, mask),
-                                        events._starts).compressed()
-    events._stops = np.ma.masked_where(np.append(mask, _mask),
-                                       events._stops).compressed()
+    events._starts = np.ma.masked_where(np.append(init_mask, mask), events._starts).compressed()
+    events._stops = np.ma.masked_where(np.append(mask, init_mask), events._stops).compressed()
 
     return events
