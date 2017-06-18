@@ -113,6 +113,28 @@ Array Methods
 
 .. doctest:: arrays
 
+    >>> example.to_series()
+    0    0.0
+    1    1.0
+    2    1.0
+    3    0.0
+    4    1.0
+    5    0.0
+    Name: example, dtype: float64
+
+Boolean masks via
+
+    >>> example.to_series()
+    0    0.0
+    1    1.0
+    2    1.0
+    3    0.0
+    4    1.0
+    5    0.0
+    Name: example, dtype: float64
+
+Boolean masks via
+
     >>> example.as_series()
     0    0.0
     1    1.0

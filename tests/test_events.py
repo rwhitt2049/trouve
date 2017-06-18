@@ -58,29 +58,29 @@ class TestAsSeries(EventTestCase):
     def test_default_parameters(self):
         """Test to_array() with default settings"""
         control = pd.Series([0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1])
-        test = self.events.as_series()
+        test = self.events.to_series()
         npt.assert_array_equal(control, test)
 
     def test_as_array_false_value(self):
         """Test to_array() with low value"""
         control = np.array([-1, 1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1])
-        test = self.events.as_series(false_values=-1)
+        test = self.events.to_series(inactive_value=-1)
         npt.assert_array_equal(control, test)
 
     def test_as_array_true_value(self):
         """Test to_array() with high value"""
         control = np.array([0, 5, 5, 5, 0, 0, 0, 5, 5, 0, 5, 5])
-        test = self.events.as_series(true_values=5)
+        test = self.events.to_series(active_value=5)
         npt.assert_array_equal(control, test)
 
     def test_as_array_false_and_true_value(self):
         """Test to_array() with low and high values"""
         control = np.array([-1, 5, 5, 5, -1, -1, -1, 5, 5, -1, 5, 5])
-        test = self.events.as_series(false_values=-1, true_values=5)
+        test = self.events.to_series(inactive_value=-1, active_value=5)
         npt.assert_array_equal(control, test)
 
     def test_type(self):
-        test = self.events.as_series()
+        test = self.events.to_series()
         self.assertIsInstance(test, pd.core.series.Series)
 
 

@@ -119,16 +119,25 @@ class Events(object):
             output[start:stop] = 1 * true_values
         return output.astype(dtype)
 
-    def as_series(self, false_values=0, true_values=1, name=None):
+    def to_series(self, inactive_value=0, active_value=1,
+                  index=None, dtype=None, name=None):
         """Returns a ``pandas.Series`` identifying found events
 
         Useful for plotting and for filtering a ``pandas.DataFrame``
 
         Parameters:
-            false_values(``float``, optional): Default is 0.
+            inactive_value(``float``, optional): Default is 0.
                 Value of array where events are not active.
-            true_values (``float``, optional): Default is 1.
+            active_value (``float``, optional): Default is 1.
                 Value of array where events are active.
+            index (``array-like`` or ``Index`` (1d)):Values must be
+                hashable and have the same length as data. Non-unique
+                index values are allowed. Will default to
+                RangeIndex(len(data)) if not provided. If both a dict
+                and index sequence are used, the index will override
+                the keys found in the dict.
+            dtype (``numpy.dtype`` or ``None``): If ``None``, ``dtype``
+                will be inferred.
             name (``str``, optional): Default is :attr:`Events.name`.
                 Name of series.
 
@@ -154,12 +163,10 @@ class Events(object):
             Name: events, dtype: float64
 
         """
-        warnings.warn('Use to_series instead', DeprecationWarning)
-        # TODO Deprecating in v0.5.x, removing in v0.6.x
         if name is None:
             name = self.name
-        data = self.to_array(inactive_values=false_values, active_values=true_values)
-        return pd.Series(data=data, name=name)
+        data = self.to_array(inactive_values=inactive_value, active_values=active_value, dtype=dtype)
+        return pd.Series(data=data, index=index, name=name)
 
     def as_mask(self):
         """Returns a ``numpy.ndarray`` ``bool`` mask for use with ``numpy.ma``
