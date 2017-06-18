@@ -46,7 +46,7 @@ class Events(object):
         durations = (self._stops - self._starts) * self._period
         return durations
 
-    def to_array(self, inactive_values=0, active_values=1, dtype=np.float):
+    def to_array(self, inactive_values=0, active_values=1, dtype=None, order='C'):
         """Returns a ``numpy.ndarray`` identifying found events
 
         Useful for plotting or building another mask based on identified
@@ -57,8 +57,11 @@ class Events(object):
                 Value of array where events are not active.
             active_values (``float``, optional): Default is 1.
                 Value of array where events are active.
-            dtype (``numpy.dtype``, optional): Default is ``numpy.float``.
+            dtype (``numpy.dtype``, optional): Default is ``numpy.float64``.
                 Datatype of returned array.
+            order (``str``, optional): Default is 'C'. {'C', 'F'} whether to
+                store multidimensional data in C- or Fortran-contiguous (row-
+                or column-wise) order in memory.
 
         Returns:
             ``numpy.ndarray``: An array where values are coded to 
@@ -75,9 +78,9 @@ class Events(object):
             [ 0.  0.  1.  1.  1.  0.]
 
         """
-        output = np.ones(self._condition_size, dtype=dtype) * inactive_values
+        output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_values
         for start, stop in zip(self._starts, self._stops):
-            output[start:stop] = 1 * active_values
+            output[start:stop] = active_values
         return output.astype(dtype)
 
     # TODO force defaults to np.int8 datatype
@@ -153,7 +156,7 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = find_events(condition, period=1)
-            >>> print(events.as_series())
+            >>> print(events.to_series())
             0    0.0
             1    0.0
             2    1.0
