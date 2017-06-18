@@ -66,7 +66,7 @@ events inplace to avoid making unnecessary copies.
     >>> offset = offset_events(0, 1)
     >>> cond = x > 0
     >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
-    >>> deb_first.as_array()
+    >>> deb_first.to_array()
     array([ 0.,  1.,  1.,  1.,  0.,  0.])
 
 .. note:: Order matters with transformations.
@@ -92,7 +92,7 @@ Array Methods
 -------------
 :any:`Events` provides several methods to produce array representations of events.
 
-``numpy.ndarray`` s via :any:`Events.as_array` .
+``numpy.ndarray`` s via :any:`Events.to_array` .
 
 .. doctest:: arrays
 
@@ -106,10 +106,10 @@ Array Methods
 
 
 
-    >>> example.as_array()
+    >>> example.to_array()
     array([ 0.,  1.,  1.,  0.,  1.,  0.])
 
-``pandas.Series`` s via :any:`Events.as_series` .
+``pandas.Series`` s via :any:`Events.to_series` .
 
 .. doctest:: arrays
 
@@ -135,7 +135,7 @@ Boolean masks via
 
 Boolean masks via
 
-    >>> example.as_series()
+    >>> example.to_series()
     0    0.0
     1    1.0
     2    1.0
@@ -144,17 +144,14 @@ Boolean masks via
     5    0.0
     Name: example, dtype: float64
 
-Boolean masks via :any:`Events.as_mask` for use with the ``numpy.ma.`` module.
+Boolean masks via :any:`Events.to_array` for use with the ``numpy.ma.`` module.
 
 .. doctest:: arrays
 
-    >>> example.as_mask()
+    >>> example.to_array(1, 0, dtype=np.bool)
     array([ True, False, False,  True, False,  True], dtype=bool)
     >>> x > 0
     array([False,  True,  True, False,  True, False], dtype=bool)
-
-.. note:: Identified occurrences return as ``False`` from ``Events.as_mask``. This is done as a convenience for working with the ``numpy.ma`` module.
-
 
 Inspecting Events
 -----------------
