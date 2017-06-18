@@ -28,6 +28,58 @@ You can then call that function instead of ``find_events`` .
     >>> events_1.as_array()
     array([ 1.,  1.,  0.,  0.,  0.])
     >>> events_2 = pfind_events(x == 2)
+    >>> events_2.to_array()
+    array([ 0.,  0.,  1.,  0.,  1.])
+
+
+
+    >>> from functools import partial
+    >>> x = np.array([1, 1, 2, 0, 2])
+    >>> period = 1
+    >>> pfind_events = partial(find_events, period=period)
+    >>> events_1 = pfind_events(x == 1)
+    >>> events_1.as_array()
+    array([ 1.,  1.,  0.,  0.,  0.])
+    >>> events_2 = pfind_events(x == 2)
+    >>> events_2.to_array()
+    array([ 0.,  0.,  1.,  0.,  1.])
+
+
+
+    >>> from functools import partial
+    >>> x = np.array([1, 1, 2, 0, 2])
+    >>> period = 1
+    >>> pfind_events = partial(find_events, period=period)
+    >>> events_1 = pfind_events(x == 1)
+    >>> events_1.to_array()
+    array([ 1.,  1.,  0.,  0.,  0.])
+    >>> events_2 = pfind_events(x == 2)
+    >>> events_2.as_array()
+    array([ 0.,  0.,  1.,  0.,  1.])
+
+
+
+    >>> from functools import partial
+    >>> x = np.array([1, 1, 2, 0, 2])
+    >>> period = 1
+    >>> pfind_events = partial(find_events, period=period)
+    >>> events_1 = pfind_events(x == 1)
+    >>> events_1.to_array()
+    array([ 1.,  1.,  0.,  0.,  0.])
+    >>> events_2 = pfind_events(x == 2)
+    >>> events_2.as_array()
+    array([ 0.,  0.,  1.,  0.,  1.])
+
+
+
+    >>> from functools import partial
+    >>> x = np.array([1, 1, 2, 0, 2])
+    >>> period = 1
+    >>> pfind_events = partial(find_events, period=period)
+    >>> events_1 = pfind_events(x == 1)
+    >>> events_1.as_array()
+    array([ 1.,  1.,  0.,  0.,  0.])
+    >>> events_2 = pfind_events(x == 2)
     >>> events_2.as_array()
     array([ 0.,  0.,  1.,  0.,  1.])
 
@@ -44,6 +96,13 @@ y == 2, or z <= 1. ``((x > 0) & (y == 2)) | (z <= 1)``
 
     >>> x = np.array([1, 1, 0, 0, 1, 1, 0, 1, 0, 1])
     >>> y = np.array([2, 2, 0, 0, 0, 0, 0, 0, 0, 2])
+        >>> z = np.array([2, 2, 2, 3, 3, 0, 3, 3, 3, 3])
+        >>> cond = ((x > 0) & (y == 2)) | (z <= 1)
+        >>> events = find_events(cond, period=1)
+        >>> events.to_array()
+        array([ 1.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  1.])
+
+
     >>> z = np.array([2, 2, 2, 3, 3, 0, 3, 3, 3, 3])
     >>> cond = ((x > 0) & (y == 2)) | (z <= 1)
     >>> events = find_events(cond, period=1)
@@ -114,6 +173,24 @@ This would be helpful if you wanted to know the average, min, or max time betwee
 .. doctest::
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
+        >>> cond = x == 1
+        >>> events = find_events(cond, period=1)
+        >>> inv_events = find_events(~cond, period=1)
+        >>> events.as_array()
+        array([ 0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,  1.])
+        >>> inv_events.to_array()
+        array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  1.,  0.])
+
+
+        >>> cond = x == 1
+        >>> events = find_events(cond, period=1)
+        >>> inv_events = find_events(~cond, period=1)
+        >>> events.as_array()
+        array([ 0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,  1.])
+        >>> inv_events.to_array()
+        array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  1.,  0.])
+
+
     >>> cond = x == 1
     >>> events = find_events(cond, period=1)
     >>> inv_events = find_events(~cond, period=1)

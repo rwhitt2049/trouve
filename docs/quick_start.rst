@@ -48,6 +48,24 @@ events inplace to avoid making unnecessary copies.
     >>> offset = offset_events(0, 1)
     >>> cond = x > 0
     >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
+    >>> deb_first.to_array()
+    array([ 0.,  1.,  1.,  1.,  0.,  0.])
+
+
+
+    >>> deb = debounce(2, 1)
+    >>> offset = offset_events(0, 1)
+    >>> cond = x > 0
+    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
+    >>> deb_first.to_array()
+    array([ 0.,  1.,  1.,  1.,  0.,  0.])
+
+
+
+    >>> deb = debounce(2, 1)
+    >>> offset = offset_events(0, 1)
+    >>> cond = x > 0
+    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
     >>> deb_first.as_array()
     array([ 0.,  1.,  1.,  1.,  0.,  0.])
 
@@ -58,7 +76,13 @@ Observe how the events change if the offset is applied before debouncing.
 .. doctest:: transformations
 
     >>> offset_first = find_events(cond, offset, deb, period=1, name='example')
-    >>> offset_first.as_array()
+    >>> offset_first.to_array()
+        array([ 0.,  1.,  1.,  1.,  1.,  1.])
+        >>> offset_first == deb_first
+        False
+
+
+
     array([ 0.,  1.,  1.,  1.,  1.,  1.])
     >>> offset_first == deb_first
     False
@@ -71,6 +95,16 @@ Array Methods
 ``numpy.ndarray`` s via :any:`Events.as_array` .
 
 .. doctest:: arrays
+
+    >>> example.to_array()
+    array([ 0.,  1.,  1.,  0.,  1.,  0.])
+
+
+
+    >>> example.to_array()
+    array([ 0.,  1.,  1.,  0.,  1.,  0.])
+
+
 
     >>> example.as_array()
     array([ 0.,  1.,  1.,  0.,  1.,  0.])

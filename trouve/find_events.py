@@ -41,9 +41,9 @@ def find_events(condition, *transformations, name='events', period=None):
         >>> no_transforms = find_events(condition, period=1)
         >>> events = find_events(condition, deb, filt_dur, offsets,
         ... period=1, name='example')
-        >>> no_transforms.as_array()
+        >>> no_transforms.to_array()
         array([ 1.,  1.,  0.,  0.,  1.,  1.,  1.,  0.,  1.])
-        >>> events.as_array()
+        >>> events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
 
     """

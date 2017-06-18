@@ -39,9 +39,9 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         >>> test_events = find_events(condition, period=1)
         >>> deb = debounce(2, 2)
         >>> example_events = find_events(condition, deb, period=1)
-        >>> test_events.as_array()
+        >>> test_events.to_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> example_events.as_array()
+        >>> example_events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
         
     Raises:
@@ -150,9 +150,9 @@ def filter_durations(min_duration=None, max_duration=None):
         >>> test_events = find_events(condition, period=1)
         >>> filt_dur = filter_durations(1.5, 2.5)
         >>> example_events = find_events(condition, filt_dur, period=1)
-        >>> test_events.as_array()
+        >>> test_events.to_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> example_events.as_array()
+        >>> example_events.to_array()
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
 
     """
@@ -230,9 +230,9 @@ def offset_events(start_offset=None, stop_offset=None):
         >>> test_events = find_events(condition, period=1)
         >>> offset = offset_events(-1, 1)
         >>> example_events = find_events(condition, offset, period=1)
-        >>> test_events.as_array()
+        >>> test_events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
-        >>> example_events.as_array()
+        >>> example_events.to_array()
         array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
 
     """
@@ -294,9 +294,9 @@ def merge_overlap(events):
         >>> test_events = find_events(condition, offset, period=1)
         >>> example_events = find_events(condition, offset,
         ... merge_overlap, period=1)
-        >>> test_events.as_array()
+        >>> test_events.to_array()
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
-        >>> example_events.as_array()
+        >>> example_events.to_array()
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
         >>> len(test_events)
         2
