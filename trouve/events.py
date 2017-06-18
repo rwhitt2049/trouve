@@ -2,6 +2,7 @@ from collections import namedtuple
 
 import numpy as np
 import pandas as pd
+import warnings
 
 
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
@@ -36,7 +37,7 @@ class Events(object):
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x == 2
             >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> print(events.to_array())
             [ 1.  1.  0.  0.  0.  1.]
             >>> print(events.durations)
             [2 1]
@@ -44,6 +45,40 @@ class Events(object):
         """
         durations = (self._stops - self._starts) * self._period
         return durations
+
+    def to_array(self, inactive_values=0, active_values=1, dtype=np.float):
+        """Returns a ``numpy.ndarray`` identifying found events
+
+        Useful for plotting or building another mask based on identified
+        events.
+
+        Parameters:
+            inactive_values(``float``, optional): Default is 0.
+                Value of array where events are not active.
+            active_values (``float``, optional): Default is 1.
+                Value of array where events are active.
+            dtype (``numpy.dtype``, optional): Default is ``numpy.float``.
+                Datatype of returned array.
+
+        Returns:
+            ``numpy.ndarray``: An array where values are coded to 
+                identify when events are active or inactive.
+
+        Examples:
+            >>> from trouve import find_events
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x > 2
+            >>> print(condition)
+            [False False  True  True  True False]
+            >>> events = find_events(condition, period=1)
+            >>> print(events.to_array())
+            [ 0.  0.  1.  1.  1.  0.]
+
+        """
+        output = np.ones(self._condition_size, dtype=dtype) * inactive_values
+        for start, stop in zip(self._starts, self._stops):
+            output[start:stop] = 1 * active_values
+        return output.astype(dtype)
 
     # TODO force defaults to np.int8 datatype
     # specify false and true values as None, check if values and dtype is noe
@@ -73,10 +108,12 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> print(events.to_array())
             [ 0.  0.  1.  1.  1.  0.]
 
         """
+        warnings.warn('Use to_array instead', DeprecationWarning)
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
         output = np.ones(self._condition_size, dtype=dtype) * false_values
         for start, stop in zip(self._starts, self._stops):
             output[start:stop] = 1 * true_values
@@ -117,9 +154,11 @@ class Events(object):
             Name: events, dtype: float64
 
         """
+        warnings.warn('Use to_series instead', DeprecationWarning)
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
         if name is None:
             name = self.name
-        data = self.as_array(false_values=false_values, true_values=true_values)
+        data = self.to_array(inactive_values=false_values, active_values=true_values)
         return pd.Series(data=data, name=name)
 
     def as_mask(self):
@@ -148,7 +187,7 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> print(events.to_array())
             [ 0.  0.  1.  1.  1.  0.]
             >>> print(events.as_mask())
             [ True  True False False False  True]
@@ -156,7 +195,9 @@ class Events(object):
             [-- -- 4 5 3 --]
 
         """
-        return self.as_array(1, 0, np.int8).view(bool)
+        warnings.warn('Use to_array or to_series instead', DeprecationWarning)
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
+        return self.to_array(1, 0, np.int8).view(bool)
 
     def __iter__(self):
         self._i = 0
