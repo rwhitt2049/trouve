@@ -77,12 +77,6 @@ Observe how the events change if the offset is applied before debouncing.
 
     >>> offset_first = find_events(cond, offset, deb, period=1, name='example')
     >>> offset_first.to_array()
-        array([ 0.,  1.,  1.,  1.,  1.,  1.])
-        >>> offset_first == deb_first
-        False
-
-
-
     array([ 0.,  1.,  1.,  1.,  1.,  1.])
     >>> offset_first == deb_first
     False
