@@ -31,17 +31,17 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         ``callable``: Partial function
     
     Examples:
-        >>> from trouve import find_events
-        >>> from trouve.transformations import debounce
+        >>> import trouve as tr
+        >>> import trouve.transformations as tt
         >>> import numpy as np
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, period=1)
-        >>> deb = debounce(2, 2)
-        >>> example_events = find_events(condition, deb, period=1)
-        >>> test_events.to_array()
+        >>> events = tr.find_events(condition, period=1)
+        >>> deb = tt.debounce(2, 2)
+        >>> trans_events = tr.find_events(condition, period=1, transformations=[deb])
+        >>> events.to_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> example_events.to_array()
+        >>> trans_events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
         
     Raises:
@@ -143,16 +143,16 @@ def filter_durations(min_duration=None, max_duration=None):
         ``ValueError``: If min_duration or max_duration is < 0
 
     Examples:
-        >>> from trouve import find_events
-        >>> from trouve.transformations import filter_durations
+        >>> import trouve as tr
+        >>> import trouve.transformations as tt
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 3, 3])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, period=1)
+        >>> events = tr.find_events(condition, period=1)
         >>> filt_dur = filter_durations(1.5, 2.5)
-        >>> example_events = find_events(condition, filt_dur, period=1)
-        >>> test_events.to_array()
+        >>> trans_events = tr.find_events(condition, period=1, transformations=[filt_dur])
+        >>> events.to_array()
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> example_events.to_array()
+        >>> trans_events.to_array()
         array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
 
     """
@@ -223,16 +223,16 @@ def offset_events(start_offset=None, stop_offset=None):
         ``ValueError``: If ``start_offset`` > 0 or ``stop_offset`` < 0
 
     Examples:
-        >>> from trouve import find_events
-        >>> from trouve.transformations import offset_events
+        >>> import trouve as tr
+        >>> import trouve.transformations as tt
         >>> y = np.array([2, 2, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
-        >>> test_events = find_events(condition, period=1)
-        >>> offset = offset_events(-1, 1)
-        >>> example_events = find_events(condition, offset, period=1)
-        >>> test_events.to_array()
+        >>> events = tr.find_events(condition, period=1)
+        >>> offset = tt.offset_events(-1, 1)
+        >>> trans_events = tr.find_events(condition, period=1, transformations=[offset])
+        >>> events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
-        >>> example_events.to_array()
+        >>> trans_events.to_array()
         array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
 
     """
@@ -286,21 +286,21 @@ def merge_overlap(events):
         :any:`trouve.events.Events`: Any overlapping events merged into one event.
 
     Examples:
-        >>> from trouve import find_events
-        >>> from trouve.transformations import offset_events, merge_overlap
+        >>> import trouve as tr
+        >>> import trouve.transformations as tt
         >>> y = np.array([2, 3, 2, 3, 4, 5, 2, 2, 2])
         >>> condition = y > 2
-        >>> offset = offset_events(-1, 1)
-        >>> test_events = find_events(condition, offset, period=1)
-        >>> example_events = find_events(condition, offset,
-        ... merge_overlap, period=1)
-        >>> test_events.to_array()
+        >>> offset = tt.offset_events(-1, 1)
+        >>> events = tr.find_events(condition, period=1, transformations=[offset])
+        >>> merged_events = tr.find_events(condition,  period=1,
+        ... transformations=[offset, merge_overlap])
+        >>> events.to_array()
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
-        >>> example_events.to_array()
+        >>> merged_events.to_array()
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
-        >>> len(test_events)
+        >>> len(events)
         2
-        >>> len(example_events)
+        >>> len(merged_events)
         1
 
     """

@@ -8,8 +8,8 @@ Here are some recipes to effectively use Trouve to it's full potential.
 
     import numpy as np
     import pandas as pd
-    from trouve import find_events
-    from trouve.transformations import *
+    impot trouve as tr
+    import trouve.transformations as tt
 
 Specify Sample Period with `functools.partial`
 ----------------------------------------------
@@ -23,64 +23,12 @@ You can then call that function instead of ``find_events`` .
     >>> from functools import partial
     >>> x = np.array([1, 1, 2, 0, 2])
     >>> period = 1
-    >>> pfind_events = partial(find_events, period=period)
+    >>> pfind_events = partial(tr.find_events, period=period)
     >>> events_1 = pfind_events(x == 1)
     >>> events_1.as_array()
     array([ 1.,  1.,  0.,  0.,  0.])
     >>> events_2 = pfind_events(x == 2)
     >>> events_2.to_array()
-    array([ 0.,  0.,  1.,  0.,  1.])
-
-
-
-    >>> from functools import partial
-    >>> x = np.array([1, 1, 2, 0, 2])
-    >>> period = 1
-    >>> pfind_events = partial(find_events, period=period)
-    >>> events_1 = pfind_events(x == 1)
-    >>> events_1.as_array()
-    array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = pfind_events(x == 2)
-    >>> events_2.to_array()
-    array([ 0.,  0.,  1.,  0.,  1.])
-
-
-
-    >>> from functools import partial
-    >>> x = np.array([1, 1, 2, 0, 2])
-    >>> period = 1
-    >>> pfind_events = partial(find_events, period=period)
-    >>> events_1 = pfind_events(x == 1)
-    >>> events_1.to_array()
-    array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = pfind_events(x == 2)
-    >>> events_2.as_array()
-    array([ 0.,  0.,  1.,  0.,  1.])
-
-
-
-    >>> from functools import partial
-    >>> x = np.array([1, 1, 2, 0, 2])
-    >>> period = 1
-    >>> pfind_events = partial(find_events, period=period)
-    >>> events_1 = pfind_events(x == 1)
-    >>> events_1.to_array()
-    array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = pfind_events(x == 2)
-    >>> events_2.as_array()
-    array([ 0.,  0.,  1.,  0.,  1.])
-
-
-
-    >>> from functools import partial
-    >>> x = np.array([1, 1, 2, 0, 2])
-    >>> period = 1
-    >>> pfind_events = partial(find_events, period=period)
-    >>> events_1 = pfind_events(x == 1)
-    >>> events_1.as_array()
-    array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = pfind_events(x == 2)
-    >>> events_2.as_array()
     array([ 0.,  0.,  1.,  0.,  1.])
 
 Multi-parameter Conditional Array
@@ -96,16 +44,16 @@ y == 2, or z <= 1. ``((x > 0) & (y == 2)) | (z <= 1)``
 
     >>> x = np.array([1, 1, 0, 0, 1, 1, 0, 1, 0, 1])
     >>> y = np.array([2, 2, 0, 0, 0, 0, 0, 0, 0, 2])
-        >>> z = np.array([2, 2, 2, 3, 3, 0, 3, 3, 3, 3])
-        >>> cond = ((x > 0) & (y == 2)) | (z <= 1)
-        >>> events = find_events(cond, period=1)
-        >>> events.to_array()
-        array([ 1.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  1.])
+    >>> z = np.array([2, 2, 2, 3, 3, 0, 3, 3, 3, 3])
+    >>> cond = ((x > 0) & (y == 2)) | (z <= 1)
+    >>> events = tr.find_events(cond, period=1)
+    >>> events.to_array()
+    array([ 1.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  1.])
 
 
     >>> z = np.array([2, 2, 2, 3, 3, 0, 3, 3, 3, 3])
     >>> cond = ((x > 0) & (y == 2)) | (z <= 1)
-    >>> events = find_events(cond, period=1)
+    >>> events = tr.find_events(cond, period=1)
     >>> events.as_array()
     array([ 1.,  1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.,  1.])
 
@@ -120,7 +68,7 @@ min/max of arrays based on your condition.
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> cond = x == 1
-    >>> events = find_events(cond, period=1)
+    >>> events = tr.find_events(cond, period=1)
     >>> mask = events.as_mask()
     >>> np.ma.masked_where(mask, x)
     masked_array(data = [-- 1 -- -- 1 1 -- 1 -- 1],
@@ -148,7 +96,7 @@ further process them.
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> y = np.array([1, 2, 3, 4, 5, 4, 3, 2, 1, 0])
     >>> cond = x == 1
-    >>> events = find_events(cond, period=1)
+    >>> events = tr.find_events(cond, period=1)
     >>> columns = ['duration', 'ave_y_value', 'y_value_at_event_start']
     >>> df = pd.DataFrame(index=pd.RangeIndex(len(events)), columns=columns)
     >>> for i, occurrence in enumerate(events):
@@ -173,30 +121,12 @@ This would be helpful if you wanted to know the average, min, or max time betwee
 .. doctest::
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
-        >>> cond = x == 1
-        >>> events = find_events(cond, period=1)
-        >>> inv_events = find_events(~cond, period=1)
-        >>> events.as_array()
-        array([ 0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,  1.])
-        >>> inv_events.to_array()
-        array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  1.,  0.])
-
-
-        >>> cond = x == 1
-        >>> events = find_events(cond, period=1)
-        >>> inv_events = find_events(~cond, period=1)
-        >>> events.as_array()
-        array([ 0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,  1.])
-        >>> inv_events.to_array()
-        array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  1.,  0.])
-
-
     >>> cond = x == 1
     >>> events = find_events(cond, period=1)
     >>> inv_events = find_events(~cond, period=1)
     >>> events.as_array()
     array([ 0.,  1.,  0.,  0.,  1.,  1.,  0.,  1.,  0.,  1.])
-    >>> inv_events.as_array()
+    >>> inv_events.to_array()
     array([ 1.,  0.,  1.,  1.,  0.,  0.,  1.,  0.,  1.,  0.])
 
 ``Events.durations`` Tips
@@ -208,7 +138,7 @@ Total time in seconds events are active.
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> cond = x == 1
-    >>> events = find_events(cond, period=1)
+    >>> events = tr.find_events(cond, period=1)
     >>> events.durations.sum()
     5
 
@@ -218,7 +148,7 @@ Occurrence rate: Occurrences/second
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> cond = x == 1
-    >>> events = find_events(cond, period=1)
+    >>> events = tr.find_events(cond, period=1)
     >>> len(events) / events.durations.sum() # doctest: +SKIP
     0.8
 
@@ -228,6 +158,6 @@ Creating a histogram of event lengths
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> cond = x == 1
-    >>> events = find_events(cond, period=1)
+    >>> events = ftr.ind_events(cond, period=1)
     >>> np.histogram(events.durations, [0, 0.5, 1, 1.5, 2, 2.5])
     (array([0, 0, 3, 0, 1], dtype=int64), array([ 0. ,  0.5,  1. ,  1.5,  2. ,  2.5]))

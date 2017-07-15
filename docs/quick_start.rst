@@ -7,21 +7,21 @@ Setup
 .. testsetup:: *
 
     import numpy as np
-    from trouve import find_events
-    from trouve.transformations import *
+    import trouve as tr
+    import trouve.transformations as tt
     x = np.array([0, 1, 1, 0, 1, 0])
-    example = find_events(x > 0, period=1, name='example')
-    example_2 = find_events(x > 0, period=1, name='example_2')
+    example = tr.find_events(x > 0, period=1, name='example')
+    example_2 = tr.find_events(x > 0, period=1, name='example_2')
 
 Example events for quickstart.
 
 .. code-block:: python
 
     >>> import numpy as np
-    >>> from trouve import find_events
-    >>> from trouve.transformation import *
+    >>> import trouve as tr
+    >>> import trouve.transformations as tt
     >>> x = np.array([0, 1, 1, 0, 1, 0])
-    >>> example = find_events(x > 0, period=1, name='example')
+    >>> example = tr.find_events(x > 0, period=1, name='example')
 
 Finding Events
 --------------
@@ -44,28 +44,11 @@ events inplace to avoid making unnecessary copies.
 
 .. doctest:: transformations
 
-    >>> deb = debounce(2, 1)
-    >>> offset = offset_events(0, 1)
+    >>> deb = tt.debounce(2, 1)
+    >>> offset = tt.offset_events(0, 1)
     >>> cond = x > 0
-    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
-    >>> deb_first.to_array()
-    array([ 0.,  1.,  1.,  1.,  0.,  0.])
-
-
-
-    >>> deb = debounce(2, 1)
-    >>> offset = offset_events(0, 1)
-    >>> cond = x > 0
-    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
-    >>> deb_first.to_array()
-    array([ 0.,  1.,  1.,  1.,  0.,  0.])
-
-
-
-    >>> deb = debounce(2, 1)
-    >>> offset = offset_events(0, 1)
-    >>> cond = x > 0
-    >>> deb_first = find_events(cond, deb, offset, period=1, name='example')
+    >>> deb_first = tr.find_events(cond, period=1,
+    ... transformations=[deb, offset])
     >>> deb_first.to_array()
     array([ 0.,  1.,  1.,  1.,  0.,  0.])
 
@@ -75,7 +58,7 @@ Observe how the events change if the offset is applied before debouncing.
 
 .. doctest:: transformations
 
-    >>> offset_first = find_events(cond, offset, deb, period=1, name='example')
+    >>> offset_first = find_events(cond, period=1, transformations=[offset, deb])
     >>> offset_first.to_array()
     array([ 0.,  1.,  1.,  1.,  1.,  1.])
     >>> offset_first == deb_first
@@ -138,7 +121,7 @@ Boolean masks via
     5    0.0
     Name: example, dtype: float64
 
-Boolean masks via :any:`Events.to_array` for use with the ``numpy.ma.`` module.
+Boolean masks via :any:`Events.to_array` for use with the ``numpy.ma`` module.
 
 .. doctest:: arrays
 

@@ -17,4 +17,3 @@ Definitions
 
 .. automodule:: trouve.transformations
    :members:
-
