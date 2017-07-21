@@ -11,4 +11,4 @@ Change Log
 * Deprecate ``Events.as_mask``, use :any:`Events.to_array` with ``inactive_values=1``, ``ative_values=0`` and ``dtype=np.bool``
 
 **Transformations**
-*
+* Deprecate passing transformation functions as *args to :any:`trouve.find_events`. Pass them to the explicit transformations keyword arguments
