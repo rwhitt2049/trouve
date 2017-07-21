@@ -7,7 +7,7 @@ from toolz import pipe
 from trouve.events import Events
 
 
-def find_events(condition, period, *transformations_, name='events', transformations=None):
+def find_events(condition, *transformations_, period, name='events', transformations=None):
     """Find events based off a condition
 
     Find events based off a ``bool`` conditional array and apply a sequence
@@ -107,3 +107,22 @@ def _apply_condition(condition):
     stops = np.ma.masked_where(deltas > -1, slice_index).compressed()
 
     return starts, stops
+
+
+def main():
+    import numpy as np
+    import trouve as tr
+    import trouve.transformations as tt
+
+    ar = np.zeros(10)
+    ar[:2] = 1
+    ar[-2:] =1
+    con = ar > 0
+    offset = tt.offset_events(-2,2)
+    events = tr.find_events(con, offset, period=1)
+    print(len(events))
+    for event in events:
+        print(ar[event.start], ar[event.stop])
+
+if __name__ == '__main__':
+    main()
