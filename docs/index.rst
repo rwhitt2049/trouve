@@ -19,9 +19,7 @@ and Linux.
    events.rst
    transformations.rst
    tips_and_tricks.rst
-
-
-
+   change_log.rst
 
 Indices and tables
 ==================

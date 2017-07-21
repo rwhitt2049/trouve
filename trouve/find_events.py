@@ -1,12 +1,13 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 from toolz import pipe
 
-
 from trouve.events import Events
 
 
-def find_events(condition, *transformations, name='events', period=None):
+def find_events(condition, *transformations_, period, name='events', transformations=None):
     """Find events based off a condition
 
     Find events based off a ``bool`` conditional array and apply a sequence
@@ -18,7 +19,7 @@ def find_events(condition, *transformations, name='events', period=None):
         period (``float``):
             Time in seconds between each data point. Requires constant
             increment data that is uniform across the array. (1/Hz = s)
-        *transformations (sequence of ``callable`` 's, optional):
+        transformations (sequence of ``callable`` 's, optional):
             Ordered sequence of transformation functions to apply to
             events. Transformations are applied via ``toolz.pipe()``
         name (``str``, optional): Default is ``'events'``.
@@ -30,25 +31,34 @@ def find_events(condition, *transformations, name='events', period=None):
             ``*transformations`` applied.
 
     Examples:
-        >>> from trouve import find_events
-        >>> from trouve.transformations import *
+        >>> import trouve as tr
+        >>> import trouve.transformations as tt
         >>> import numpy as np
-        >>> deb = debounce(2, 2)
-        >>> offsets = offset_events(-1,2)
-        >>> filt_dur = filter_durations(3, 5)
+        >>> deb = tt.debounce(2, 2)
+        >>> offsets = tt.offset_events(-1,2)
+        >>> filt_dur = tt.filter_durations(3, 5)
         >>> x = np.array([4, 5, 1, 2, 3, 4, 5, 1, 3])
         >>> condition = (x > 2)
-        >>> no_transforms = find_events(condition, period=1)
-        >>> events = find_events(condition, deb, filt_dur, offsets,
-        ... period=1, name='example')
-        >>> no_transforms.as_array()
+        >>> no_transforms = tr.find_events(condition, period=1)
+        >>> events = tr.find_events(condition, period=1,
+        ... transformations=[deb, filt_dur, offsets])
+        >>> no_transforms.to_array()
         array([ 1.,  1.,  0.,  0.,  1.,  1.,  1.,  0.,  1.])
-        >>> events.as_array()
+        >>> events.to_array()
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
 
     """
-    if type(condition) is pd.core.series.Series:
+    if isinstance(condition, pd.Series):
         condition = condition.values
+
+    if transformations is None:
+        transformations = []
+
+    if transformations_:
+        warnings.warn('Transformations should be specified with the '
+                      'transformations keyword, not  as a *arg', DeprecationWarning)
+        transformations = transformations_
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
 
     starts, stops = _apply_condition(condition)
     raw_events = Events(starts, stops, period, name, condition.size)

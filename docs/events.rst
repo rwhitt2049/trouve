@@ -31,9 +31,9 @@ index value. These values then allow a user to inspect each event in a Pythonic 
     .. doctest:: python
 
         >>> import numpy as np
-        >>> from trouve import find_events
+        >>> import trouve as tr
         >>> x = np.array([0, 1, 1, 0, 1, 0])
-        >>> example = find_events(x, period=1, name='example')
+        >>> example = tr.find_events(x, period=1, name='example')
         >>> first_event = example[0]
         >>> print(first_event)
         Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)

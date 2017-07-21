@@ -2,6 +2,7 @@ from collections import namedtuple
 
 import numpy as np
 import pandas as pd
+import warnings
 
 
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
@@ -32,11 +33,11 @@ class Events(object):
         """Return a ``numpy.ndarray`` of event durations in seconds.
 
         Examples:
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x == 2
-            >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> events = tr.find_events(condition, period=1)
+            >>> print(events.to_array())
             [ 1.  1.  0.  0.  0.  1.]
             >>> print(events.durations)
             [2 1]
@@ -44,6 +45,43 @@ class Events(object):
         """
         durations = (self._stops - self._starts) * self._period
         return durations
+
+    def to_array(self, inactive_values=0, active_values=1, dtype=None, order='C'):
+        """Returns a ``numpy.ndarray`` identifying found events
+
+        Useful for plotting or building another mask based on identified
+        events.
+
+        Parameters:
+            inactive_values(``float``, optional): Default is 0.
+                Value of array where events are not active.
+            active_values (``float``, optional): Default is 1.
+                Value of array where events are active.
+            dtype (``numpy.dtype``, optional): Default is ``numpy.float64``.
+                Datatype of returned array.
+            order (``str``, optional): Default is 'C'. {'C', 'F'} whether to
+                store multidimensional data in C- or Fortran-contiguous (row-
+                or column-wise) order in memory.
+
+        Returns:
+            ``numpy.ndarray``: An array where values are coded to 
+                identify when events are active or inactive.
+
+        Examples:
+            >>> import trouve as tr
+            >>> x = np.array([2, 2, 4, 5, 3, 2])
+            >>> condition = x > 2
+            >>> print(condition)
+            [False False  True  True  True False]
+            >>> events = tr.find_events(condition, period=1)
+            >>> print(events.to_array())
+            [ 0.  0.  1.  1.  1.  0.]
+
+        """
+        output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_values
+        for start, stop in zip(self._starts, self._stops):
+            output[start:stop] = active_values
+        return output.astype(dtype)
 
     # TODO force defaults to np.int8 datatype
     # specify false and true values as None, check if values and dtype is noe
@@ -67,31 +105,42 @@ class Events(object):
                 or inactive.
 
         Examples:
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> events = tr.find_events(condition, period=1)
+            >>> print(events.to_array())
             [ 0.  0.  1.  1.  1.  0.]
 
         """
+        warnings.warn('Use to_array instead', DeprecationWarning)
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
         output = np.ones(self._condition_size, dtype=dtype) * false_values
         for start, stop in zip(self._starts, self._stops):
             output[start:stop] = 1 * true_values
         return output.astype(dtype)
 
-    def as_series(self, false_values=0, true_values=1, name=None):
+    def to_series(self, inactive_value=0, active_value=1,
+                  index=None, dtype=None, name=None):
         """Returns a ``pandas.Series`` identifying found events
 
         Useful for plotting and for filtering a ``pandas.DataFrame``
 
         Parameters:
-            false_values(``float``, optional): Default is 0.
+            inactive_value(``float``, optional): Default is 0.
                 Value of array where events are not active.
-            true_values (``float``, optional): Default is 1.
+            active_value (``float``, optional): Default is 1.
                 Value of array where events are active.
+            index (``array-like`` or ``Index`` (1d)):Values must be
+                hashable and have the same length as data. Non-unique
+                index values are allowed. Will default to
+                RangeIndex(len(data)) if not provided. If both a dict
+                and index sequence are used, the index will override
+                the keys found in the dict.
+            dtype (``numpy.dtype`` or ``None``): If ``None``, ``dtype``
+                will be inferred.
             name (``str``, optional): Default is :attr:`Events.name`.
                 Name of series.
 
@@ -101,13 +150,13 @@ class Events(object):
                 or inactive.
 
         Examples:
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, period=1)
-            >>> print(events.as_series())
+            >>> events = tr.find_events(condition, period=1)
+            >>> print(events.to_series())
             0    0.0
             1    0.0
             2    1.0
@@ -119,8 +168,8 @@ class Events(object):
         """
         if name is None:
             name = self.name
-        data = self.as_array(false_values=false_values, true_values=true_values)
-        return pd.Series(data=data, name=name)
+        data = self.to_array(inactive_values=inactive_value, active_values=active_value, dtype=dtype)
+        return pd.Series(data=data, index=index, name=name)
 
     def as_mask(self):
         """Returns a ``numpy.ndarray`` ``bool`` mask for use with ``numpy.ma``
@@ -142,13 +191,13 @@ class Events(object):
                 isn't met and ``False`` when the conditions are met.
 
         Examples:
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x > 2
             >>> print(condition)
             [False False  True  True  True False]
-            >>> events = find_events(condition, period=1)
-            >>> print(events.as_array())
+            >>> events = tr.find_events(condition, period=1)
+            >>> print(events.to_array())
             [ 0.  0.  1.  1.  1.  0.]
             >>> print(events.as_mask())
             [ True  True False False False  True]
@@ -156,7 +205,9 @@ class Events(object):
             [-- -- 4 5 3 --]
 
         """
-        return self.as_array(1, 0, np.int8).view(bool)
+        warnings.warn('Use to_array or to_series instead', DeprecationWarning)
+        # TODO Deprecating in v0.5.x, removing in v0.6.x
+        return self.to_array(1, 0, np.int8).view(bool)
 
     def __iter__(self):
         self._i = 0
@@ -167,9 +218,9 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, period=1, name='example')
+            >>> example = tr.find_events(x, period=1, name='example')
             >>> for event in example:
             ...     print(event)
             ...
@@ -194,9 +245,9 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, period=1, name='example')
+            >>> example = tr.find_events(x, period=1, name='example')
             >>> first_event = example[0]
             >>> print(first_event)
             Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
@@ -217,9 +268,9 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, period=1, name='example')
+            >>> example = tr.find_events(x, period=1, name='example')
             >>> len(example)
             2
 
@@ -240,9 +291,9 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, period=1, name='example')
+            >>> example = tr.find_events(x, period=1, name='example')
             >>> print(example)
             example
             Number of events: 2
@@ -271,10 +322,10 @@ class Events(object):
 
         Examples:
             >>> import numpy as np
-            >>> from trouve import find_events
+            >>> import trouve as tr
             >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = find_events(x, period=1, name='example')
-            >>> other = find_events(x, period=1, name='other')
+            >>> example = tr.find_events(x, period=1, name='example')
+            >>> other = tr.find_events(x, period=1, name='other')
             >>> id(example) # doctest: +SKIP
             2587452050568
             >>> id(other) # doctest: +SKIP
