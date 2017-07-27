@@ -115,6 +115,7 @@ class Events(object):
             [ 0.  0.  1.  1.  1.  0.]
 
         """
+        warnings.simplefilter('default', DeprecationWarning)
         warnings.warn('Use to_array instead', DeprecationWarning)
         # TODO Deprecating in v0.5.x, removing in v0.6.x
         output = np.ones(self._condition_size, dtype=dtype) * false_values
@@ -205,6 +206,7 @@ class Events(object):
             [-- -- 4 5 3 --]
 
         """
+        warnings.simplefilter('default', DeprecationWarning)
         warnings.warn('Use to_array or to_series instead', DeprecationWarning)
         # TODO Deprecating in v0.5.x, removing in v0.6.x
         return self.to_array(1, 0, np.int8).view(bool)
