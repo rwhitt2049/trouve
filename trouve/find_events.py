@@ -7,6 +7,9 @@ from toolz import pipe
 from trouve.events import Events
 
 
+
+
+
 def find_events(condition, *transformations_, period, name='events', transformations=None):
     """Find events based off a condition
 
@@ -55,6 +58,7 @@ def find_events(condition, *transformations_, period, name='events', transformat
         transformations = []
 
     if transformations_:
+        warnings.simplefilter('default', DeprecationWarning)
         warnings.warn('Transformations should be specified with the '
                       'transformations keyword, not  as a *arg', DeprecationWarning)
         transformations = transformations_
