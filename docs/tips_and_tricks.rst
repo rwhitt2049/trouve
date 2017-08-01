@@ -8,26 +8,25 @@ Here are some recipes to effectively use Trouve to it's full potential.
 
     import numpy as np
     import pandas as pd
-    impot trouve as tr
+    import trouve as tr
     import trouve.transformations as tt
 
-Specify Sample Period with `functools.partial`
-----------------------------------------------
+Specify Sample Period for Reuse
+-------------------------------
 
 If you're looking for multiple events in the same data set, then one shortcut is
-to use ``functools.partial`` and add the period to the partial function.
-You can then call that function instead of ``find_events`` .
+to specify the period once. The :any:``find_events`` function is curried via ``toolz.curry``,
+allowing a user to specify the period once for reuse.
 
 .. doctest:: partial_period
 
-    >>> from functools import partial
     >>> x = np.array([1, 1, 2, 0, 2])
     >>> period = 1
-    >>> pfind_events = partial(tr.find_events, period=period)
-    >>> events_1 = pfind_events(x == 1)
+    >>> find_events = tr.find_events(period=period)
+    >>> events_1 = find_events(x == 1)
     >>> events_1.as_array()
     array([ 1.,  1.,  0.,  0.,  0.])
-    >>> events_2 = pfind_events(x == 2)
+    >>> events_2 = find_events(x == 2)
     >>> events_2.to_array()
     array([ 0.,  0.,  1.,  0.,  1.])
 
@@ -38,7 +37,9 @@ The condition can be as complicated as necessary. Using multiple inputs and the
 ampersand (``&``) or the pipe (``|``). The following example find events where x > 0 and
 y == 2, or z <= 1. ``((x > 0) & (y == 2)) | (z <= 1)``
 
-.. note:: When using more than one parameter, you must put each expression in its own parenthesis
+.. note::
+
+When using more than one parameter, you must put each expression in its own parenthesis
 
 .. doctest::
 
@@ -148,9 +149,10 @@ Occurrence rate: Occurrences/second
 
     >>> x = np.array([-1, 1, -1, -1, 1, 1, -1, 1, -1, 1])
     >>> cond = x == 1
-    >>> events = tr.find_events(cond, period=1)
-    >>> len(events) / events.durations.sum() # doctest: +SKIP
-    0.8
+    >>> period = 1
+    >>> events = tr.find_events(cond, period=period)
+    >>> len(events) / (x.size * period)
+    0.4
 
 Creating a histogram of event lengths
 

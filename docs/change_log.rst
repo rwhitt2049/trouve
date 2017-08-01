@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+0.6.0
+-----
+
+* Apply ``toolz.curry`` to :any:``trouve.find_events``
+
 0.5.1
 -----
 
@@ -13,7 +18,7 @@ Change Log
 
 * Deprecate ``Events.as_array``, use :any:`Events.to_array`
 * Deprecate ``Events.as_series``, use :any:`Events.to_series`
-* Deprecate ``Events.as_mask``, use :any:`Events.to_array` with ``inactive_values=1``, ``ative_values=0`` and ``dtype=np.bool``
+* Deprecate ``Events.as_mask``, use :any:`Events.to_array` with ``inactive_value=1``, ``ative_values=`` and ``dtype=np.bool``
 
 **Transformations**
 

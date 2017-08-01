@@ -18,6 +18,7 @@ and Linux.
    quick_start.rst
    events.rst
    transformations.rst
+   developing_transformations.rst
    tips_and_tricks.rst
    change_log.rst
 
