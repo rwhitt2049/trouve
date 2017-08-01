@@ -3,7 +3,7 @@ Events
 
 The primary function of ``trouve`` is to find events in time-series data and apply
 functional transformations in a specified order. The main function is :any:`find_events`.
-This function takes in a condtional ``bool`` and then returns the class :any:`Events`.
+This function takes in a conditional ``bool`` and then returns the class :any:`Events`.
 The :any:`Events` class finds each distinct occurrence and records it's start and stop
 index value. These values then allow a user to inspect each event in a Pythonic manner.
 

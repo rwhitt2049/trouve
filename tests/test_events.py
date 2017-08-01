@@ -26,19 +26,19 @@ class TestAsArray(EventTestCase):
     def test_as_array_false_value(self):
         """Test to_array() with low value"""
         control = np.array([-1, 1, 1, 1, -1, -1, -1, 1, 1, -1, 1, 1])
-        test = self.events.to_array(inactive_values=-1)
+        test = self.events.to_array(inactive_value=-1)
         npt.assert_array_equal(control, test)
 
     def test_as_array_true_value(self):
         """Test to_array() with high value"""
         control = np.array([0, 5, 5, 5, 0, 0, 0, 5, 5, 0, 5, 5])
-        test = self.events.to_array(active_values=5)
+        test = self.events.to_array(active_value=5)
         npt.assert_array_equal(control, test)
 
     def test_as_array_false_and_true_value(self):
         """Test to_array() with low and high values"""
         control = np.array([-1, 5, 5, 5, -1, -1, -1, 5, 5, -1, 5, 5])
-        test = self.events.to_array(inactive_values=-1, active_values=5)
+        test = self.events.to_array(inactive_value=-1, active_value=5)
         npt.assert_array_equal(control, test)
 
     def test_type(self):

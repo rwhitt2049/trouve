@@ -3,6 +3,7 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
+
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 
 
@@ -44,19 +45,19 @@ class Events(object):
         durations = (self._stops - self._starts) * self._period
         return durations
 
-    def to_array(self, inactive_values=0, active_values=1, dtype=None, order='C'):
+    def to_array(self, inactive_value=0, active_value=1, dtype=None, order='C'):
         """Returns a ``numpy.ndarray`` identifying found events
 
         Useful for plotting or building another mask based on identified
         events.
 
         Parameters:
-            inactive_values(``float``, optional): Default is 0.
+            inactive_value (``float``, optional): Default is 0.
                 Value of array where events are not active.
-            active_values (``float``, optional): Default is 1.
+            active_value (``float``, optional): Default is 1.
                 Value of array where events are active.
             dtype (``numpy.dtype``, optional): Default is ``numpy.float64``.
-                Datatype of returned array.
+                The datatype of returned array.
             order (``str``, optional): Default is 'C'. {'C', 'F'} whether to
                 store multidimensional data in C- or Fortran-contiguous (row-
                 or column-wise) order in memory.
@@ -76,14 +77,12 @@ class Events(object):
             [ 0.  0.  1.  1.  1.  0.]
 
         """
-        output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_values
+        if dtype is None and inactive_value == 0 and active_value == 1:
+            dtype = np.int8
+        output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_value
         for start, stop in zip(self._starts, self._stops):
-            output[start:stop] = active_values
+            output[start:stop] = active_value
         return output.astype(dtype)
-
-    # TODO force defaults to np.int8 datatype
-    # specify false and true values as None, check if values and dtype is noe
-    # and specify appropriately
 
     def to_series(self, inactive_value=0, active_value=1,
                   index=None, dtype=None, name=None):
@@ -129,9 +128,11 @@ class Events(object):
             Name: events, dtype: float64
 
         """
+        if dtype is None and inactive_value == 0 and active_value == 1:
+            dtype = np.int8
         if name is None:
             name = self.name
-        data = self.to_array(inactive_values=inactive_value, active_values=active_value, dtype=dtype)
+        data = self.to_array(inactive_value=inactive_value, active_value=active_value, dtype=dtype)
         return pd.Series(data=data, index=index, name=name)
 
     def __iter__(self):
