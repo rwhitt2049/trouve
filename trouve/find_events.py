@@ -2,15 +2,13 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from toolz import pipe
+import toolz
 
 from trouve.events import Events
 
 
-
-
-
-def find_events(condition, *transformations_, period, name='events', transformations=None):
+@toolz.curry
+def find_events(condition, period, name='events', transformations=None):
     """Find events based off a condition
 
     Find events based off a ``bool`` conditional array and apply a sequence
@@ -57,17 +55,10 @@ def find_events(condition, *transformations_, period, name='events', transformat
     if transformations is None:
         transformations = []
 
-    if transformations_:
-        warnings.simplefilter('default', DeprecationWarning)
-        warnings.warn('Transformations should be specified with the '
-                      'transformations keyword, not  as a *arg', DeprecationWarning)
-        transformations = transformations_
-        # TODO Deprecating in v0.5.x, removing in v0.6.x
-
     starts, stops = _apply_condition(condition)
     raw_events = Events(starts, stops, period, name, condition.size)
 
-    transformed_events = pipe(raw_events, *transformations)
+    transformed_events = toolz.pipe(raw_events, *transformations)
 
     return transformed_events
 
