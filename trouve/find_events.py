@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 import pandas as pd
 import toolz
@@ -12,7 +10,9 @@ def find_events(condition, period, name='events', transformations=None):
     """Find events based off a condition
 
     Find events based off a ``bool`` conditional array and apply a sequence
-    of transformation functions to them.
+    of transformation functions to them. The ``find_events`` function is
+    curried via ``toolz.curry``. Most datasets are of the same sample rate,
+    this is a convenience so that one can specify it once.
 
     Args:
         condition (``numpy.ndarray`` or ``pandas.Series`` of ``bool``):
@@ -29,7 +29,7 @@ def find_events(condition, period, name='events', transformations=None):
     Returns:
         :class:`trouve.events.Events`:
             Returns events found from ``condition`` with any supplied
-            ``*transformations`` applied.
+            ``transformations`` applied.
 
     Examples:
         >>> import trouve as tr

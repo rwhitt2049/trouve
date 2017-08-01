@@ -2,8 +2,6 @@ from collections import namedtuple
 
 import numpy as np
 import pandas as pd
-import warnings
-
 
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 
@@ -86,42 +84,6 @@ class Events(object):
     # TODO force defaults to np.int8 datatype
     # specify false and true values as None, check if values and dtype is noe
     # and specify appropriately
-    def as_array(self, false_values=0, true_values=1, dtype=np.float):
-        """Returns a ``numpy.ndarray`` identifying found events
-
-        Useful for plotting.
-
-        Parameters:
-            false_values(``float``, optional): Default is 0.
-                Value of array where events are not active.
-            true_values (``float``, optional): Default is 1.
-                Value of array where events are active.
-            dtype (``numpy.dtype``, optional): Default is ``numpy.float``.
-                Datatype of returned array.
-
-        Returns:
-            ``numpy.ndarray``:
-                An array where values are coded to identify when events are active
-                or inactive.
-
-        Examples:
-            >>> import trouve as tr
-            >>> x = np.array([2, 2, 4, 5, 3, 2])
-            >>> condition = x > 2
-            >>> print(condition)
-            [False False  True  True  True False]
-            >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
-
-        """
-        warnings.simplefilter('default', DeprecationWarning)
-        warnings.warn('Use to_array instead', DeprecationWarning)
-        # TODO Deprecating in v0.5.x, removing in v0.6.x
-        output = np.ones(self._condition_size, dtype=dtype) * false_values
-        for start, stop in zip(self._starts, self._stops):
-            output[start:stop] = 1 * true_values
-        return output.astype(dtype)
 
     def to_series(self, inactive_value=0, active_value=1,
                   index=None, dtype=None, name=None):
@@ -171,45 +133,6 @@ class Events(object):
             name = self.name
         data = self.to_array(inactive_values=inactive_value, active_values=active_value, dtype=dtype)
         return pd.Series(data=data, index=index, name=name)
-
-    def as_mask(self):
-        """Returns a ``numpy.ndarray`` ``bool`` mask for use with ``numpy.ma``
-
-        This method returns a ``np.ndarray`` of ``bool`` where values are
-        False where the condition is met, and True where the conditions
-        are not met. Trouve treats conditionals opposite of how numpy
-        treats them. That is to say that numpy will mask out values in
-        an array that meet the condition, however Trouve is by design
-        more interested in finding and keeping events that meet the
-        given condition. This method makes it more convenient to
-        interact with the numpy masked array module as it will return
-        a mask that can be directly used by the ``numpy.ma`` module.
-        This is similar to what the tilde does for bool arrays.
-
-        Returns:
-            ``np.ndarray``:
-                An array of bools where the values are ``True`` when the condition
-                isn't met and ``False`` when the conditions are met.
-
-        Examples:
-            >>> import trouve as tr
-            >>> x = np.array([2, 2, 4, 5, 3, 2])
-            >>> condition = x > 2
-            >>> print(condition)
-            [False False  True  True  True False]
-            >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
-            >>> print(events.as_mask())
-            [ True  True False False False  True]
-            >>> print(np.ma.masked_where(events.as_mask(), x))
-            [-- -- 4 5 3 --]
-
-        """
-        warnings.simplefilter('default', DeprecationWarning)
-        warnings.warn('Use to_array or to_series instead', DeprecationWarning)
-        # TODO Deprecating in v0.5.x, removing in v0.6.x
-        return self.to_array(1, 0, np.int8).view(bool)
 
     def __iter__(self):
         self._i = 0
@@ -339,9 +262,9 @@ class Events(object):
 
         """
         if (np.all(self._starts == other._starts)
-                and np.all(self._stops == other._stops)
-                and self._period == other._period
-                and self._condition_size == other._condition_size):
+            and np.all(self._stops == other._stops)
+            and self._period == other._period
+            and self._condition_size == other._condition_size):
             return True
         else:
             return False
