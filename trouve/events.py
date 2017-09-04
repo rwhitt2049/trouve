@@ -3,7 +3,6 @@ from collections import namedtuple
 import numpy as np
 import pandas as pd
 
-
 Occurrence = namedtuple('Occurrence', 'start stop slice duration')
 
 
@@ -136,35 +135,14 @@ class Events(object):
         return pd.Series(data=data, index=index, name=name)
 
     def __iter__(self):
-        self._i = 0
-        return self
-
-    def __next__(self):
-        """Iterate through ``Events._starts`` and ``Events._stops`` and return an :class:`.Occurrence`
-
-        Examples:
-            >>> import numpy as np
-            >>> import trouve as tr
-            >>> x = np.array([0, 1, 1, 0, 1, 0])
-            >>> example = tr.find_events(x, period=1, name='example')
-            >>> for event in example:
-            ...     print(event)
-            ...
-            Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
-            Occurrence(start=4, stop=4, slice=slice(4, 5, None), duration=1)
-
-        """
-        try:
+        for start, stop in zip(self._starts, self._stops):
             occurrence = Occurrence(
-                start=self._starts[self._i],
-                stop=self._stops[self._i] - 1,
-                slice=slice(self._starts[self._i], self._stops[self._i]),
-                duration=(self._stops[self._i] - self._starts[self._i]) * self._period
+                start=start,
+                stop=stop - 1,
+                slice=slice(start, stop),
+                duration=(stop - start) * self._period
             )
-            self._i += 1
-            return occurrence
-        except IndexError:
-            raise StopIteration
+            yield occurrence
 
     def __getitem__(self, item):
         """Get a specific :class:`.Occurrence`
@@ -201,16 +179,18 @@ class Events(object):
             2
 
         """
-        return self._starts.size
+        return len(self._starts)
 
     def __repr__(self):
-        return (
+        msg = (
             '{__class__.__name__}(_starts={_starts!r}, '
             '_stops={_stops!r}, '
             '_period={_period!r}, '
             'name={name!r}, '
             '_condition_size={_condition_size!r})'
         ).format(__class__=self.__class__, **self.__dict__)
+
+        return msg
 
     def __str__(self):
         """Prints a summary of the events
