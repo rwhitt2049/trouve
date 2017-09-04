@@ -36,7 +36,7 @@ class Events(object):
             >>> condition = x == 2
             >>> events = tr.find_events(condition, period=1)
             >>> print(events.to_array())
-            [ 1.  1.  0.  0.  0.  1.]
+            [1 1 0 0 0 1]
             >>> print(events.durations)
             [2 1]
 
@@ -73,7 +73,7 @@ class Events(object):
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
             >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
+            [0 0 1 1 1 0]
 
         """
         if dtype is None and inactive_value == 0 and active_value == 1:
@@ -121,13 +121,13 @@ class Events(object):
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
             >>> print(events.to_series())
-            0    0.0
-            1    0.0
-            2    1.0
-            3    1.0
-            4    1.0
-            5    0.0
-            Name: events, dtype: float64
+            0    0
+            1    0
+            2    1
+            3    1
+            4    1
+            5    0
+            Name: events, dtype: int8
 
         """
         if dtype is None and inactive_value == 0 and active_value == 1:

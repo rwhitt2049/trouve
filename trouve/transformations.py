@@ -39,10 +39,10 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         >>> events = tr.find_events(condition, period=1)
         >>> deb = tt.debounce(2, 2)
         >>> trans_events = tr.find_events(condition, period=1, transformations=[deb])
-        >>> events.to_array()
-        array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> trans_events.to_array()
-        array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
+        >>> print(events.to_array())
+        [0 1 0 1 1 1 0 1 1]
+        >>> print(trans_events.to_array())
+        [0 0 0 1 1 1 1 1 1]
         
     Raises:
         ``ValueError``: If ``activate_debounce`` or ``deactivate_debounce`` < 0
@@ -150,10 +150,10 @@ def filter_durations(min_duration=None, max_duration=None):
         >>> events = tr.find_events(condition, period=1)
         >>> filt_dur = filter_durations(1.5, 2.5)
         >>> trans_events = tr.find_events(condition, period=1, transformations=[filt_dur])
-        >>> events.to_array()
-        array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
-        >>> trans_events.to_array()
-        array([ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  1.,  1.])
+        >>> print(events.to_array())
+        [0 1 0 1 1 1 0 1 1]
+        >>> print(trans_events.to_array())
+        [0 0 0 0 0 0 0 1 1]
 
     """
     min_dur = 0 if min_duration is None else min_duration
@@ -230,10 +230,10 @@ def offset_events(start_offset=None, stop_offset=None):
         >>> events = tr.find_events(condition, period=1)
         >>> offset = tt.offset_events(-1, 1)
         >>> trans_events = tr.find_events(condition, period=1, transformations=[offset])
-        >>> events.to_array()
-        array([ 0.,  0.,  0.,  1.,  1.,  1.,  0.,  0.,  0.])
-        >>> trans_events.to_array()
-        array([ 0.,  0.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
+        >>> print(events.to_array())
+        [0 0 0 1 1 1 0 0 0]
+        >>> print(trans_events.to_array())
+        [0 0 1 1 1 1 1 0 0]
 
     """
     start_offset_ = 0 if start_offset is None else start_offset
@@ -294,10 +294,10 @@ def merge_overlap(events):
         >>> events = tr.find_events(condition, period=1, transformations=[offset])
         >>> merged_events = tr.find_events(condition,  period=1,
         ... transformations=[offset, merge_overlap])
-        >>> events.to_array()
-        array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
-        >>> merged_events.to_array()
-        array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
+        >>> print(events.to_array())
+        [1 1 1 1 1 1 1 0 0]
+        >>> print(merged_events.to_array())
+        [1 1 1 1 1 1 1 0 0]
         >>> len(events)
         2
         >>> len(merged_events)
