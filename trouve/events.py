@@ -78,9 +78,12 @@ class Events(object):
         """
         if dtype is None and inactive_value == 0 and active_value == 1:
             dtype = np.int8
-        output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_value
-        for start, stop in zip(self._starts, self._stops):
-            output[start:stop] = active_value
+
+        output = np.full(self._condition_size, inactive_value, dtype, order)
+
+        for event in self:
+            output[event.slice] = active_value
+
         return output.astype(dtype)
 
     def to_series(self, inactive_value=0, active_value=1,
