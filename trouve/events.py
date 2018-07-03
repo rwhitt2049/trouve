@@ -37,8 +37,8 @@ class Events(object):
             >>> x = np.array([2, 2, 4, 5, 3, 2])
             >>> condition = x == 2
             >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 1.  1.  0.  0.  0.  1.]
+            >>> events.to_array()  # doctest: +SKIP
+            array([1., 1., 0., 0., 0., 1.])
             >>> print(events.durations)
             [2 1]
 
@@ -74,8 +74,8 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
+            >>> events.to_array()  # doctest: +SKIP
+            array([0., 0., 1., 1., 1., 0.])
 
         """
         output = np.ones(self._condition_size, dtype=dtype, order=order) * inactive_values
@@ -111,8 +111,8 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
+            >>> events.to_array()  # doctest: +SKIP
+            array([0., 0., 1., 1., 1., 0.])
 
         """
         warnings.simplefilter('default', DeprecationWarning)
@@ -157,7 +157,7 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_series())
+            >>> events.to_series()
             0    0.0
             1    0.0
             2    1.0
@@ -198,8 +198,8 @@ class Events(object):
             >>> print(condition)
             [False False  True  True  True False]
             >>> events = tr.find_events(condition, period=1)
-            >>> print(events.to_array())
-            [ 0.  0.  1.  1.  1.  0.]
+            >>> events.to_array()  # doctest: +SKIP
+            array([0., 0., 1., 1., 1., 0.])
             >>> print(events.as_mask())
             [ True  True False False False  True]
             >>> print(np.ma.masked_where(events.as_mask(), x))
