@@ -6,6 +6,10 @@ Change Log
 
 * Apply ``toolz.curry`` to :any:``trouve.find_events``
 
+0.5.2
+-----
+* Fixed bug where events with no occurrences failed with `transformations.merge_overlap` applied to them
+
 0.5.1
 -----
 

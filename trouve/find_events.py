@@ -43,10 +43,10 @@ def find_events(condition, period, name='events', transformations=None):
         >>> no_transforms = tr.find_events(condition, period=1)
         >>> events = tr.find_events(condition, period=1,
         ... transformations=[deb, filt_dur, offsets])
-        >>> print(no_transforms.to_array())
-        [1 1 0 0 1 1 1 0 1]
-        >>> print(events.to_array())
-        [0 0 0 1 1 1 1 1 1]
+        >>> no_transforms.to_array()  # doctest: +SKIP
+        array([ 1.,  1.,  0.,  0.,  1.,  1.,  1.,  0.,  1.])
+        >>> events.to_array()  # doctest: +SKIP
+        array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
 
     """
     if isinstance(condition, pd.Series):

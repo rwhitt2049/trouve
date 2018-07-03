@@ -205,6 +205,13 @@ class TestNoEvents(TransformationTestFixture):
         control_stops = np.array([])
         self.fixture(control_starts, control_stops, period, start_offset=-2, stop_offset=3.1)
 
+    def test_merge_overlap_no_events(self):
+        self.transformation = merge_overlap
+        period = 1
+        control_starts = np.array([])
+        control_stops = np.array([])
+        self.fixture(control_starts, control_stops, period)
+
 
 class TestDefaultArguments(TransformationTestFixture):
     """Test default arguments of all functions
