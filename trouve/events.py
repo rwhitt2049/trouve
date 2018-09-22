@@ -91,30 +91,7 @@ class Events(object):
 
         Useful for plotting.
 
-        Parameters:
-            false_values(``float``, optional): Default is 0.
-                Value of array where events are not active.
-            true_values (``float``, optional): Default is 1.
-                Value of array where events are active.
-            dtype (``numpy.dtype``, optional): Default is ``numpy.float``.
-                Datatype of returned array.
 
-        Returns:
-            ``numpy.ndarray``:
-                An array where values are coded to identify when events are active
-                or inactive.
-
-        Examples:
-            >>> import trouve as tr
-            >>> x = np.array([2, 2, 4, 5, 3, 2])
-            >>> condition = x > 2
-            >>> print(condition)
-            [False False  True  True  True False]
-            >>> events = tr.find_events(condition, period=1)
-            >>> events.to_array()  # doctest: +SKIP
-            array([0., 0., 1., 1., 1., 0.])
-
-        """
         warnings.simplefilter('default', DeprecationWarning)
         warnings.warn('Use to_array instead', DeprecationWarning)
         # TODO Deprecating in v0.5.x, removing in v0.6.x
