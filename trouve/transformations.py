@@ -311,3 +311,47 @@ def merge_overlap(events):
         events._stops = np.ma.masked_where(np.append(mask, init_mask), events._stops).compressed()
 
     return events
+
+
+def prepone_events(starts=0, stops=0):
+    if starts < 0 or stops < 0:
+        raise ValueError('Can only prepone events with positive numbers.'
+                         'Alternatively, use postpone_evets')
+
+    def _prepone_events(events):
+        starts_ = events._starts - np.ceil(
+            starts / events._period)
+        stops_ = events._stops - np.ceil(stops / events._period)
+
+        starts_ = np.clip(starts_, 0, events._condition_size)
+        stops_ = np.clip(stops_, 0, events._condition_size)
+
+        not_clobbered = (stops_ - starts_) > 0
+
+        events._starts = starts_[not_clobbered]
+        events._stops = stops_[not_clobbered]
+        return events
+
+    return _prepone_events
+
+
+def postpone_events(starts=0, stops=0):
+    if starts < 0 or stops < 0:
+        raise ValueError('Can only prepone events with positive numbers.'
+                         'Alternatively, use postpone_evets')
+
+    def _postpone_events(events):
+        starts_ = events._starts + np.ceil(
+            starts / events._period)
+        stops_ = events._stops + np.ceil(stops / events._period)
+
+        starts_ = np.clip(starts_, 0, events._condition_size)
+        stops_ = np.clip(stops_, 0, events._condition_size)
+
+        not_clobbered = (stops_ - starts_) > 0
+
+        events._starts = starts_[not_clobbered]
+        events._stops = stops_[not_clobbered]
+        return events
+
+    return _prepone_events
