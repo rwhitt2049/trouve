@@ -160,13 +160,16 @@ class Events(object):
             Occurrence(start=1, stop=2, slice=slice(1, 3, None), duration=2)
 
         """
-        occurrence = Occurrence(
-            start=self._starts[item],
-            stop=self._stops[item]-1,
-            slice=slice(self._starts[item], self._stops[item]),
-            duration=(self._stops[item] - self._starts[item]) * self._period
-        )
-        return occurrence
+        if isinstance(item, slice):
+            pass
+        else:
+            occurrence = Occurrence(
+                start=self._starts[item],
+                stop=self._stops[item] - 1,
+                slice=slice(self._starts[item], self._stops[item]),
+                duration=(self._stops[item] - self._starts[item]) * self._period
+            )
+            return occurrence
 
     def __len__(self):
         """Returns the number of events found
