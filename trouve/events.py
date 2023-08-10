@@ -86,7 +86,7 @@ class Events(object):
     # TODO force defaults to np.int8 datatype
     # specify false and true values as None, check if values and dtype is noe
     # and specify appropriately
-    def as_array(self, false_values=0, true_values=1, dtype=np.float):
+    def as_array(self, false_values=0, true_values=1, dtype=float):
         """Returns a ``numpy.ndarray`` identifying found events
 
         Useful for plotting.

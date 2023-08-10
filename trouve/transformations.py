@@ -79,8 +79,8 @@ def _debounce(events, activate_debounce, deactivate_debounce):
     activate_debounce_ = np.ceil(activate_debounce / events._period)
     deactivate_debounce_ = np.ceil(deactivate_debounce / events._period)
 
-    start_mask = np.zeros(events._starts.size, dtype=np.bool)
-    stop_mask = np.zeros(events._stops.size, dtype=np.bool)
+    start_mask = np.zeros(events._starts.size, dtype=bool)
+    stop_mask = np.zeros(events._stops.size, dtype=bool)
     event_active = False
 
     for index in np.arange(events._starts.size):
