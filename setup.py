@@ -17,7 +17,7 @@ def install_requires():
 
 
 def dev_requires():
-    with open(path.join(base, 'dev_requirements.txt'), encoding='utf-8') as file:
+    with open(path.join(base, 'requirements-dev.txt'), encoding='utf-8') as file:
         return file.read().splitlines()
 
 
