@@ -41,7 +41,7 @@
 
 
 
-name: Python package
+name: Trouve automation
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
         python -m pip install tox tox-gh-actions
     - name: Test with tox
       run: tox
-  install-dev:
+  verify-platforms:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -85,8 +85,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Build and publish to PYPI
-    needs: [qa, install-dev]
-#    if: github.ref == "refs/heads/master"
+    needs: [qa, verify-platforms]
+    if: github.ref == "refs/heads/master"
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
