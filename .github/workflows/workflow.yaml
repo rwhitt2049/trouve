@@ -1,0 +1,63 @@
+name: Trouve automation
+
+on:
+  push:
+    branches: [ "develop", "feature/*", "hotfix/*"]
+  pull_request:
+    branches: [ "develop", "master" ]
+
+jobs:
+  # Run all qa automations - linting, tests, formatting
+  qa:
+    runs-on: ubuntu-latest
+    name: Test and lint with TOX
+    strategy:
+      matrix:
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox tox-gh-actions
+    - name: Test with tox
+      run: tox
+  # verify installation on all applicable os platforms
+  verify-platforms:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    name: Verify dev env
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+      - run: "python -m pip install -e .[develop]"
+      - run: "python -c 'import trouve; print(trouve.__version__)'"
+  # build distributions and publish to PYPI - need to add verionsing automation before using this
+#  deploy:
+#    runs-on: ubuntu-latest
+#    name: Build and publish to PYPI
+#    needs: [qa, verify-platforms]
+#    if: ${{ github.ref == 'refs/heads/master' }}
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Set up Python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: "3.x"
+#      - name: Install dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          python -m pip install build
+#      - name: Build distributions
+#        run: python -m build
+#      - name: check it
+#        run: ls dist

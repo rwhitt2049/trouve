@@ -9,4 +9,6 @@ _static
 _templates
 *ipynb_checkpoints*
 dist/
-*.env
+*.env/
+*.tox/
+*.pytest_cache/
