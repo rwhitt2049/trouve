@@ -68,11 +68,24 @@ jobs:
         python -m pip install tox tox-gh-actions
     - name: Test with tox
       run: tox
-#  dev-install:
+  install-dev:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    name: Verify dev env
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - run: "python -m pip install -e .[develop]"
+      - run: "python -c 'import trouve; print(trouve.__version__)'"
   deploy:
     runs-on: ubuntu-latest
     name: Build and publish to PYPI
-    needs: [qa]
+    needs: [qa, install-dev]
 #    if: github.ref == "refs/heads/master"
     steps:
       - uses: actions/checkout@v3
