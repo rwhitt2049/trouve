@@ -6,9 +6,17 @@ from os import path
 
 from setuptools import find_packages, setup
 
-from trouve import __version__
-
 base = path.abspath(path.dirname(__file__))
+
+def get_version():
+    with open(path.join(base, "trouve/__init__.py")) as fp:
+
+        for line in fp.read().splitlines():
+            if line.startswith('__version__'):
+                delim = '"' if '"' in line else "'"
+                return line.split(delim)[1]
+        else:
+            raise RuntimeError("Unable to find version string.")
 
 
 def install_requires():
@@ -17,7 +25,7 @@ def install_requires():
 
 
 def dev_requires():
-    with open(path.join(base, 'dev_requirements.txt'), encoding='utf-8') as file:
+    with open(path.join(base, 'requirements-dev.txt'), encoding='utf-8') as file:
         return file.read().splitlines()
 
 
@@ -28,7 +36,7 @@ def long_description():
 
 kwargs = dict(
     name='trouve',
-    version=__version__,
+    version=get_version(),
     description='Event detection and transformation for time-series data',
     long_description=long_description(),
     author='Ry Whittington',
@@ -53,6 +61,7 @@ kwargs = dict(
     install_requires=install_requires(),
     package_data={},
     data_files=[],
+    extras_require={"develop": dev_requires()},
     entry_points={},
     test_suite='tests',
     tests_require=dev_requires()
