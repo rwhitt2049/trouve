@@ -33,7 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 develop = [
-    "pytest~=7.0.0"
+    "pytest"
 ]
 
 [project.urls]
@@ -45,3 +45,6 @@ Changelog = "https://trouve.readthedocs.io/en/stable/change_log.html"
 [tool.setuptools.dynamic]
 version = {attr = "trouve.__version__"}
 readme = {file = ["README.rst"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
