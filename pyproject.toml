@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trouve"
+description = "Event detection and transformation for time-series data"
+classifiers = [
+    'Development Status :: 6 - Mature',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Manufacturing',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX',
+    'Operating System :: MacOS',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering'
+]
+dynamic = ["version", "readme"]
+requires-python = ">=3.6"
+dependencies = [
+    "numpy",
+    "toolz",
+    "pandas",
+]
+
+[project.optional-dependencies]
+develop = [
+    "pytest"
+]
+
+[project.urls]
+Homepage = "https://github.com/rwhitt2049/trouve"
+Documentation = "https://trouve.readthedocs.io/en/stable/"
+Repository = "https://github.com/rwhitt2049/trouve"
+Changelog = "https://trouve.readthedocs.io/en/stable/change_log.html"
+
+[tool.setuptools.dynamic]
+version = {attr = "trouve.__version__"}
+readme = {file = ["README.rst"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
