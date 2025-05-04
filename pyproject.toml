@@ -32,8 +32,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-develop = [
-    "pytest"
+develop = ["pytest"]
+docs = [
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]
