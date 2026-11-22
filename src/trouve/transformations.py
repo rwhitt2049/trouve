@@ -2,8 +2,7 @@ from functools import partial
 
 import numpy as np
 
-
-__all__ = ['debounce', 'filter_durations', 'offset_events', 'merge_overlap']
+__all__ = ["debounce", "filter_durations", "offset_events", "merge_overlap"]
 
 
 def debounce(activate_debounce=None, deactivate_debounce=None):
@@ -29,7 +28,7 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
 
     Returns:
         ``callable``: Partial function
-    
+
     Examples:
         >>> import trouve as tr
         >>> import trouve.transformations as tt
@@ -43,7 +42,7 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
         array([ 0.,  1.,  0.,  1.,  1.,  1.,  0.,  1.,  1.])
         >>> trans_events.to_array()  # doctest: +SKIP
         array([ 0.,  0.,  0.,  1.,  1.,  1.,  1.,  1.,  1.])
-        
+
     Raises:
         ``ValueError``: If ``activate_debounce`` or ``deactivate_debounce`` < 0
 
@@ -52,10 +51,10 @@ def debounce(activate_debounce=None, deactivate_debounce=None):
     d_deb = 0 if deactivate_debounce is None else deactivate_debounce
 
     if a_deb < 0:
-        raise ValueError('activate_debounce must be a value >= 0 or None')
+        raise ValueError("activate_debounce must be a value >= 0 or None")
 
     if d_deb < 0:
-        raise ValueError('deactivate_debounce must be a value >= 0 or None')
+        raise ValueError("deactivate_debounce must be a value >= 0 or None")
 
     return partial(_debounce, activate_debounce=a_deb, deactivate_debounce=d_deb)
 
@@ -138,7 +137,7 @@ def filter_durations(min_duration=None, max_duration=None):
 
     Returns:
         ``callable``: Partial function
-        
+
     Raises:
         ``ValueError``: If min_duration or max_duration is < 0
 
@@ -160,10 +159,10 @@ def filter_durations(min_duration=None, max_duration=None):
     max_dur = np.nan if max_duration is None else max_duration
 
     if min_dur < 0:
-        raise ValueError('min_duration must be >= 0 or None')
+        raise ValueError("min_duration must be >= 0 or None")
 
     if max_dur < 0:
-        raise ValueError('max_duration must be >= 0 or None')
+        raise ValueError("max_duration must be >= 0 or None")
 
     return partial(_filter_durations, min_duration=min_dur, max_duration=max_dur)
 
@@ -193,10 +192,9 @@ def _filter_durations(events, min_duration, max_duration):
 
     event_lengths = events._stops - events._starts
     if not np.isnan(max_duration_):
-        condition = ((event_lengths < min_duration_) |
-                     (event_lengths > max_duration_))
+        condition = (event_lengths < min_duration_) | (event_lengths > max_duration_)
     else:
-        condition = (event_lengths < min_duration_)
+        condition = event_lengths < min_duration_
 
     events._starts = np.ma.masked_where(condition, events._starts).compressed()
     events._stops = np.ma.masked_where(condition, events._stops).compressed()
@@ -218,7 +216,7 @@ def offset_events(start_offset=None, stop_offset=None):
 
     Returns:
         ``callable``: Partial function
-        
+
     Raises:
         ``ValueError``: If ``start_offset`` > 0 or ``stop_offset`` < 0
 
@@ -240,10 +238,10 @@ def offset_events(start_offset=None, stop_offset=None):
     stop_offset_ = 0 if stop_offset is None else stop_offset
 
     if start_offset_ > 0:
-        raise ValueError('start_offset must be None or <= 0')
+        raise ValueError("start_offset must be None or <= 0")
 
     if stop_offset_ < 0:
-        raise ValueError('stop_offset must be None or >= 0')
+        raise ValueError("stop_offset must be None or >= 0")
 
     return partial(_offset_events, start_offset=start_offset_, stop_offset=stop_offset_)
 
@@ -292,8 +290,9 @@ def merge_overlap(events):
         >>> condition = y > 2
         >>> offset = tt.offset_events(-1, 1)
         >>> events = tr.find_events(condition, period=1, transformations=[offset])
-        >>> merged_events = tr.find_events(condition,  period=1,
-        ... transformations=[offset, merge_overlap])
+        >>> merged_events = tr.find_events(
+        ...     condition, period=1, transformations=[offset, merge_overlap]
+        ... )
         >>> events.to_array()  # doctest: +SKIP
         array([ 1.,  1.,  1.,  1.,  1.,  1.,  1.,  0.,  0.])
         >>> merged_events.to_array()  # doctest: +SKIP
@@ -306,8 +305,14 @@ def merge_overlap(events):
     """
     if events:
         init_mask = np.array([False])
-        mask = (events._starts[1:] <= events._stops[:-1])
-        events._starts = np.ma.masked_where(np.append(init_mask, mask), events._starts).compressed()
-        events._stops = np.ma.masked_where(np.append(mask, init_mask), events._stops).compressed()
+        mask = events._starts[1:] <= events._stops[:-1]
+
+        events._starts = np.ma.masked_where(
+            np.append(init_mask, mask), events._starts
+        ).compressed()
+
+        events._stops = np.ma.masked_where(
+            np.append(mask, init_mask), events._stops
+        ).compressed()
 
     return events

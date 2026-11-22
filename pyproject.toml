@@ -1,10 +1,12 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "trouve"
 description = "Event detection and transformation for time-series data"
+readme = "README.rst"
+authors = [{name = "Ry Whittington"}]
 classifiers = [
     'Development Status :: 6 - Mature',
     'Intended Audience :: Developers',
@@ -14,17 +16,17 @@ classifiers = [
     'Operating System :: Microsoft :: Windows',
     'Operating System :: POSIX',
     'Operating System :: MacOS',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3',
     'Topic :: Scientific/Engineering'
 ]
-dynamic = ["version", "readme"]
-requires-python = ">=3.6"
+dynamic = ["version"]
+requires-python = ">=3.8"
 dependencies = [
     "numpy",
     "toolz",
@@ -32,8 +34,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-develop = [
-    "pytest"
+develop = ["pytest"]
+docs = [
+    "sphinx-autodoc-typehints",
+    "sphinx-copybutton",
+    "sphinx-rtd-theme",
 ]
 
 [project.urls]
@@ -44,7 +49,16 @@ Changelog = "https://trouve.readthedocs.io/en/stable/change_log.html"
 
 [tool.setuptools.dynamic]
 version = {attr = "trouve.__version__"}
-readme = {file = ["README.rst"]}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+# target-version is inferred from requires-python
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "W", "N"]
+
+[tool.ruff.format]
+quote-style = "double"

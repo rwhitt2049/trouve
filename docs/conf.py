@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Trouve'
-copyright = '2017, Ry Whittington'
+copyright = '2025, Ry Whittington'
 author = 'Ry Whittington'
 
 # The version info for the project you're documenting, acts as replacement for
