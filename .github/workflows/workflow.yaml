@@ -1,10 +1,19 @@
 name: Trouve automation
 
 on:
+  # Post-merge check of what actually landed on the long-lived branches
   push:
-    branches: [ "develop", "feature/*", "hotfix/*"]
+    branches: [ "develop", "master" ]
+  # Every push to an open PR; tests the merge result against the target branch
   pull_request:
     branches: [ "develop", "master" ]
+  # Manual run for a branch without a PR (Actions tab -> Run workflow)
+  workflow_dispatch:
+
+# Cancel an in-progress run when a newer commit arrives for the same PR/branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   qa:
@@ -40,6 +49,18 @@ jobs:
           python-version: "3.x"
       - run: "python -m pip install -e .[develop]"
       - run: "python -c 'import trouve; print(trouve.__version__)'"
+  # Single stable status check for branch protection; fails if any required
+  # job failed or was cancelled, so matrix changes never require settings edits
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [qa, verify-platforms]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required jobs
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - run: echo "All required jobs passed"
   # build distributions and publish to PYPI - need to add verionsing automation before using this
 #  deploy:
 #    runs-on: ubuntu-latest
