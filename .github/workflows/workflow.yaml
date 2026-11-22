@@ -7,11 +7,11 @@ on:
     branches: [ "develop", "master" ]
 
 jobs:
-  # Run all qa automations - linting, tests, formatting
   qa:
     runs-on: ubuntu-latest
-    name: Test and lint with TOX
+    name: Test and lint with TOX (Python ${{ matrix.python-version }})
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
@@ -25,8 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install tox tox-gh-actions
     - name: Test with tox
-      run: tox
-  # verify installation on all applicable os platforms
+      run: tox --parallel auto --parallel-live
   verify-platforms:
     strategy:
       matrix:
