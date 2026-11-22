@@ -1,0 +1,4 @@
+# Default owner for everything in the repo; auto-requested as reviewer on
+# every PR. With "Require review from Code Owners" enabled in the branch
+# ruleset, PRs from others need this approval to merge.
+* @rwhitt2049
