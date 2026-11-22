@@ -22,7 +22,7 @@ def test_reference_events(reference_events, reference_array):
         stops=np.array([4, 9, 12]),
         period=1,
         name="test",
-        condition_size=len(reference_array)
+        condition_size=len(reference_array),
     )
 
     assert reference_events == expected
@@ -31,13 +31,19 @@ def test_reference_events(reference_events, reference_array):
 def test_events_to_array(reference_events, reference_array):
     actual = reference_events.to_array()
     expected = reference_array
-    npt.assert_equal(actual, expected, err_msg="Converting events to array don't match expected")
+    npt.assert_equal(
+        actual, expected, err_msg="Converting events to array don't match expected"
+    )
 
     expected = reference_array.copy()
     expected[expected == 0] = 5
     expected[expected == 1] = 3
 
-    npt.assert_equal(reference_events.to_array(5, 3), expected, err_msg="Converting events to array with options don't match expected")
+    npt.assert_equal(
+        reference_events.to_array(5, 3),
+        expected,
+        err_msg="Converting events to array with options don't match expected",
+    )
     assert isinstance(reference_events.to_array(), np.ndarray)
 
 
@@ -47,5 +53,5 @@ def test_events_durations(reference_events):
     npt.assert_equal(actual, expected)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

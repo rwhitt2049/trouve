@@ -12,7 +12,7 @@ class TestClassIterable(TestCase):
         starts = np.array([1, 7, 10])
         stops = np.array([4, 9, 12])
         period = 1
-        self.events = Events(starts, stops, period, 'control', array.size)
+        self.events = Events(starts, stops, period, "control", array.size)
 
     def test_start_stop_loc(self):
         test_starts = []
@@ -34,5 +34,5 @@ class TestClassIterable(TestCase):
         npt.assert_array_equal(validation_durations, test_durations)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
