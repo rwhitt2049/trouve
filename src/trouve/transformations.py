@@ -304,15 +304,20 @@ def merge_overlap(events):
 
     """
     if events:
-        init_mask = np.array([False])
-        mask = events._starts[1:] <= events._stops[:-1]
+        order = np.argsort(events._starts, kind="stable")
+        starts = events._starts[order]
+        stops = events._stops[order]
 
-        events._starts = np.ma.masked_where(
-            np.append(init_mask, mask), events._starts
-        ).compressed()
+        # An event begins a new group only if it starts after every
+        # earlier stop, not just after the previous one. This handles
+        # events fully contained within an earlier event.
+        running_stop = np.maximum.accumulate(stops)
+        new_group = np.empty(starts.size, dtype=bool)
+        new_group[0] = True
+        new_group[1:] = starts[1:] > running_stop[:-1]
 
-        events._stops = np.ma.masked_where(
-            np.append(mask, init_mask), events._stops
-        ).compressed()
+        group_starts = np.flatnonzero(new_group)
+        events._starts = starts[group_starts]
+        events._stops = np.maximum.reduceat(stops, group_starts)
 
     return events

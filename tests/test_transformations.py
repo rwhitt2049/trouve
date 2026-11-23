@@ -1,7 +1,8 @@
-from unittest import TestCase, main
+from unittest import TestCase
 
 import numpy as np
 import numpy.testing as npt
+import pytest
 
 from trouve.events import Events
 from trouve.transformations import (
@@ -319,5 +320,32 @@ class TestDefaultArguments(TransformationTestFixture):
         self.fixture(control_starts, control_stops, self.period)
 
 
-if __name__ == "__main__":
-    main()
+@pytest.mark.parametrize(
+    "starts, stops, expected_starts, expected_stops",
+    [
+        pytest.param([1, 2], [10, 5], [1], [10], id="one-contained"),
+        pytest.param([1, 2, 3], [10, 4, 6], [1], [10], id="two-contained"),
+        pytest.param(
+            [1, 2, 12], [10, 5, 14], [1, 12], [10, 14], id="contained-then-separate"
+        ),
+        pytest.param(
+            [1, 2, 8], [10, 5, 12], [1], [12], id="contained-then-overlap-outer"
+        ),
+        pytest.param(
+            [1, 2, 4, 9, 12, 13, 20, 21, 22, 30],
+            [8, 3, 6, 11, 18, 14, 25, 23, 27, 31],
+            [1, 9, 12, 20, 30],
+            [8, 11, 18, 27, 31],
+            id="many-events-mixed-groups",
+        ),
+        pytest.param([8, 1], [12, 9], [1], [12], id="unsorted-starts"),
+        pytest.param([8, 1], [10, 4], [1, 8], [4, 10], id="unsorted-no-overlap"),
+    ],
+)
+def test_merge_overlap_contained_events(starts, stops, expected_starts, expected_stops):
+    """Custom transformations may alter events individually, producing
+    contained or out-of-order events that must still merge correctly."""
+    events = Events(np.array(starts), np.array(stops), 1, "input", 35)
+    merged = merge_overlap(events)
+    npt.assert_array_equal(merged._starts, expected_starts)
+    npt.assert_array_equal(merged._stops, expected_stops)

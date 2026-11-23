@@ -53,5 +53,21 @@ def test_events_durations(reference_events):
     npt.assert_equal(actual, expected)
 
 
-if __name__ == "__main__":
-    pytest.main()
+def test_str_with_no_events():
+    events = trouve.find_events(np.zeros(5, dtype=bool), period=1, name="empty")
+    summary = str(events)
+    assert "empty" in summary
+    assert "Number of events: 0" in summary
+
+
+def test_eq_with_different_number_of_events():
+    two_events = trouve.find_events(np.array([0, 1, 0, 1, 0, 0]), period=1)
+    three_events = trouve.find_events(np.array([1, 0, 1, 0, 1, 0]), period=1)
+    assert two_events != three_events
+    assert not (two_events == three_events)
+
+
+@pytest.mark.parametrize("other", [5, None, "events", np.array([1, 7, 10])])
+def test_eq_with_non_events(reference_events, other):
+    assert not (reference_events == other)
+    assert reference_events != other

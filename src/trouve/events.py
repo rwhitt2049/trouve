@@ -215,20 +215,21 @@ class Events(object):
             Number of events: 2
             Min, Max, Mean Duration: 1.000s, 2.000s, 1.500s
 
-        """
-        args = [
-            len(self),
-            np.min(self.durations),
-            np.max(self.durations),
-            np.mean(self.durations),
-        ]
+            >>> empty = tr.find_events(np.zeros(3), period=1, name="empty")
+            >>> print(empty)
+            empty
+            Number of events: 0
+            Min, Max, Mean Duration: n/a
 
-        kwargs = {"name": "{}".format(self.name), "period": "{}s".format(self._period)}
-        return (
-            "{name}"
-            "\nNumber of events: {0}"
-            "\nMin, Max, Mean Duration: {1:.3f}s, {2:.3f}s, {3:.3f}s"
-        ).format(*args, **kwargs)
+        """
+        header = "{}\nNumber of events: {}".format(self.name, len(self))
+        if len(self) == 0:
+            return header + "\nMin, Max, Mean Duration: n/a"
+
+        durations = self.durations
+        return header + "\nMin, Max, Mean Duration: {:.3f}s, {:.3f}s, {:.3f}s".format(
+            np.min(durations), np.max(durations), np.mean(durations)
+        )
 
     def __eq__(self, other):
         """Determine if two Events objects are identical
@@ -252,16 +253,21 @@ class Events(object):
             >>> example != other
             False
 
+            >>> example == 5
+            False
+
         """
-        if (
-            np.all(self._starts == other._starts)
-            and np.all(self._stops == other._stops)
+        # Return False rather than NotImplemented: NotImplemented makes Python
+        # fall back to ndarray.__eq__, which returns an elementwise array.
+        if not isinstance(other, Events):
+            return False
+
+        return bool(
+            np.array_equal(self._starts, other._starts)
+            and np.array_equal(self._stops, other._stops)
             and self._period == other._period
             and self._condition_size == other._condition_size
-        ):
-            return True
-        else:
-            return False
+        )
 
     def __hash__(self):
         """Numpy arrays aren't hashable.

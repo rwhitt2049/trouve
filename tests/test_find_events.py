@@ -1,4 +1,4 @@
-from unittest import TestCase, main
+from unittest import TestCase
 
 import numpy as np
 import numpy.testing as npt
@@ -38,5 +38,9 @@ class TestFindEvents(TestCase):
         self.assertIsInstance(events, trouve.events.Events)
 
 
-if __name__ == "__main__":
-    main()
+def test_find_events_empty_condition():
+    events = find_events(np.array([], dtype=bool), period=1)
+    assert len(events) == 0
+    npt.assert_array_equal(events._starts, [])
+    npt.assert_array_equal(events._stops, [])
+    assert events.to_array().size == 0

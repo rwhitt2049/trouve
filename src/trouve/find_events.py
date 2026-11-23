@@ -82,6 +82,10 @@ def _apply_condition(condition):
     if isinstance(condition, pd.core.series.Series):
         condition = condition.values
 
+    if condition.size == 0:
+        empty = np.array([], dtype=np.int32)
+        return empty, empty.copy()
+
     mask = (condition > 0).view("i1")
     slice_index = np.arange(mask.size + 1, dtype=np.int32)
 
