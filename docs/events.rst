@@ -18,7 +18,7 @@ index value. These values then allow a user to inspect each event in a Pythonic 
 .. autoclass:: trouve.events.Occurrence
 
 ``trouve.events.Occurrence`` is a ``collections.namedtuple`` that is returned by both
-:any:`Events.__getitem__` and :any:`Events.__next__`
+:any:`Events.__getitem__` and iterating over ``Events``
 
     Parameters:
         * start (``int``): Index of the start of the occurrence

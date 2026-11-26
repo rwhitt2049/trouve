@@ -26,4 +26,4 @@ Change Log
 
 **Transformations**
 
-* Deprecate passing transformation functions as *args to :any:`trouve.find_events`. Pass them to the explicit transformations keyword arguments
+* Deprecate passing transformation functions as ``*args`` to :func:`~trouve.find_events.find_events`. Pass them to the explicit transformations keyword arguments

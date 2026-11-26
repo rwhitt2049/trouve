@@ -39,7 +39,7 @@ y == 2, or z <= 1. ``((x > 0) & (y == 2)) | (z <= 1)``
 
 .. note::
 
-When using more than one parameter, you must put each expression in its own parenthesis
+    When using more than one parameter, you must put each expression in its own parenthesis
 
 .. doctest::
 
@@ -61,7 +61,7 @@ When using more than one parameter, you must put each expression in its own pare
 Events and the ``numpy.ma`` Module
 ----------------------------------
 
-The :any:`Events.as_mask` method was developed to integrate directly with ``numpy.ma.MaskedArray``
+The ``Events.as_mask`` method was developed to integrate directly with ``numpy.ma.MaskedArray``
 and ``numpy.ma.masked_where`` . The ``numpy.ma`` module makes things like summing or finding
 min/max of arrays based on your condition.
 
